@@ -2270,6 +2270,128 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_quote: {
+        Args: {
+          p_confirmation?: boolean
+          p_quote_id: string
+          p_terms_version_id?: string
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          customer_user_id: string
+          deleted_at: string | null
+          id: string
+          notes: string | null
+          project_id: string | null
+          quote_number: string
+          quote_request_id: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["quote_status"]
+          subtotal_cents: number
+          tax_cents: number
+          terms_version_id: string | null
+          total_cents: number
+          updated_at: string
+          valid_until: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "quotes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_dashboard_stats: { Args: never; Returns: Json }
+      admin_work_queue: { Args: never; Returns: Json }
+      approve_commission: {
+        Args: { p_commission_id: string; p_reason: string }
+        Returns: Json
+      }
+      approve_partner_application: {
+        Args: { p_application_id: string; p_reason?: string }
+        Returns: Json
+      }
+      book_appointment_slot: {
+        Args: { p_notes?: string; p_slot_id: string; p_title: string }
+        Returns: {
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          created_at: string
+          customer_user_id: string
+          ends_at: string
+          id: string
+          location: string | null
+          meeting_url: string | null
+          notes: string | null
+          project_id: string | null
+          slot_id: string | null
+          staff_user_id: string | null
+          starts_at: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          timezone: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      cancel_appointment: {
+        Args: { p_appointment_id: string; p_reason?: string }
+        Returns: {
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          created_at: string
+          customer_user_id: string
+          ends_at: string
+          id: string
+          location: string | null
+          meeting_url: string | null
+          notes: string | null
+          project_id: string | null
+          slot_id: string | null
+          staff_user_id: string | null
+          starts_at: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          timezone: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_project_from_request: {
+        Args: { p_project_id: string; p_status?: string }
+        Returns: {
+          created_at: string
+          customer_user_id: string | null
+          deleted_at: string | null
+          description: string | null
+          id: string
+          metadata: Json
+          order_id: string | null
+          owner_staff_id: string | null
+          sale_id: string | null
+          starts_on: string | null
+          status: Database["public"]["Enums"]["project_status"]
+          target_end_on: string | null
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "projects"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       current_partner_id: { Args: never; Returns: string }
       has_app_role: { Args: { p_roles: string[] }; Returns: boolean }
       is_conversation_participant: {
@@ -2279,6 +2401,55 @@ export type Database = {
       is_partner: { Args: never; Returns: boolean }
       is_project_member: { Args: { p_project_id: string }; Returns: boolean }
       is_staff_or_above: { Args: never; Returns: boolean }
+      mark_document_scan_clean: {
+        Args: { p_version_id: string }
+        Returns: Json
+      }
+      process_payout_request: {
+        Args: { p_payout_id: string; p_reason: string }
+        Returns: Json
+      }
+      reject_commission: {
+        Args: { p_commission_id: string; p_reason: string }
+        Returns: Json
+      }
+      reject_partner_application: {
+        Args: { p_application_id: string; p_reason: string }
+        Returns: Json
+      }
+      reject_quote: {
+        Args: { p_quote_id: string; p_reason?: string }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          customer_user_id: string
+          deleted_at: string | null
+          id: string
+          notes: string | null
+          project_id: string | null
+          quote_number: string
+          quote_request_id: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["quote_status"]
+          subtotal_cents: number
+          tax_cents: number
+          terms_version_id: string | null
+          total_cents: number
+          updated_at: string
+          valid_until: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "quotes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      suspend_partner: {
+        Args: { p_partner_id: string; p_reason: string }
+        Returns: Json
+      }
       write_audit_log: {
         Args: {
           p_action: string

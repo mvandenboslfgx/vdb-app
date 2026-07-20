@@ -223,6 +223,8 @@ export interface Quote extends Timestamps {
   totalCents: number;
   items: QuoteItem[];
   projectId: string | null;
+  /** Version of the terms document linked to this quote, e.g. "1.2". Null when none is linked yet. */
+  termsVersion: string | null;
 }
 
 export interface Invoice extends Timestamps {
@@ -258,6 +260,15 @@ export interface Appointment extends Timestamps {
   endsAt: string;
   status: AppointmentStatus;
   location: string | null;
+  timezone: 'Europe/Amsterdam';
+}
+
+export interface AppointmentSlot {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  capacity: number;
+  bookedCount: number;
   timezone: 'Europe/Amsterdam';
 }
 

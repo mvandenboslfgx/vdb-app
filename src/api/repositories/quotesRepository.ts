@@ -55,44 +55,82 @@ export async function getQuote(id: string): Promise<Quote | null> {
   return mapQuote(data, itemsByQuote.get(data.id) ?? []);
 }
 
-async function setQuoteStatus(id: string, status: 'accepted' | 'rejected'): Promise<Quote> {
+export interface AcceptQuoteInput {
+  quoteId: string;
+  /** Legacy alias kept for backwards-compatible callers; superseded by termsVersionId. */
+  acceptTerms?: boolean;
+  /** Explicit customer confirmation. Defaults to true: the UI's Accept button
+   * tap already *is* the confirmation gesture, so single-argument callers
+   * (`acceptQuote(id)`) do not need to pass this explicitly. The server RPC
+   * still independently enforces `p_confirmation = true`. */
+  confirmation?: boolean;
+  /** Optional terms-of-service version being accepted alongside the quote. */
+  termsVersionId?: string;
+}
+
+/**
+ * Accept a quote via the `accept_quote` SECURITY DEFINER RPC. The database is
+ * the source of truth for ownership, status transitions, expiry, and
+ * duplicate-acceptance checks -- this repository never mutates `quotes`
+ * directly for accept/reject.
+ */
+export async function acceptQuote(idOrInput: string | AcceptQuoteInput): Promise<Quote> {
+  const input: AcceptQuoteInput =
+    typeof idOrInput === 'string' ? { quoteId: idOrInput } : idOrInput;
+
   if (shouldUseMockApi()) {
     await delay();
-    const quote = mockStore.quotes.find((q) => q.id === id);
+    const quote = mockStore.quotes.find((q) => q.id === input.quoteId);
     if (!quote) throw DomainError.notFound('Quote not found');
-    quote.status = status;
+    quote.status = 'accepted';
     quote.updatedAt = new Date().toISOString();
     return { ...quote };
   }
+
   const supabase = requireLiveSupabase();
   const { data, error } = await supabase
-    .from('quotes')
-    .update({ status })
-    .eq('id', id)
-    .select('*')
-    .single();
+    .rpc('accept_quote', {
+      p_quote_id: input.quoteId,
+      p_terms_version_id: input.termsVersionId ?? undefined,
+      p_confirmation: input.confirmation ?? true,
+    });
   if (error) throw fromSupabaseError(error);
+
   const itemsByQuote = await fetchItems(supabase, [data.id]);
   return mapQuote(data, itemsByQuote.get(data.id) ?? []);
 }
 
-export async function acceptQuote(
-  idOrInput: string | { quoteId: string; acceptTerms?: boolean; confirmation?: boolean },
-): Promise<Quote> {
-  const id = typeof idOrInput === 'string' ? idOrInput : idOrInput.quoteId;
-  return setQuoteStatus(id, 'accepted');
+export interface RejectQuoteInput {
+  quoteId: string;
+  reason?: string;
 }
 
 export async function rejectQuote(
-  idOrInput: string | { quoteId: string; reason?: string },
+  idOrInput: string | RejectQuoteInput,
   reason = '',
 ): Promise<Quote> {
-  if (typeof idOrInput === 'string') {
-    return setQuoteStatus(idOrInput, 'rejected');
+  const input: RejectQuoteInput =
+    typeof idOrInput === 'string' ? { quoteId: idOrInput, reason } : idOrInput;
+
+  if (shouldUseMockApi()) {
+    await delay();
+    const quote = mockStore.quotes.find((q) => q.id === input.quoteId);
+    if (!quote) throw DomainError.notFound('Quote not found');
+    quote.status = 'rejected';
+    quote.updatedAt = new Date().toISOString();
+    return { ...quote };
   }
-  void reason;
-  void idOrInput.reason;
-  return setQuoteStatus(idOrInput.quoteId, 'rejected');
+
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase
+    .rpc('reject_quote', {
+      p_quote_id: input.quoteId,
+      p_reason: input.reason || undefined,
+    });
+  if (error) throw fromSupabaseError(error);
+
+  const itemsByQuote = await fetchItems(supabase, [data.id]);
+  return mapQuote(data, itemsByQuote.get(data.id) ?? []);
 }
 
 export const quotesRepository = {

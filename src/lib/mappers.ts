@@ -10,6 +10,7 @@
 import type { Tables } from '@/types/database.generated';
 import type {
   Appointment,
+  AppointmentSlot,
   Commission,
   Conversation,
   Document,
@@ -37,8 +38,10 @@ type QuoteRow = Tables<'quotes'>;
 type QuoteItemRow = Tables<'quote_items'>;
 type InvoiceRow = Tables<'invoices'>;
 type AppointmentRow = Tables<'appointments'>;
+type AvailabilitySlotRow = Tables<'availability_slots'>;
 type CommissionRow = Tables<'commissions'>;
 type PartnerProfileRow = Tables<'partner_profiles'>;
+type TermsVersionRow = Tables<'terms_versions'>;
 
 function readMetadata(metadata: unknown): Record<string, unknown> {
   return typeof metadata === 'object' && metadata !== null && !Array.isArray(metadata)
@@ -226,7 +229,11 @@ export function mapQuoteItem(row: QuoteItemRow): QuoteItem {
   };
 }
 
-export function mapQuote(row: QuoteRow, items: QuoteItemRow[] = []): Quote {
+export function mapQuote(
+  row: QuoteRow,
+  items: QuoteItemRow[] = [],
+  termsVersion?: TermsVersionRow | null,
+): Quote {
   return {
     id: row.id,
     number: row.quote_number,
@@ -239,6 +246,7 @@ export function mapQuote(row: QuoteRow, items: QuoteItemRow[] = []): Quote {
     totalCents: row.total_cents,
     items: items.map(mapQuoteItem),
     projectId: row.project_id,
+    termsVersion: termsVersion?.version ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -290,6 +298,17 @@ export function mapAppointment(row: AppointmentRow): Appointment {
     timezone: 'Europe/Amsterdam',
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+  };
+}
+
+export function mapAvailabilitySlot(row: AvailabilitySlotRow): AppointmentSlot {
+  return {
+    id: row.id,
+    startsAt: row.starts_at,
+    endsAt: row.ends_at,
+    capacity: row.capacity,
+    bookedCount: row.booked_count,
+    timezone: 'Europe/Amsterdam',
   };
 }
 

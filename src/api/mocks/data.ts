@@ -61,6 +61,7 @@ export const mockQuotes: Quote[] = [
       },
     ],
     projectId: 'proj-1',
+    termsVersion: null,
     createdAt: now,
     updatedAt: now,
   },
@@ -172,7 +173,7 @@ export const mockCommissions: Commission[] = [
   {
     id: 'com-1',
     partnerId: 'partner-1',
-    saleLabel: 'Website redesign — Acme',
+    saleLabel: 'Website redesign â€” Acme',
     amountCents: 45000,
     currency: 'EUR',
     status: 'under_review',

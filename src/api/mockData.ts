@@ -1,6 +1,7 @@
 import type {
   AdminDashboardStats,
   Appointment,
+  AppointmentSlot,
   Commission,
   Conversation,
   CustomerDashboard,
@@ -227,6 +228,7 @@ export const mockQuotes: Quote[] = [
       },
     ],
     projectId: 'proj-app-003',
+    termsVersion: '1.2',
     createdAt: daysAgo(5),
     updatedAt: daysAgo(5),
   },
@@ -250,6 +252,7 @@ export const mockQuotes: Quote[] = [
       },
     ],
     projectId: 'proj-webshop-001',
+    termsVersion: '1.1',
     createdAt: daysAgo(25),
     updatedAt: daysAgo(20),
   },
@@ -407,6 +410,33 @@ export const mockAppointments: Appointment[] = [
     timezone: 'Europe/Amsterdam',
     createdAt: daysAgo(1),
     updatedAt: daysAgo(1),
+  },
+];
+
+export const mockAvailabilitySlots: AppointmentSlot[] = [
+  {
+    id: 'slot-001',
+    startsAt: daysFromNow(3).replace('T10:00:00.000Z', 'T09:00:00.000Z'),
+    endsAt: daysFromNow(3).replace('T10:00:00.000Z', 'T09:30:00.000Z'),
+    capacity: 1,
+    bookedCount: 0,
+    timezone: 'Europe/Amsterdam',
+  },
+  {
+    id: 'slot-002',
+    startsAt: daysFromNow(3).replace('T10:00:00.000Z', 'T11:00:00.000Z'),
+    endsAt: daysFromNow(3).replace('T10:00:00.000Z', 'T11:30:00.000Z'),
+    capacity: 1,
+    bookedCount: 0,
+    timezone: 'Europe/Amsterdam',
+  },
+  {
+    id: 'slot-003',
+    startsAt: daysFromNow(4).replace('T10:00:00.000Z', 'T14:00:00.000Z'),
+    endsAt: daysFromNow(4).replace('T10:00:00.000Z', 'T14:30:00.000Z'),
+    capacity: 1,
+    bookedCount: 1,
+    timezone: 'Europe/Amsterdam',
   },
 ];
 
@@ -615,6 +645,7 @@ export const mockStore = {
   documents: [...mockDocuments],
   tickets: [...mockTickets],
   appointments: [...mockAppointments],
+  availabilitySlots: mockAvailabilitySlots.map((slot) => ({ ...slot })),
   partner: { ...mockPartner },
   leads: [...mockLeads],
   commissions: [...mockCommissions],

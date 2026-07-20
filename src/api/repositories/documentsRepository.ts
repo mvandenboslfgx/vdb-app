@@ -9,6 +9,13 @@ import type { DocumentReviewDecisionInput } from '@/validation/documents';
 type DocumentRow = Tables<'documents'>;
 type DocumentVersionRow = Tables<'document_versions'>;
 
+const DOCUMENTS_BUCKET = 'documents';
+/** Scans that must never be opened/downloaded, regardless of caller intent. */
+const BLOCKED_SCAN_STATUSES: readonly DocumentVersionRow['scan_status'][] = [
+  'flagged',
+  'failed',
+];
+
 async function fetchVersions(
   supabase: ReturnType<typeof requireLiveSupabase>,
   versionIds: string[],
@@ -78,6 +85,9 @@ export async function submitReviewDecision(
     await delay();
     const doc = mockStore.documents.find((d) => d.id === id);
     if (!doc) throw DomainError.notFound('Document not found');
+    if (BLOCKED_SCAN_STATUSES.includes(doc.scanStatus)) {
+      throw DomainError.forbidden('This file failed its security scan and cannot be reviewed.');
+    }
     doc.status = status;
     doc.updatedAt = new Date().toISOString();
     return { ...doc };
@@ -100,6 +110,12 @@ export async function submitReviewDecision(
     throw DomainError.validation('Document has no version to review yet.');
   }
 
+  const versions = await fetchVersions(supabase, [doc.current_version_id]);
+  const currentVersion = versions.get(doc.current_version_id);
+  if (currentVersion && BLOCKED_SCAN_STATUSES.includes(currentVersion.scan_status)) {
+    throw DomainError.forbidden('This file failed its security scan and cannot be reviewed.');
+  }
+
   const { error: reviewError } = await supabase.from('document_reviews').insert({
     document_id: id,
     document_version_id: doc.current_version_id,
@@ -117,7 +133,6 @@ export async function submitReviewDecision(
     .single();
   if (updateError) throw fromSupabaseError(updateError);
 
-  const versions = await fetchVersions(supabase, [doc.current_version_id]);
   return toDocuments([updated], versions)[0]!;
 }
 
@@ -130,9 +145,93 @@ export async function reviewDocument(
   return submitReviewDecision(id, { decision, comment: comment ?? '' });
 }
 
+/**
+ * Requests changes on a document. A non-empty, meaningful comment is
+ * required -- the reviewer must explain what needs to change. The database
+ * also enforces this independently via the `document_reviews_comment_required`
+ * CHECK constraint, so this is defense in depth, not the only guard.
+ */
+export async function requestChanges(id: string, comment: string): Promise<Document> {
+  const trimmed = comment.trim();
+  if (trimmed.length < 5) {
+    throw DomainError.validation(
+      'A comment of at least 5 characters is required to request changes.',
+    );
+  }
+  return submitReviewDecision(id, { decision: 'changes_requested', comment: trimmed });
+}
+
+export interface DocumentDownloadLink {
+  url: string;
+  expiresAt: string;
+}
+
+/**
+ * Creates a short-lived signed URL to open/download a document's current
+ * version from the private `documents` storage bucket. Blocked entirely for
+ * `flagged`/`failed` scans -- `storage.objects` RLS (see migration
+ * 20260720101500) enforces the same rule server-side, so this is defense in
+ * depth, not the only guard.
+ */
+export async function createSignedUrl(documentId: string): Promise<DocumentDownloadLink> {
+  if (shouldUseMockApi()) {
+    await delay();
+    const doc = mockStore.documents.find((d) => d.id === documentId);
+    if (!doc) throw DomainError.notFound('Document not found');
+    if (BLOCKED_SCAN_STATUSES.includes(doc.scanStatus)) {
+      throw DomainError.forbidden('This file failed its security scan and cannot be opened.');
+    }
+    return {
+      url: `https://mock.local/documents/${documentId}/download`,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+    };
+  }
+
+  const supabase = requireLiveSupabase();
+  const { data: doc, error: docError } = await supabase
+    .from('documents')
+    .select('*')
+    .eq('id', documentId)
+    .maybeSingle();
+  if (docError) throw fromSupabaseError(docError);
+  if (!doc) throw DomainError.notFound('Document not found');
+  if (!doc.current_version_id) {
+    throw DomainError.validation('Document has no version to download yet.');
+  }
+
+  const versions = await fetchVersions(supabase, [doc.current_version_id]);
+  const currentVersion = versions.get(doc.current_version_id);
+  if (!currentVersion) {
+    throw DomainError.notFound('Document version not found');
+  }
+  if (BLOCKED_SCAN_STATUSES.includes(currentVersion.scan_status)) {
+    throw DomainError.forbidden('This file failed its security scan and cannot be opened.');
+  }
+
+  const expiresInSeconds = 300;
+  const { data: signed, error: signError } = await supabase.storage
+    .from(DOCUMENTS_BUCKET)
+    .createSignedUrl(currentVersion.storage_path, expiresInSeconds);
+  if (signError) throw fromSupabaseError(signError);
+  if (!signed?.signedUrl) {
+    throw DomainError.configuration('Could not create a signed download URL for this file.');
+  }
+
+  return {
+    url: signed.signedUrl,
+    expiresAt: new Date(Date.now() + expiresInSeconds * 1000).toISOString(),
+  };
+}
+
+/** @deprecated Prefer createSignedUrl */
+export const getDocumentDownloadLink = createSignedUrl;
+
 export const documentsRepository = {
   list: listDocuments,
   get: getDocument,
   submitReviewDecision,
   reviewDocument,
+  requestChanges,
+  createSignedUrl,
+  getDownloadLink: createSignedUrl,
 };
