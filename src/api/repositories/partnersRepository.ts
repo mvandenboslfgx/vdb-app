@@ -1,34 +1,67 @@
 import { listCommissions, requestPayout } from '@/api/repositories/commissionsRepository';
 import { mockStore } from '@/api/mockData';
-import { delay, shouldUseMockApi } from '@/api/repositories/_utils';
-import { getSupabase } from '@/lib/supabase';
+import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
+import { DomainError, fromSupabaseError } from '@/lib/errors';
+import { mapPartnerProfile } from '@/lib/mappers';
 import type { Lead, PartnerProfile } from '@/types/domain';
 import type { PartnerApplicationInput } from '@/validation/partner';
+
+async function requireCurrentPartnerProfile(supabase: ReturnType<typeof requireLiveSupabase>) {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) {
+    throw DomainError.unauthorized('You must be signed in as a partner.');
+  }
+  const { data, error } = await supabase
+    .from('partner_profiles')
+    .select('*')
+    .eq('user_id', userData.user.id)
+    .maybeSingle();
+  if (error) throw fromSupabaseError(error);
+  return data;
+}
 
 export async function getPartnerProfile(): Promise<PartnerProfile | null> {
   if (shouldUseMockApi()) {
     await delay();
     return { ...mockStore.partner };
   }
-  const supabase = getSupabase();
-  if (!supabase) return { ...mockStore.partner };
-  const { data, error } = await supabase.from('partners').select('*').maybeSingle();
-  if (error) throw new Error(error.message);
-  return data as PartnerProfile | null;
+  const supabase = requireLiveSupabase();
+  const profile = await requireCurrentPartnerProfile(supabase);
+  if (!profile) return null;
+
+  const { data: codeRow } = await supabase
+    .from('partner_codes')
+    .select('code')
+    .eq('partner_id', profile.id)
+    .eq('is_active', true)
+    .maybeSingle();
+  const { data: linkRow } = await supabase
+    .from('partner_links')
+    .select('slug')
+    .eq('partner_id', profile.id)
+    .eq('is_active', true)
+    .maybeSingle();
+
+  return mapPartnerProfile(profile, {
+    code: codeRow?.code ?? '',
+    linkUrl: linkRow?.slug ? `https://vdbdigital.nl/r/${linkRow.slug}` : '',
+  });
 }
 
+/**
+ * There is no `leads` table in the current schema — this is a real gap, not a
+ * mock. We fail closed with a clear configuration error instead of querying a
+ * table that does not exist or fabricating data.
+ */
 export async function listLeads(): Promise<Lead[]> {
   if (shouldUseMockApi()) {
     await delay();
     return [...mockStore.leads];
   }
-  const supabase = getSupabase();
-  if (!supabase) return [...mockStore.leads];
-  const { data, error } = await supabase.from('leads').select('*').order('created_at', {
-    ascending: false,
-  });
-  if (error) throw new Error(error.message);
-  return (data ?? []) as Lead[];
+  requireLiveSupabase();
+  throw DomainError.configuration(
+    'Leads are not yet available: the `leads` table has not been provisioned in Supabase.',
+  );
 }
 
 export async function createLead(input: {
@@ -39,7 +72,7 @@ export async function createLead(input: {
   consentConfirmed: boolean;
 }): Promise<Lead> {
   if (!input.consentConfirmed) {
-    throw new Error('Lead consent required');
+    throw DomainError.validation('Lead consent required');
   }
   if (shouldUseMockApi()) {
     await delay();
@@ -57,20 +90,10 @@ export async function createLead(input: {
     mockStore.leads.unshift(lead);
     return lead;
   }
-  const supabase = getSupabase();
-  if (!supabase) throw new Error('Supabase is not configured');
-  const { data, error } = await supabase
-    .from('leads')
-    .insert({
-      name: input.name,
-      email: input.email,
-      phone: input.phone ?? null,
-      notes: input.notes ?? null,
-    })
-    .select('*')
-    .single();
-  if (error) throw new Error(error.message);
-  return data as Lead;
+  requireLiveSupabase();
+  throw DomainError.configuration(
+    'Leads are not yet available: the `leads` table has not been provisioned in Supabase.',
+  );
 }
 
 export async function getPartnerLink(): Promise<string> {
@@ -96,25 +119,31 @@ export async function submitPartnerApplication(
     await delay(200);
     return { id: `app-${Date.now()}`, status: 'submitted' };
   }
-  const supabase = getSupabase();
-  if (!supabase) throw new Error('Supabase is not configured');
+
+  const supabase = requireLiveSupabase();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) {
+    throw DomainError.unauthorized('You must be signed in to apply as a partner.');
+  }
+
+  const fullName = 'contactName' in input ? input.contactName : userData.user.email ?? '';
   const { data, error } = await supabase
     .from('partner_applications')
     .insert({
-      company_name: input.companyName,
-      contact_name: input.contactName,
+      user_id: userData.user.id,
+      full_name: fullName,
+      company_name: input.companyName || null,
       email: input.email,
-      phone: input.phone ?? null,
-      website: input.website || null,
-      kvk_number: input.kvkNumber || null,
-      vat_number: input.vatNumber || null,
+      phone: input.phone || null,
       motivation: input.motivation ?? '',
       status: 'submitted',
+      accepted_partner_rules: true,
+      accepted_privacy_policy: true,
     })
     .select('id')
     .single();
-  if (error) throw new Error(error.message);
-  return { id: data.id as string, status: 'submitted' };
+  if (error) throw fromSupabaseError(error);
+  return { id: data.id, status: 'submitted' };
 }
 
 export const partnersRepository = {

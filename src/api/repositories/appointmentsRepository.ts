@@ -1,6 +1,7 @@
 import { mockStore } from '@/api/mockData';
-import { delay, shouldUseMockApi } from '@/api/repositories/_utils';
-import { getSupabase } from '@/lib/supabase';
+import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
+import { DomainError, fromSupabaseError } from '@/lib/errors';
+import { mapAppointment } from '@/lib/mappers';
 import type { Appointment } from '@/types/domain';
 
 export async function listAppointments(): Promise<Appointment[]> {
@@ -8,13 +9,12 @@ export async function listAppointments(): Promise<Appointment[]> {
     await delay();
     return [...mockStore.appointments];
   }
-  const supabase = getSupabase();
-  if (!supabase) return [...mockStore.appointments];
+  const supabase = requireLiveSupabase();
   const { data, error } = await supabase.from('appointments').select('*').order('starts_at', {
     ascending: true,
   });
-  if (error) throw new Error(error.message);
-  return (data ?? []) as Appointment[];
+  if (error) throw fromSupabaseError(error);
+  return (data ?? []).map(mapAppointment);
 }
 
 export async function getAppointment(id: string): Promise<Appointment | null> {
@@ -22,15 +22,14 @@ export async function getAppointment(id: string): Promise<Appointment | null> {
     await delay();
     return mockStore.appointments.find((a) => a.id === id) ?? null;
   }
-  const supabase = getSupabase();
-  if (!supabase) return mockStore.appointments.find((a) => a.id === id) ?? null;
+  const supabase = requireLiveSupabase();
   const { data, error } = await supabase
     .from('appointments')
     .select('*')
     .eq('id', id)
     .maybeSingle();
-  if (error) throw new Error(error.message);
-  return data as Appointment | null;
+  if (error) throw fromSupabaseError(error);
+  return data ? mapAppointment(data) : null;
 }
 
 export async function requestAppointment(input: {
@@ -56,12 +55,17 @@ export async function requestAppointment(input: {
     return appointment;
   }
 
-  const supabase = getSupabase();
-  if (!supabase) throw new Error('Supabase is not configured');
+  const supabase = requireLiveSupabase();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) {
+    throw DomainError.unauthorized('You must be signed in to request an appointment.');
+  }
+
   const { data, error } = await supabase
     .from('appointments')
     .insert({
-      title: input.title,
+      customer_user_id: userData.user.id,
+      notes: input.title,
       starts_at: input.startsAt,
       ends_at: input.endsAt,
       location: input.location ?? null,
@@ -70,8 +74,8 @@ export async function requestAppointment(input: {
     })
     .select('*')
     .single();
-  if (error) throw new Error(error.message);
-  return data as Appointment;
+  if (error) throw fromSupabaseError(error);
+  return mapAppointment(data);
 }
 
 export const appointmentsRepository = {
