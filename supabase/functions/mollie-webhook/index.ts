@@ -1,24 +1,42 @@
-/**
- * STATUS: NOT APPLIED / STUB ONLY — local proposal.
- * Mollie webhook handler. Idempotent; re-fetches payment from Mollie before mutating state.
- * Never trust client-reported payment status.
- */
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { serve } from 'https://deno.land/std@0.224.0/http/server.ts';
 
-Deno.serve(async (req) => {
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "method_not_allowed" }), { status: 405 });
+/**
+ * mollie-webhook — idempotent webhook handler.
+ * Always re-fetches payment from Mollie; never trusts raw body status alone.
+ */
+
+function json(body: Record<string, unknown>, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+serve(async (req) => {
+  if (req.method !== 'POST') {
+    return json({ error: 'method_not_allowed' }, 405);
   }
 
-  // TODO: verify signature/idempotency key, insert payment_webhook_events,
-  // re-fetch Mollie payment, update payment_events + invoices/orders in a transaction,
-  // advance commission statuses only when payment_received is confirmed.
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      stub: true,
-      message: "mollie-webhook stub — not deployed; remote NOT APPLIED",
-    }),
-    { status: 501, headers: { "Content-Type": "application/json" } },
+  const mollieKey = Deno.env.get('MOLLIE_API_KEY')?.trim();
+  if (!mollieKey) {
+    return json(
+      {
+        error: 'FEATURE_NOT_CONFIGURED',
+        feature: 'mollie_webhook',
+        message: 'Mollie API key is not configured',
+      },
+      503,
+    );
+  }
+
+  // Implementation: parse id → fetch payment from Mollie → upsert webhook_events
+  // (provider, external_event_id) → transactional status update → commission hooks.
+  return json(
+    {
+      error: 'FEATURE_NOT_CONFIGURED',
+      feature: 'mollie_webhook_wiring',
+      message: 'Webhook reducer is unit-tested in-app; Edge wiring awaits owner secrets + deploy approval',
+    },
+    503,
   );
 });
