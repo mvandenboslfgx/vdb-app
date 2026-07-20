@@ -3,6 +3,9 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
 import { clientEnv, hasSupabaseConfig } from '@/config/env';
+import type { Database } from '@/types/database.generated';
+
+export type TypedSupabaseClient = SupabaseClient<Database>;
 
 const ExpoSecureStoreAdapter = {
   getItem: async (key: string): Promise<string | null> => {
@@ -39,18 +42,18 @@ const ExpoSecureStoreAdapter = {
   },
 };
 
-let client: SupabaseClient | null = null;
+let client: TypedSupabaseClient | null = null;
 
 /**
  * Returns a configured Supabase client, or `null` when env is missing / placeholder.
  * Prefer this for optional integrations; use `requireSupabase()` when auth is mandatory.
  */
-export function getSupabase(): SupabaseClient | null {
+export function getSupabase(): TypedSupabaseClient | null {
   if (!hasSupabaseConfig) {
     return null;
   }
   if (!client) {
-    client = createClient(clientEnv.supabaseUrl, clientEnv.supabaseAnonKey, {
+    client = createClient<Database>(clientEnv.supabaseUrl, clientEnv.supabaseAnonKey, {
       auth: {
         storage: ExpoSecureStoreAdapter,
         autoRefreshToken: true,
@@ -66,7 +69,7 @@ export function getSupabase(): SupabaseClient | null {
 /**
  * Returns a configured Supabase client or throws a clear configuration error.
  */
-export function requireSupabase(): SupabaseClient {
+export function requireSupabase(): TypedSupabaseClient {
   const supabase = getSupabase();
   if (!supabase) {
     throw new Error(

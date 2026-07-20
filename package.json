@@ -16,7 +16,13 @@
     "format:check": "prettier --check .",
     "check:translations": "node scripts/check-translations.mjs",
     "secret-scan": "node scripts/secret-scan.mjs",
-    "doctor": "npx expo-doctor"
+    "doctor": "npx expo-doctor",
+    "db:types": "node scripts/gen-db-types.mjs",
+    "db:types:check": "node scripts/check-db-types.mjs",
+    "db:seed:identities": "node scripts/seed-local-identities.mjs",
+    "test:rls": "node scripts/run-rls-suite.mjs",
+    "test:repo-integration": "node scripts/repository-integration.mjs",
+    "test:maestro:syntax": "node scripts/validate-maestro.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
