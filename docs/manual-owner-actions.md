@@ -7,8 +7,8 @@ The coding agent must not perform these without explicit approval.
 
 ## 1. Secrets & environments
 
-1. [ ] Create local `.env` from `.env.example` (never commit real values)
-2. [ ] Confirm which Supabase project is the official VDB Digital identity (`vdb nieuw` / `nhsrdnjfsxfikfbdmdfj` was audited read-only)
+1. [ ] Create local `.env` from `.env.example` (never commit real values); keep `EXPO_PUBLIC_ENABLE_DEMO_MODE=false` for real local Supabase
+2. [ ] Confirm website Supabase project ref is exactly `nhsrdnjfsxfikfbdmdfj` (dashboard only — do not paste keys)
 3. [ ] Add `EXPO_PUBLIC_SUPABASE_URL` + `EXPO_PUBLIC_SUPABASE_ANON_KEY` to EAS Secrets for development / preview / production
 4. [ ] Store `SUPABASE_SERVICE_ROLE_KEY` server-side only (Edge Functions / CI) — never in the app
 5. [ ] Add Mollie **test** API key to server secrets; keep production key separate

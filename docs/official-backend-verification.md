@@ -1,21 +1,32 @@
 # Official backend verification
 
-**Date:** 2026-07-20  
+**Date:** 2026-07-20 (Phase 3 refresh)  
 **Mode:** read-only MCP inspection only — **no remote mutations**  
 **Candidate project:** `vdb nieuw` (`nhsrdnjfsxfikfbdmdfj`, `eu-west-1`, Postgres 17)
 
 ## Verification verdict
 
+**Status: `PROBABLE BUT OWNER CONFIRMATION REQUIRED`**
+
 | Question | Finding |
 |---|---|
+| MCP project list contains only this VDB project? | **Yes** — single listed project `vdb nieuw` / `nhsrdnjfsxfikfbdmdfj` |
 | Is this *likely* the VDB Digital Software website backend? | **Yes, strongly indicated** — product catalog, quote_requests, Mollie-shaped `payments` + idempotent `webhook_events`, `admin_roles`, shared `profiles` ↔ `auth.users` |
-| Is ownership / “official production” contractually proven in-repo? | **Not fully** — no signed owner attestation file; agent must treat remote apply as **BLOCKED** until Matthijs confirms |
+| Is ownership / “official production” contractually proven in-repo? | **Not fully** — Matthijs must confirm the dashboard ref matches website |
 | Safe to apply mobile migrations remotely now? | **No** |
 | Safe for local/staging work? | **Yes** — use local Supabase; map to this schema contract |
 
 **Activation status:** `BLOCKED BY OWNER CONFIRMATION` for remote apply; local integration proceeds on local Supabase.
 
-## Existing public tables (confirmed)
+## Owner check (only action needed in dashboard)
+
+Open the Supabase project used by the website and confirm the project reference is exactly:
+
+`nhsrdnjfsxfikfbdmdfj`
+
+Do **not** paste API keys or passwords into chat — confirmation of the reference alone is enough.
+
+## Existing public tables (confirmed earlier)
 
 `profiles`, `admin_roles`, `categories`, `products`, `product_features`, `product_faqs`, `carts`, `cart_items`, `customers`, `orders`, `order_items`, `payments`, `leads`, `quote_requests`, `contact_submissions`, `case_studies`, `audit_logs`, `webhook_events`, `site_settings`, `consent_records`
 
@@ -28,13 +39,13 @@
 
 ## Storage buckets
 
-`storage.buckets` query returned **no rows** at audit time. Mobile private document buckets are **not present remotely** and must be created via additive migrations (local first).
+`storage.buckets` query returned **no rows** at prior audit. Mobile private document buckets are **not present remotely** and must be created via additive migrations (local first).
 
 ## Shared vs mobile-only
 
 | Shared now | Mobile additive (local proposal) |
 |---|---|
-| Auth identity, profiles, admin_roles | user_roles, projects, messaging, documents |
+| Auth identity, profiles, admin_roles | `user_roles`, `app_profiles`, projects, messaging, documents |
 | products, orders, payments, webhook_events | quotes/invoices portal tables, commissions |
 | leads, quote_requests | partner_profiles/codes, appointments, push_tokens |
 

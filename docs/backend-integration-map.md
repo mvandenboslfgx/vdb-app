@@ -5,7 +5,7 @@
 
 | Mobile concept | Existing remote | Proposed / mapping |
 |---|---|---|
-| User profile | `profiles` | Reuse; join `user_roles` |
+| User profile | `profiles` | Local additive `app_profiles` + remote `profiles` reuse later |
 | Staff/admin gate | `admin_roles` | `is_staff_or_above()` OR `user_roles` |
 | Catalog / checkout eligibility | `products` | Add `product_category_policy` |
 | Cart checkout | `carts`, `cart_items`, `orders` | Reuse orders as commercial backbone |
@@ -18,6 +18,17 @@
 | Audit | `audit_logs` | Reuse via `write_audit_log()` |
 | Consent | `consent_records` | Reuse + `terms_acceptances` |
 | Contact | `contact_submissions` | Support tickets are separate domain |
+| Mobile projects / chat / docs | — | Local tables + RLS suite (`npm run test:rls`) |
+
+## App adapter wiring (Phase 3)
+
+| Layer | Path |
+|---|---|
+| Adapter selection | `src/api/repositories/_utils.ts` (`demo` \| `supabase`) |
+| Typed client | `src/lib/supabase.ts` + `src/types/database.generated.ts` |
+| Domain errors | `src/lib/errors.ts` |
+| Row mappers | `src/lib/mappers.ts` |
+| Repositories | `src/api/repositories/*` |
 
 ## Edge Functions → tables
 
