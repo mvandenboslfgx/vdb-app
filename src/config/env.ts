@@ -81,8 +81,12 @@ export function resolveDemoMode(input: {
   }
 
   const demoAllowed = wantsDemo && envAllowsDemo;
-  // Never fall back to demo merely because Supabase is unreachable / unset in non-dev.
-  const useMockData = demoAllowed && !input.hasSupabaseConfig;
+  // Demo mode is an explicit developer choice — once allowed it always wins,
+  // even if Supabase happens to be configured. The inverse (missing Supabase
+  // without an explicit demo flag) must NEVER silently resolve to mock data;
+  // callers (`getRepositoryAdapter` / `requireLiveSupabase`) are responsible
+  // for throwing a ConfigurationError in that case instead.
+  const useMockData = demoAllowed;
 
   return { demoAllowed, useMockData };
 }

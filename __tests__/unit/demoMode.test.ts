@@ -25,14 +25,24 @@ describe('demo mode hardening', () => {
     ).toEqual({ demoAllowed: false, useMockData: false });
   });
 
-  it('never uses mock data when Supabase is configured even if demo enabled', () => {
+  it('uses mock data when demo is explicitly enabled even if Supabase is configured', () => {
     expect(
       resolveDemoMode({
         appEnv: 'development',
         enableDemoMode: true,
         hasSupabaseConfig: true,
       }),
-    ).toEqual({ demoAllowed: true, useMockData: false });
+    ).toEqual({ demoAllowed: true, useMockData: true });
+  });
+
+  it('never silently uses mock data when Supabase is missing without an explicit demo flag', () => {
+    expect(
+      resolveDemoMode({
+        appEnv: 'development',
+        enableDemoMode: false,
+        hasSupabaseConfig: false,
+      }),
+    ).toEqual({ demoAllowed: false, useMockData: false });
   });
 
   it('hard-fails when demo is requested in preview', () => {
