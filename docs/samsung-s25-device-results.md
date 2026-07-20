@@ -1,37 +1,34 @@
 # Samsung Galaxy S25 device results
 
-**Date:** 2026-07-20  
-**Device availability:** **BLOCKED** — `adb` not on PATH, `ANDROID_HOME` unset on this machine.
+**Date:** 2026-07-20 (Phase 3)  
+**Device availability:** **BLOCKED** — `adb` not on PATH, `ANDROID_HOME` unset. Setup guide: `docs/windows-android-setup-exact.md`.
 
 | Check | Result | Notes |
 |---|---|---|
 | USB debugging / ADB detect | BLOCKED | adb not installed/configured |
 | Install development APK | BLOCKED | No Android SDK / no APK built |
 | Cold start | BLOCKED | |
-| Warm start | BLOCKED | |
-| Login | BLOCKED | |
+| Login (customer.a@local.vdb) | BLOCKED | Local auth proven via API integration only |
 | Session restore | BLOCKED | |
-| Keyboard | BLOCKED | |
-| Edge-to-edge | BLOCKED | |
-| Back gesture | BLOCKED | |
-| Deep links | BLOCKED | |
+| Project flow | BLOCKED | |
+| Realtime chat | BLOCKED | |
+| Support ticket | BLOCKED | |
 | File picker / upload | BLOCKED | |
 | Document preview | BLOCKED | |
-| Mollie test checkout return | BLOCKED | Mollie test key also owner-blocked |
-| Notification permission | BLOCKED | |
+| Quote acceptance | BLOCKED | |
+| Fake / Mollie test checkout | BLOCKED | Mollie key also owner-blocked |
+| Browser return | BLOCKED | |
 | Notification deep link | BLOCKED | |
+| Android back gesture | BLOCKED | |
 | Network loss | BLOCKED | |
 | App resume | BLOCKED | |
-| Lock screen | BLOCKED | |
-| Font scaling | BLOCKED | |
-| Dark mode | BLOCKED | |
-| Battery optimization | BLOCKED | |
+| Logout | BLOCKED | |
+| Account deletion request | BLOCKED | |
 | Crash-free happy path | BLOCKED | |
 
-## Unblock requirements (owner / workstation)
+## Unblock requirements
 
-1. Install Android Studio SDK + platform-tools (`adb`)
-2. Set `ANDROID_HOME`
-3. Enable USB debugging on Galaxy S25
-4. Build `eas build --profile development` or `npx expo run:android`
-5. Re-run this checklist and replace BLOCKED with PASS/FAIL evidence
+1. Complete `docs/windows-android-setup-exact.md`
+2. `adb devices` shows S25 as `device`
+3. Build + install debug APK
+4. Re-run this checklist with PASS/FAIL + logcat excerpts (no secrets)
