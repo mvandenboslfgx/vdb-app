@@ -1,0 +1,18 @@
+appId: nl.vdbdigital.app
+---
+# 05 — Document review
+# Device execution: BLOCKED until adb available.
+- launchApp
+- tapOn:
+    id: "nav-documents"
+    optional: true
+- tapOn:
+    id: "document-row-0"
+    optional: true
+- assertVisible:
+    id: "screen-document-detail"
+    optional: true
+- tapOn:
+    id: "btn-document-approve"
+    optional: true
+- takeScreenshot: "05-document-review"

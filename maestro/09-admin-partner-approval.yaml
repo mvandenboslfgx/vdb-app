@@ -1,0 +1,15 @@
+appId: nl.vdbdigital.app
+---
+# 09 — Admin partner approval
+# Device execution: BLOCKED until adb available.
+- launchApp
+- tapOn:
+    id: "nav-admin"
+    optional: true
+- tapOn:
+    id: "admin-queue-partner-0"
+    optional: true
+- tapOn:
+    id: "btn-admin-approve-partner"
+    optional: true
+- takeScreenshot: "09-admin-partner-approval"

@@ -1,0 +1,22 @@
+appId: nl.vdbdigital.app
+---
+# 04 — Support ticket
+# Device execution: BLOCKED until adb available.
+- launchApp
+- tapOn:
+    id: "nav-support"
+    optional: true
+- tapOn:
+    id: "btn-support-new"
+    optional: true
+- assertVisible:
+    id: "screen-support-create"
+    optional: true
+- inputText:
+    id: "input-support-subject"
+    text: "Maestro support"
+    optional: true
+- tapOn:
+    id: "btn-support-submit"
+    optional: true
+- takeScreenshot: "04-support-ticket"

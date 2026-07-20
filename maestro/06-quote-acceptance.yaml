@@ -1,0 +1,18 @@
+appId: nl.vdbdigital.app
+---
+# 06 — Quote acceptance
+# Device execution: BLOCKED until adb available.
+- launchApp
+- tapOn:
+    id: "nav-quotes"
+    optional: true
+- tapOn:
+    id: "quote-row-0"
+    optional: true
+- assertVisible:
+    id: "screen-quote-detail"
+    optional: true
+- tapOn:
+    id: "btn-quote-accept"
+    optional: true
+- takeScreenshot: "06-quote-acceptance"

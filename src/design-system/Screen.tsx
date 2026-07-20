@@ -21,6 +21,7 @@ export interface ScreenProps {
   scrollProps?: Omit<ScrollViewProps, 'contentContainerStyle' | 'children'>;
   edges?: ('top' | 'right' | 'bottom' | 'left')[];
   showOfflineBanner?: boolean;
+  testID?: string;
 }
 
 export function Screen({
@@ -32,11 +33,12 @@ export function Screen({
   scrollProps,
   edges = ['top', 'left', 'right'],
   showOfflineBanner = true,
+  testID,
 }: ScreenProps) {
   const paddingStyle = padded ? styles.padded : null;
 
   return (
-    <SafeAreaView style={[styles.safe, style]} edges={edges}>
+    <SafeAreaView style={[styles.safe, style]} edges={edges} testID={testID}>
       {showOfflineBanner ? <OfflineBanner /> : null}
       {scroll ? (
         <ScrollView

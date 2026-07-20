@@ -1,0 +1,20 @@
+appId: nl.vdbdigital.app
+---
+# 01 — Customer auth (local identities)
+# Device execution: BLOCKED until adb + installed APK available.
+- launchApp
+- assertVisible:
+    id: "screen-auth-login"
+    optional: true
+- tapOn:
+    id: "input-login-email"
+    optional: true
+- inputText: "customer.a@local.vdb"
+- tapOn:
+    id: "input-login-password"
+    optional: true
+- inputText: "LocalTest!Vdb2026"
+- tapOn:
+    id: "btn-login-submit"
+    optional: true
+- takeScreenshot: "01-customer-auth"

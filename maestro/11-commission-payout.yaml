@@ -1,0 +1,13 @@
+appId: nl.vdbdigital.app
+---
+# 11 — Commission payout request
+# Device execution: BLOCKED until adb available.
+# Partner payouts remain fail-closed without feature flag + owner config.
+- launchApp
+- tapOn:
+    id: "nav-partner-commissions"
+    optional: true
+- tapOn:
+    id: "btn-commission-request-payout"
+    optional: true
+- takeScreenshot: "11-commission-payout"

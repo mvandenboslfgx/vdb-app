@@ -59,19 +59,21 @@ export default function RegisterScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-auth-register">
       <Text variant="title">{t('register.title')}</Text>
       <Text variant="body" color="textSecondary" style={styles.subtitle}>
         {t('register.subtitle')}
       </Text>
       <View style={styles.form}>
         <TextInput
+          testID="input-register-full-name"
           label={t('register.fullName')}
           placeholder={t('register.fullNamePlaceholder')}
           value={fullName}
           onChangeText={setFullName}
         />
         <TextInput
+          testID="input-register-email"
           label={t('register.email')}
           placeholder={t('register.emailPlaceholder')}
           autoCapitalize="none"
@@ -80,6 +82,7 @@ export default function RegisterScreen() {
           onChangeText={setEmail}
         />
         <TextInput
+          testID="input-register-phone"
           label={t('register.phone')}
           placeholder={t('register.phonePlaceholder')}
           keyboardType="phone-pad"
@@ -87,6 +90,7 @@ export default function RegisterScreen() {
           onChangeText={setPhone}
         />
         <TextInput
+          testID="input-register-password"
           label={t('register.password')}
           placeholder={t('register.passwordPlaceholder')}
           secureTextEntry
@@ -94,12 +98,14 @@ export default function RegisterScreen() {
           onChangeText={setPassword}
         />
         <TextInput
+          testID="input-register-confirm-password"
           label={t('register.confirmPassword')}
           secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
         <Pressable
+          testID="btn-register-accept-terms"
           onPress={() => setAcceptTerms((v) => !v)}
           style={[styles.check, acceptTerms && styles.checkOn]}
         >
@@ -109,11 +115,12 @@ export default function RegisterScreen() {
           </Text>
         </Pressable>
         {error ? (
-          <Text variant="caption" color="error">
+          <Text variant="caption" color="error" testID="register-error">
             {error}
           </Text>
         ) : null}
         <Button
+          testID="btn-register-submit"
           title={t('register.submit')}
           onPress={() => void onSubmit()}
           loading={loading}

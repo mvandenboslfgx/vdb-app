@@ -38,7 +38,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-auth-login">
       <Text variant="title">{t('login.title')}</Text>
       <Text variant="body" color="textSecondary" style={styles.subtitle}>
         {t('login.subtitle')}
@@ -46,6 +46,7 @@ export default function LoginScreen() {
 
       <View style={styles.form}>
         <TextInput
+          testID="input-login-email"
           label={t('login.email')}
           placeholder={t('login.emailPlaceholder')}
           autoCapitalize="none"
@@ -55,6 +56,7 @@ export default function LoginScreen() {
           onChangeText={setEmail}
         />
         <TextInput
+          testID="input-login-password"
           label={t('login.password')}
           placeholder={t('login.passwordPlaceholder')}
           secureTextEntry
@@ -63,7 +65,7 @@ export default function LoginScreen() {
           onChangeText={setPassword}
         />
         {error ? (
-          <Text variant="caption" color="error">
+          <Text variant="caption" color="error" testID="login-error">
             {error}
           </Text>
         ) : null}
@@ -73,6 +75,7 @@ export default function LoginScreen() {
           </Text>
         ) : null}
         <Button
+          testID="btn-login-submit"
           title={t('login.submit')}
           onPress={() => void onSubmit()}
           loading={loading}

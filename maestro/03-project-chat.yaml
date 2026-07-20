@@ -1,0 +1,22 @@
+appId: nl.vdbdigital.app
+---
+# 03 — Project chat
+# Device execution: BLOCKED until adb available.
+- launchApp
+- tapOn:
+    id: "nav-messages"
+    optional: true
+- tapOn:
+    id: "conversation-row-0"
+    optional: true
+- assertVisible:
+    id: "screen-chat-thread"
+    optional: true
+- tapOn:
+    id: "input-chat-message"
+    optional: true
+- inputText: "Maestro chat ping"
+- tapOn:
+    id: "btn-chat-send"
+    optional: true
+- takeScreenshot: "03-project-chat"
