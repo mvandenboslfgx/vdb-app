@@ -1,7 +1,8 @@
 import { mockStore } from '@/api/mockData';
-import { delay, shouldUseMockApi } from '@/api/repositories/_utils';
+import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { createCheckout } from '@/api/repositories/paymentsRepository';
-import { getSupabase } from '@/lib/supabase';
+import { fromSupabaseError } from '@/lib/errors';
+import { mapInvoice } from '@/lib/mappers';
 import type { Invoice, ProductCategory } from '@/types/domain';
 
 export async function listInvoices(): Promise<Invoice[]> {
@@ -9,13 +10,12 @@ export async function listInvoices(): Promise<Invoice[]> {
     await delay();
     return [...mockStore.invoices];
   }
-  const supabase = getSupabase();
-  if (!supabase) return [...mockStore.invoices];
-  const { data, error } = await supabase.from('invoices').select('*').order('issue_date', {
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.from('invoices').select('*').order('issued_on', {
     ascending: false,
   });
-  if (error) throw new Error(error.message);
-  return (data ?? []) as Invoice[];
+  if (error) throw fromSupabaseError(error);
+  return (data ?? []).map(mapInvoice);
 }
 
 export async function getInvoice(id: string): Promise<Invoice | null> {
@@ -23,11 +23,10 @@ export async function getInvoice(id: string): Promise<Invoice | null> {
     await delay();
     return mockStore.invoices.find((i) => i.id === id) ?? null;
   }
-  const supabase = getSupabase();
-  if (!supabase) return mockStore.invoices.find((i) => i.id === id) ?? null;
+  const supabase = requireLiveSupabase();
   const { data, error } = await supabase.from('invoices').select('*').eq('id', id).maybeSingle();
-  if (error) throw new Error(error.message);
-  return data as Invoice | null;
+  if (error) throw fromSupabaseError(error);
+  return data ? mapInvoice(data) : null;
 }
 
 export async function startCheckout(input: {

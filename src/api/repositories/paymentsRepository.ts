@@ -1,9 +1,9 @@
 import { Platform } from 'react-native';
 
 import { mockStore } from '@/api/mockData';
-import { delay, shouldUseMockApi } from '@/api/repositories/_utils';
+import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
+import { fromSupabaseError } from '@/lib/errors';
 import { createIdempotencyKey } from '@/lib/idempotency';
-import { getSupabase } from '@/lib/supabase';
 import { evaluatePaymentPolicy, isFeatureEnabled } from '@/security/featureFlags';
 import { evaluatePaymentPolicy as evaluateStorePolicy } from '@/security/paymentPolicy';
 import type { Payment, ProductCategory } from '@/types/domain';
@@ -51,8 +51,10 @@ function blocked(reason: string, messageKey: string): CreateCheckoutResult {
 
 /**
  * Create a Mollie hosted checkout session.
- * Fail-closed when mollieCheckout is off or payment policy blocks.
- * NEVER marks the invoice/payment as paid locally — only returns a checkout URL.
+ * Fail-closed when mollieCheckout is off, payment policy blocks, or the
+ * feature is not configured server-side. NEVER marks the invoice/payment as
+ * paid locally, and NEVER fabricates a checkout URL when running against
+ * Supabase — only the demo adapter returns a synthetic URL.
  */
 export async function createCheckout(input: CreateCheckoutInput): Promise<CreateCheckoutResult> {
   const platform = resolvePlatform(input.platform);
@@ -63,7 +65,7 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<Create
   }
 
   if (!isFeatureEnabled('mollieCheckout')) {
-    return blocked('mollie_checkout_disabled', 'payments.policy.checkoutDisabled');
+    return blocked('FEATURE_NOT_CONFIGURED', 'payments.policy.checkoutDisabled');
   }
 
   const flagPolicy = evaluatePaymentPolicy({
@@ -94,20 +96,18 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<Create
     return blocked(storePolicy.reason, storePolicy.messageKey);
   }
 
-  const invoice = mockStore.invoices.find((i) => i.id === input.invoiceId);
-  const amountCents =
-    input.amountCents ??
-    (invoice ? invoice.totalCents - invoice.amountPaidCents : undefined);
-
-  if (!amountCents || amountCents <= 0) {
-    return blocked('invalid_amount', 'payments.policy.checkoutDisabled');
-  }
-
   const idempotencyKey = createIdempotencyKey('checkout');
 
   if (shouldUseMockApi()) {
+    const invoice = mockStore.invoices.find((i) => i.id === input.invoiceId);
+    const amountCents =
+      input.amountCents ?? (invoice ? invoice.totalCents - invoice.amountPaidCents : undefined);
+    if (!amountCents || amountCents <= 0) {
+      return blocked('invalid_amount', 'payments.policy.checkoutDisabled');
+    }
+
     await delay(180);
-    // Demo: return a fake checkout URL — do NOT mark invoice/payment as paid.
+    // Demo adapter only: fake checkout URL, never marks invoice/payment as paid.
     const payment: Payment = {
       id: `pay-${Date.now()}`,
       invoiceId: input.invoiceId,
@@ -123,9 +123,20 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<Create
     return { allowed: true, ok: true, payment, checkoutUrl: payment.checkoutUrl! };
   }
 
-  const supabase = getSupabase();
-  if (!supabase) {
-    return blocked('supabase_missing', 'payments.policy.checkoutDisabled');
+  const supabase = requireLiveSupabase();
+
+  let amountCents = input.amountCents;
+  if (!amountCents) {
+    const { data: invoice, error: invoiceError } = await supabase
+      .from('invoices')
+      .select('total_cents, amount_paid_cents')
+      .eq('id', input.invoiceId)
+      .maybeSingle();
+    if (invoiceError) throw fromSupabaseError(invoiceError);
+    amountCents = invoice ? invoice.total_cents - invoice.amount_paid_cents : undefined;
+  }
+  if (!amountCents || amountCents <= 0) {
+    return blocked('invalid_amount', 'payments.policy.checkoutDisabled');
   }
 
   const { data, error } = await supabase.functions.invoke('create-mollie-checkout', {
@@ -171,13 +182,22 @@ export async function listPayments(): Promise<Payment[]> {
     await delay();
     return [...mockStore.payments];
   }
-  const supabase = getSupabase();
-  if (!supabase) return [...mockStore.payments];
-  const { data, error } = await supabase.from('payments').select('*').order('created_at', {
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.from('payment_events').select('*').order('occurred_at', {
     ascending: false,
   });
-  if (error) throw new Error(error.message);
-  return (data ?? []) as Payment[];
+  if (error) throw fromSupabaseError(error);
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    invoiceId: row.invoice_id ?? '',
+    status: row.status,
+    amountCents: row.amount_cents,
+    currency: 'EUR' as const,
+    checkoutUrl: null,
+    productCategory: 'custom_project' as const,
+    createdAt: row.created_at,
+    updatedAt: row.created_at,
+  }));
 }
 
 export const paymentsRepository = {
