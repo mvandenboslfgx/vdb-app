@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 -- Existing payments + webhook_events remain. These tables are mobile Mollie event ledgers
 -- that can optionally reference payments.id.
 

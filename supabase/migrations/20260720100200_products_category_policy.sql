@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 -- Additive product policy for Play Store / Mollie gating.
 -- Does not replace existing product columns.
 

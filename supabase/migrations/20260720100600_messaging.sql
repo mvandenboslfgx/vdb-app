@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 DO $$ BEGIN
   CREATE TYPE public.conversation_type AS ENUM (
     'customer_support', 'partner_support', 'project', 'direct'

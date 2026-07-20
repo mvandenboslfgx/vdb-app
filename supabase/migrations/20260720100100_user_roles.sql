@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 -- Mobile app roles. Existing admin_roles remains authoritative for web admins.
 -- Mapping: admin_roles rows imply staff/admin access via is_staff_or_above().
 

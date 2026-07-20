@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 -- Sales / commissions layer. Prefer mapping to existing orders when present.
 -- Partners never mark payments received; only staff/service_role do.
 

@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 DO $$ BEGIN
   CREATE TYPE public.partner_application_status AS ENUM (
     'draft', 'submitted', 'under_review', 'approved', 'rejected', 'suspended'

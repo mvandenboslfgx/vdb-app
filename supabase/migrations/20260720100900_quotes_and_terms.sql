@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 -- Formal quotes vs existing quote_requests (lead intake). Keep both; map in app layer.
 
 DO $$ BEGIN

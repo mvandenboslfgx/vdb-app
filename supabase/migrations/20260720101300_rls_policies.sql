@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 -- RLS policies for mobile-portal tables. Existing remote table policies are left untouched.
 
 -- ---------- helpers used in policies ----------

@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 DO $$ BEGIN
   CREATE TYPE public.support_ticket_status AS ENUM (
     'open', 'in_progress', 'waiting_on_customer', 'resolved', 'closed'

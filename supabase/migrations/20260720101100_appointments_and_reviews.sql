@@ -1,4 +1,4 @@
-﻿-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
 DO $$ BEGIN
   CREATE TYPE public.appointment_status AS ENUM (
     'requested', 'confirmed', 'rescheduled', 'cancelled', 'completed', 'no_show'
