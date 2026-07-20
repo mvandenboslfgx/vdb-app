@@ -50,3 +50,4 @@ against production without written owner approval and a backup.
 | `20260720101100_appointments_and_reviews.sql` | Appointments, slots, reviews |
 | `20260720101200_notifications_flags_deletion.sql` | Push, flags, account deletion |
 | `20260720101300_rls_policies.sql` | Row Level Security policies |
+| `20260720101400_app_profiles_and_guards.sql` | app_profiles, signup trigger, project/role guards |

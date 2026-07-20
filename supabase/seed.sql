@@ -1,10 +1,8 @@
--- STATUS: NOT APPLIED to remote — local seed for integration tests
--- Seed deterministic users/projects after `supabase db reset` (local only)
+-- STATUS: NOT APPLIED -- local proposal only. Requires explicit owner approval before remote apply.
+-- Seed feature flags only. Local auth identities + sample domain data:
+--   node scripts/seed-local-identities.mjs
+-- (see docs/local-test-identities.md)
 
--- Note: auth.users seeding typically uses supabase auth admin / test helpers.
--- This file documents expected seed entities for Maestro + pgTAP.
-
--- feature flags fail-closed financials
 INSERT INTO public.feature_flags (key, enabled, description) VALUES
   ('mollie_checkout', false, 'FAIL-CLOSED'),
   ('digital_product_checkout', false, 'FAIL-CLOSED'),
