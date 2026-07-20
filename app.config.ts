@@ -20,6 +20,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: 'nl.vdbdigital.app',
     versionCode: VERSION_CODE,
+    // Required for local Supabase over HTTP via adb reverse (127.0.0.1).
+    // Production/preview builds must use HTTPS — do not ship cleartext to prod without review.
+    usesCleartextTraffic: true,
     adaptiveIcon: {
       foregroundImage: './assets/images/android-icon-foreground.png',
       backgroundImage: './assets/images/android-icon-background.png',
@@ -62,6 +65,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-localization',
     'expo-font',
     '@sentry/react-native',
+    [
+      'expo-image-picker',
+      {
+        // Photos/documents only — no video mic capture in v1
+        photosPermission: 'VDB Digital needs photo access to attach images to documents and support.',
+        cameraPermission: 'VDB Digital needs camera access to capture document photos.',
+        microphonePermission: false,
+      },
+    ],
     [
       'expo-notifications',
       {

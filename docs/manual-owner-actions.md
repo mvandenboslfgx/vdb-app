@@ -1,21 +1,20 @@
 # Manual owner actions — Matthijs
 
-## Immediate (device phase) — blocks Phase 6
+## Immediate (device phase) — install blocked on USB
 
 1. [ ] Confirm website Supabase ref is `nhsrdnjfsxfikfbdmdfj` (no keys in chat)
-2. [ ] Install Android Studio + SDK Platform Tools (`docs/windows-android-setup-exact.md`)
-3. [ ] Set `ANDROID_HOME` / `JAVA_HOME`; verify `java -version` and `adb version`
-4. [ ] Enable USB debugging on Galaxy S25; accept RSA prompt; `adb devices` → `device`
-5. [ ] For local Supabase from phone: `adb reverse tcp:54321 tcp:54321` (and any other local ports)
+2. [x] Install Android Studio + SDK Platform Tools
+3. [x] Set `ANDROID_HOME` / `JAVA_HOME`; verify `java -version` and `adb version`
+4. [ ] Reconnect Galaxy S25 USB; unlock; accept RSA if needed; `adb devices` → `device` (`SM_S931B`)
+5. [ ] `adb reverse tcp:54321 tcp:54321` and `adb reverse tcp:8081 tcp:8081`
+6. [ ] `adb install -r android\app\build\outputs\apk\debug\app-debug.apk` (rebuild if tree cleaned)
+7. [ ] Start Metro (`npx expo start`); cold start; fill `docs/samsung-s25-device-results.md`
+8. [ ] Run Maestro device flows → `docs/maestro-device-results.md`
+9. [ ] Optional: `eas login` + `eas init` — preview AAB **BLOCKED BY EAS CONFIGURATION** until linked
 
-## After SDK works
+## Done this session
 
-6. [ ] From clean tree: `npx expo prebuild --clean`
-7. [ ] `npx expo run:android` or `cd android; .\gradlew.bat assembleDebug`
-8. [ ] Inspect APK → fill `docs/android-apk-evidence.md` + `docs/android-build-evidence.md`
-9. [ ] `adb install -r <debug.apk>`; cold start; fill `docs/samsung-s25-device-results.md`
-10. [ ] Run Maestro device flows → `docs/maestro-device-results.md`
-11. [ ] Optional: `eas login` + `eas init` (correct Expo org/project only) — until then preview AAB is **BLOCKED BY EAS CONFIGURATION**
+- Debug APK built + inspected (`docs/android-build-evidence.md`, `docs/android-apk-evidence.md`)
 
 ## Later (production — explicit approval)
 
