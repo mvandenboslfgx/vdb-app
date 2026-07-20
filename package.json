@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:components": "jest --testPathPattern=__tests__/components",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check:translations": "node scripts/check-translations.mjs",
