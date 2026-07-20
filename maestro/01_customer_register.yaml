@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Nieuwe klant registreert
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-auth"
+    optional: true
+- tapOn:
+    id: "screen-auth-register"
+    optional: true
+- assertVisible:
+    id: "screen-auth-register"
+    optional: true
+- takeScreenshot: "01_customer_register"

@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Partner vraagt uitbetaling aan
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-partner"
+    optional: true
+- tapOn:
+    id: "screen-partner-payouts"
+    optional: true
+- assertVisible:
+    id: "screen-partner-payouts"
+    optional: true
+- takeScreenshot: "16_partner_request_payout"

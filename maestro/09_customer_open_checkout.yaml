@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Klant opent checkout
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-invoices"
+    optional: true
+- tapOn:
+    id: "screen-invoices-checkout"
+    optional: true
+- assertVisible:
+    id: "screen-invoices-checkout"
+    optional: true
+- takeScreenshot: "09_customer_open_checkout"

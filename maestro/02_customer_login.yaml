@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Klant logt in
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-auth"
+    optional: true
+- tapOn:
+    id: "screen-auth-login"
+    optional: true
+- assertVisible:
+    id: "screen-auth-login"
+    optional: true
+- takeScreenshot: "02_customer_login"

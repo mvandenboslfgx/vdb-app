@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Klant maakt supportticket
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-support"
+    optional: true
+- tapOn:
+    id: "screen-support-new"
+    optional: true
+- assertVisible:
+    id: "screen-support-new"
+    optional: true
+- takeScreenshot: "17_customer_support_ticket"

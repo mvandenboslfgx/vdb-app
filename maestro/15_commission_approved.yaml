@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Commissie wordt goedgekeurd
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-admin"
+    optional: true
+- tapOn:
+    id: "screen-admin-commissions"
+    optional: true
+- assertVisible:
+    id: "screen-admin-commissions"
+    optional: true
+- takeScreenshot: "15_commission_approved"

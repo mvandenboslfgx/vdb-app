@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Gebruiker vraagt accountverwijdering aan
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-settings"
+    optional: true
+- tapOn:
+    id: "screen-settings-deletion"
+    optional: true
+- assertVisible:
+    id: "screen-settings-deletion"
+    optional: true
+- takeScreenshot: "18_account_deletion_request"

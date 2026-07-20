@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Partner registreert lead
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-partner"
+    optional: true
+- tapOn:
+    id: "screen-partner-leads"
+    optional: true
+- assertVisible:
+    id: "screen-partner-leads"
+    optional: true
+- takeScreenshot: "12_partner_register_lead"

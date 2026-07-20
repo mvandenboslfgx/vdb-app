@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Betaling wordt bevestigd
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-payments"
+    optional: true
+- tapOn:
+    id: "screen-payments-status"
+    optional: true
+- assertVisible:
+    id: "screen-payments-status"
+    optional: true
+- takeScreenshot: "14_payment_confirmed"

@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+# Admin keurt partner goed
+# Placeholder flow — update testIDs when screens are implemented.
+- launchApp
+- assertVisible:
+    id: "app-root"
+- tapOn:
+    id: "nav-admin"
+    optional: true
+- tapOn:
+    id: "screen-admin-partners"
+    optional: true
+- assertVisible:
+    id: "screen-admin-partners"
+    optional: true
+- takeScreenshot: "11_admin_approve_partner"
