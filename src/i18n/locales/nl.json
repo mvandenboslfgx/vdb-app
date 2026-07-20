@@ -1,0 +1,340 @@
+{
+  "common": {
+    "brand": "VDB Digital",
+    "loading": "Laden…",
+    "retry": "Opnieuw proberen",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "continue": "Doorgaan",
+    "back": "Terug",
+    "seeAll": "Alles bekijken",
+    "signOut": "Uitloggen",
+    "errorTitle": "Er ging iets mis",
+    "errorDescription": "Probeer het zo opnieuw.",
+    "emptyTitle": "Nog niets hier",
+    "emptyDescription": "Kom later terug of start iets nieuws.",
+    "offline": {
+      "title": "Je bent offline",
+      "description": "Sommige acties zijn niet beschikbaar tot je weer verbonden bent."
+    },
+    "notFound": {
+      "title": "Pagina niet gevonden",
+      "description": "Dit scherm bestaat niet of is verplaatst.",
+      "goHome": "Naar home"
+    },
+    "language": "Taal",
+    "notifications": "Meldingen",
+    "whatsapp": "WhatsApp",
+    "profile": "Profiel",
+    "comingSoon": "Binnenkort"
+  },
+  "tabs": {
+    "home": "Home",
+    "projects": "Projecten",
+    "messages": "Berichten",
+    "more": "Meer",
+    "dashboard": "Dashboard",
+    "leads": "Leads",
+    "commissions": "Commissies",
+    "marketing": "Marketing",
+    "approvals": "Goedkeuringen",
+    "tickets": "Tickets",
+    "finance": "Finance"
+  },
+  "public": {
+    "welcomeTitle": "Software & Project Portal",
+    "welcomeSubtitle": "Volg projecten, offertes, facturen en berichten op één plek.",
+    "login": "Inloggen",
+    "register": "Account aanmaken",
+    "privacy": "Privacy",
+    "terms": "Voorwaarden",
+    "privacyTitle": "Privacybeleid",
+    "privacyBody": "We verwerken persoonsgegevens om het VDB Digital-portaal te leveren. Volledige details staan op onze website.",
+    "termsTitle": "Gebruiksvoorwaarden",
+    "termsBody": "Door deze app te gebruiken ga je akkoord met de voorwaarden van VDB Digital op onze website."
+  },
+  "auth": {
+    "loginTitle": "Welkom terug",
+    "loginSubtitle": "Log in op je VDB Digital-account.",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "fullName": "Volledige naam",
+    "confirmPassword": "Bevestig wachtwoord",
+    "loginCta": "Inloggen",
+    "registerTitle": "Maak je account",
+    "registerSubtitle": "Start als klant. Partnertoegang vereist goedkeuring.",
+    "registerCta": "Registreren",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "forgotTitle": "Wachtwoord resetten",
+    "forgotSubtitle": "We sturen je een beveiligde resetlink.",
+    "forgotCta": "Verstuur resetlink",
+    "forgotSent": "Als er een account bestaat, is er een e-mail onderweg.",
+    "verifyTitle": "Bevestig je e-mail",
+    "verifySubtitle": "Open de link die we hebben gestuurd, of vraag een nieuwe aan.",
+    "verifyCta": "Verificatie opnieuw sturen",
+    "resetTitle": "Kies een nieuw wachtwoord",
+    "resetCta": "Wachtwoord bijwerken",
+    "noAccount": "Nog geen account?",
+    "hasAccount": "Heb je al een account?",
+    "demoHint": "Demomodus: elke inlog werkt zolang Supabase niet is geconfigureerd."
+  },
+  "customer": {
+    "home": {
+      "greeting": "Welkom, {{name}}",
+      "openActions": "Open acties",
+      "projects": "Projecten",
+      "quotes": "Offertes",
+      "invoices": "Facturen",
+      "messages": "Berichten",
+      "appointments": "Afspraken",
+      "requestProject": "Project aanvragen"
+    },
+    "projects": {
+      "title": "Projecten",
+      "empty": "Nog geen projecten",
+      "emptyDescription": "Vraag een project aan om te beginnen.",
+      "requestTitle": "Project aanvragen",
+      "requestCta": "Aanvraag versturen",
+      "titleLabel": "Projecttitel",
+      "descriptionLabel": "Omschrijving",
+      "detailTitle": "Project",
+      "progress": "Voortgang",
+      "nextMilestone": "Volgende mijlpaal"
+    },
+    "messages": {
+      "title": "Berichten",
+      "empty": "Geen conversaties",
+      "emptyDescription": "Berichten over je projecten verschijnen hier.",
+      "composerPlaceholder": "Schrijf een bericht…",
+      "send": "Versturen"
+    },
+    "documents": {
+      "title": "Documenten",
+      "empty": "Geen documenten",
+      "version": "Versie {{version}}"
+    },
+    "quotes": {
+      "title": "Offertes",
+      "empty": "Geen offertes",
+      "accept": "Offerte accepteren",
+      "reject": "Offerte afwijzen",
+      "validUntil": "Geldig tot {{date}}",
+      "total": "Totaal"
+    },
+    "invoices": {
+      "title": "Facturen",
+      "empty": "Geen facturen",
+      "pay": "Factuur betalen",
+      "payUnavailable": "Online betalen is niet beschikbaar voor deze factuur.",
+      "due": "Vervalt {{date}}",
+      "amountDue": "Openstaand bedrag"
+    },
+    "appointments": {
+      "title": "Afspraken",
+      "empty": "Geen aankomende afspraken"
+    },
+    "support": {
+      "title": "Support",
+      "empty": "Geen tickets",
+      "newTitle": "Nieuw supportticket",
+      "newCta": "Ticket indienen",
+      "subject": "Onderwerp",
+      "category": "Categorie",
+      "description": "Omschrijving"
+    },
+    "more": {
+      "title": "Meer",
+      "partnerApply": "Partner worden",
+      "accountDeletion": "Account verwijderen",
+      "documents": "Documenten",
+      "quotes": "Offertes",
+      "invoices": "Facturen",
+      "appointments": "Afspraken",
+      "support": "Support",
+      "reviews": "Review achterlaten"
+    },
+    "accountDeletion": {
+      "title": "Account verwijderen",
+      "body": "Accountverwijdering wordt handmatig verwerkt voor compliance. Dien een verzoek in; we bevestigen per e-mail.",
+      "cta": "Verwijdering aanvragen"
+    },
+    "partnerApply": {
+      "title": "Partneraanvraag",
+      "body": "Meld je aan om klanten door te verwijzen en commissie te verdienen. Aanvragen worden beoordeeld door VDB Digital.",
+      "company": "Bedrijfsnaam",
+      "cta": "Aanvraag indienen"
+    },
+    "reviews": {
+      "title": "Review achterlaten",
+      "rating": "Beoordeling",
+      "reviewTitle": "Titel",
+      "body": "Je ervaring",
+      "consent": "Ik geef VDB Digital toestemming om deze review te publiceren",
+      "cta": "Review indienen"
+    }
+  },
+  "partner": {
+    "dashboard": {
+      "title": "Partnerdashboard",
+      "leads": "Leads",
+      "commissions": "Commissies",
+      "payouts": "Uitbetalingen",
+      "marketing": "Marketingmateriaal"
+    },
+    "leads": {
+      "title": "Leads",
+      "empty": "Nog geen leads",
+      "newTitle": "Lead toevoegen",
+      "newCta": "Lead opslaan",
+      "name": "Naam",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "notes": "Notities"
+    },
+    "commissions": {
+      "title": "Commissies",
+      "empty": "Nog geen commissies"
+    },
+    "marketing": {
+      "title": "Marketing",
+      "empty": "Nog geen assets",
+      "partnerLink": "Je partnerlink",
+      "copyLink": "Link kopiëren"
+    },
+    "payouts": {
+      "title": "Uitbetalingen",
+      "empty": "Geen uitbetalingsverzoeken",
+      "request": "Uitbetaling aanvragen"
+    },
+    "more": {
+      "title": "Meer",
+      "profile": "Profiel",
+      "payouts": "Uitbetalingen"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin-dashboard",
+      "partnerApplications": "Partneraanvragen",
+      "openTickets": "Open tickets",
+      "unreadMessages": "Ongelezen berichten",
+      "documentsPending": "Documenten in review",
+      "openPayments": "Open betalingen",
+      "commissionsReview": "Commissies in review",
+      "payoutRequests": "Uitbetalingsverzoeken",
+      "appointments": "Aankomende afspraken"
+    },
+    "approvals": {
+      "title": "Partnergoedkeuringen",
+      "empty": "Geen openstaande aanvragen",
+      "approve": "Goedkeuren",
+      "reject": "Afwijzen"
+    },
+    "tickets": {
+      "title": "Supporttickets",
+      "empty": "Geen open tickets"
+    },
+    "finance": {
+      "title": "Finance",
+      "commissions": "Commissies",
+      "payouts": "Uitbetalingen",
+      "reviewNote": "Gevoelige finance-acties lopen via de server. Mobiel toont alleen reviewstatus.",
+      "markReviewed": "Markeer als beoordeeld"
+    },
+    "more": {
+      "title": "Meer"
+    }
+  },
+  "status": {
+    "project": {
+      "request_received": "Aanvraag ontvangen",
+      "intake": "Intake",
+      "quote": "Offerte",
+      "accepted": "Geaccepteerd",
+      "planning": "Planning",
+      "in_progress": "In uitvoering",
+      "waiting_for_customer": "Wacht op jou",
+      "review": "Review",
+      "revision": "Revisie",
+      "completed": "Afgerond",
+      "paused": "Gepauzeerd",
+      "cancelled": "Geannuleerd"
+    },
+    "quote": {
+      "draft": "Concept",
+      "sent": "Verstuurd",
+      "viewed": "Bekeken",
+      "accepted": "Geaccepteerd",
+      "rejected": "Afgewezen",
+      "expired": "Verlopen",
+      "withdrawn": "Ingetrokken"
+    },
+    "invoice": {
+      "draft": "Concept",
+      "sent": "Verstuurd",
+      "viewed": "Bekeken",
+      "partially_paid": "Deels betaald",
+      "paid": "Betaald",
+      "overdue": "Achterstallig",
+      "cancelled": "Geannuleerd",
+      "credited": "Gecrediteerd"
+    },
+    "ticket": {
+      "new": "Nieuw",
+      "open": "Open",
+      "waiting_for_customer": "Wacht op klant",
+      "waiting_for_vdb": "Wacht op VDB",
+      "resolved": "Opgelost",
+      "closed": "Gesloten"
+    },
+    "lead": {
+      "new": "Nieuw",
+      "contacted": "Gecontacteerd",
+      "qualified": "Gekwalificeerd",
+      "proposal": "Voorstel",
+      "won": "Gewonnen",
+      "lost": "Verloren",
+      "invalid": "Ongeldig"
+    },
+    "commission": {
+      "pending": "In afwachting",
+      "awaiting_payment": "Wacht op betaling",
+      "payment_received": "Betaling ontvangen",
+      "under_review": "In review",
+      "approved": "Goedgekeurd",
+      "payable": "Uitbetaalbaar",
+      "payout_requested": "Uitbetaling aangevraagd",
+      "paid": "Uitbetaald",
+      "rejected": "Afgewezen",
+      "reversed": "Teruggedraaid"
+    },
+    "appointment": {
+      "requested": "Aangevraagd",
+      "confirmed": "Bevestigd",
+      "rescheduled": "Verzet",
+      "cancelled": "Geannuleerd",
+      "completed": "Afgerond",
+      "no_show": "Niet verschenen"
+    },
+    "document": {
+      "draft": "Concept",
+      "uploaded": "Geüpload",
+      "processing": "Verwerken",
+      "available": "Beschikbaar",
+      "under_review": "In review",
+      "approved": "Goedgekeurd",
+      "changes_requested": "Wijzigingen gevraagd",
+      "superseded": "Vervangen",
+      "archived": "Gearchiveerd",
+      "rejected": "Afgewezen"
+    }
+  },
+  "payments": {
+    "policy": {
+      "checkoutDisabled": "Checkout is momenteel uitgeschakeld.",
+      "restricted": "Dit product kan niet in-app worden betaald.",
+      "manualReview": "Deze betaling vereist handmatige review.",
+      "playBilling": "Digitale producten kunnen onder huidig beleid niet op Android worden afgerekend."
+    }
+  }
+}

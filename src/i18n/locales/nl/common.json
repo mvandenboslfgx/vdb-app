@@ -1,0 +1,76 @@
+{
+  "appName": "VDB Digital",
+  "loading": "Laden…",
+  "retry": "Opnieuw proberen",
+  "cancel": "Annuleren",
+  "confirm": "Bevestigen",
+  "save": "Opslaan",
+  "continue": "Doorgaan",
+  "back": "Terug",
+  "close": "Sluiten",
+  "search": "Zoeken",
+  "seeAll": "Alles bekijken",
+  "yes": "Ja",
+  "no": "Nee",
+  "or": "of",
+  "optional": "Optioneel",
+  "required": "Verplicht",
+  "offline": {
+    "title": "Je bent offline",
+    "description": "Sommige acties werken pas weer online.",
+    "banner": "Je bent offline"
+  },
+  "offlineHint": "Sommige acties werken pas weer online.",
+  "empty": "Nog niets hier",
+  "error": "Er ging iets mis",
+  "comingSoon": "Binnenkort beschikbaar",
+  "demoMode": "Demomodus",
+  "demoModeHint": "Supabase is niet geconfigureerd. Je gebruikt lokale demodata.",
+  "status": {
+    "active": "Actief",
+    "pending": "In behandeling",
+    "completed": "Afgerond",
+    "cancelled": "Geannuleerd"
+  },
+  "tabs": {
+    "home": "Home",
+    "projects": "Projecten",
+    "messages": "Berichten",
+    "documents": "Documenten",
+    "more": "Meer",
+    "leads": "Leads",
+    "commissions": "Commissies",
+    "marketing": "Marketing",
+    "approvals": "Goedkeuringen",
+    "tickets": "Tickets",
+    "finance": "Financiën"
+  },
+  "switchArea": {
+    "customer": "Klantgedeelte",
+    "partner": "Partnergedeelte",
+    "admin": "Beheer"
+  },
+  "language": "Taal",
+  "languageNl": "Nederlands",
+  "languageEn": "English",
+  "whatsapp": "WhatsApp",
+  "notFoundBody": "Deze pagina bestaat niet.",
+
+  "actions": {
+    "refresh": "Vernieuwen",
+    "share": "Delen",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd",
+    "open": "Openen",
+    "download": "Downloaden",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "send": "Versturen",
+    "submit": "Indienen"
+  },
+  "time": {
+    "today": "Vandaag",
+    "yesterday": "Gisteren",
+    "justNow": "Zojuist"
+  }
+}

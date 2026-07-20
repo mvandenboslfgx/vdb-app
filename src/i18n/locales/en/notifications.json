@@ -1,0 +1,13 @@
+{
+  "title": "Notifications",
+  "empty": "No notifications.",
+  "emptyHint": "Important updates will appear here.",
+  "loading": "Loading notifications…",
+  "error": "Notifications could not be loaded.",
+  "markRead": "Mark as read",
+  "markAllRead": "Mark all as read",
+  "permissionTitle": "Enable notifications",
+  "permissionBody": "Stay up to date on project updates and messages.",
+  "permissionAllow": "Allow",
+  "permissionLater": "Later"
+}

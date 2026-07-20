@@ -1,0 +1,22 @@
+{
+  "title": "Commissions",
+  "empty": "No commissions yet.",
+  "emptyHint": "Commissions appear here after approved sales.",
+  "loading": "Loading commissions…",
+  "error": "Commissions could not be loaded.",
+  "expectedRelease": "Expected release {{date}}",
+  "requestPayout": "Request payout",
+  "payoutDisabled": "Payouts are currently disabled.",
+  "status": {
+    "pending": "Pending",
+    "awaiting_payment": "Awaiting payment",
+    "payment_received": "Payment received",
+    "under_review": "Under review",
+    "approved": "Approved",
+    "payable": "Payable",
+    "payout_requested": "Payout requested",
+    "paid": "Paid",
+    "rejected": "Rejected",
+    "reversed": "Reversed"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Payments",
+  "checkout": "Checkout",
+  "redirecting": "Redirecting you to the payment provider…",
+  "success": "Payment received. Status will update once confirmed.",
+  "pending": "Payment pending. Never mark as paid locally.",
+  "failed": "Payment failed or was cancelled.",
+  "policy": {
+    "checkoutDisabled": "Online checkout is currently unavailable.",
+    "restricted": "This product cannot be checked out in the app.",
+    "manualReview": "This payment requires manual review. Please contact support.",
+    "playBilling": "Digital goods cannot be paid via Mollie on Android due to store policy.",
+    "maintenance": "Payments are temporarily disabled for maintenance."
+  },
+  "status": {
+    "created": "Created",
+    "open": "Open",
+    "pending": "Pending",
+    "authorized": "Authorized",
+    "paid": "Paid",
+    "failed": "Failed",
+    "expired": "Expired",
+    "canceled": "Cancelled",
+    "refunded": "Refunded",
+    "partially_refunded": "Partially refunded",
+    "charged_back": "Charged back"
+  }
+}

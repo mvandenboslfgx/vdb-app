@@ -1,0 +1,33 @@
+{
+  "title": "Documents",
+  "empty": "No documents yet.",
+  "emptyHint": "Documents from your projects will appear here.",
+  "loading": "Loading documents…",
+  "error": "Documents could not be loaded.",
+  "version": "Version {{version}}",
+  "upload": "Upload",
+  "review": "Review",
+  "approve": "Approve",
+  "requestChanges": "Request changes",
+  "reject": "Reject",
+  "comment": "Comment",
+  "commentPlaceholder": "Explain your decision…",
+  "scan": {
+    "pending": "Scanning",
+    "clean": "Clean",
+    "flagged": "Flagged",
+    "failed": "Scan failed"
+  },
+  "status": {
+    "draft": "Draft",
+    "uploaded": "Uploaded",
+    "processing": "Processing",
+    "available": "Available",
+    "under_review": "Under review",
+    "approved": "Approved",
+    "changes_requested": "Changes requested",
+    "superseded": "Superseded",
+    "archived": "Archived",
+    "rejected": "Rejected"
+  }
+}

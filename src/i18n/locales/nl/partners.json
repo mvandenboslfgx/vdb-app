@@ -1,0 +1,35 @@
+{
+  "title": "Partners",
+  "dashboard": "Partnerdashboard",
+  "apply": {
+    "title": "Partner worden",
+    "subtitle": "Meld je aan als VDB Digital partner en verdien commissie op doorverwijzingen.",
+    "companyName": "Bedrijfsnaam",
+    "contactName": "Contactpersoon",
+    "email": "E-mailadres",
+    "phone": "Telefoonnummer",
+    "website": "Website",
+    "kvkNumber": "KvK-nummer",
+    "vatNumber": "BTW-nummer",
+    "motivation": "Motivatie",
+    "motivationPlaceholder": "Waarom wil je partner worden en hoe verwijs je klanten door?",
+    "acceptTerms": "Ik ga akkoord met de partnervoorwaarden",
+    "submit": "Aanvraag indienen",
+    "success": "Je partneraanvraag is ontvangen. We nemen contact op.",
+    "pending": "Je aanvraag wordt beoordeeld."
+  },
+  "code": "Partnercode",
+  "link": "Partnerlink",
+  "leads": "Leads",
+  "leadsEmpty": "Nog geen leads.",
+  "copyLink": "Link kopiëren",
+  "status": {
+    "draft": "Concept",
+    "submitted": "Ingediend",
+    "under_review": "In review",
+    "approved": "Goedgekeurd",
+    "rejected": "Afgewezen",
+    "suspended": "Opgeschort",
+    "active": "Actief"
+  }
+}

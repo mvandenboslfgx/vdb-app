@@ -1,0 +1,53 @@
+{
+  "generic": "Er ging iets mis. Probeer het opnieuw.",
+  "network": "Geen netwerkverbinding.",
+  "unauthorized": "Je bent niet ingelogd.",
+  "forbidden": "Je hebt geen rechten voor deze actie.",
+  "notFound": "Niet gevonden.",
+  "notFoundBody": "Deze pagina bestaat niet.",
+  "validation": {
+    "emailRequired": "E-mailadres is verplicht",
+    "emailInvalid": "Ongeldig e-mailadres",
+    "passwordRequired": "Wachtwoord is verplicht",
+    "passwordMin": "Wachtwoord moet minimaal 8 tekens zijn",
+    "passwordMax": "Wachtwoord is te lang",
+    "passwordMismatch": "Wachtwoorden komen niet overeen",
+    "confirmPasswordRequired": "Bevestig je wachtwoord",
+    "fullNameMin": "Naam is te kort",
+    "fullNameMax": "Naam is te lang",
+    "phoneMin": "Telefoonnummer is te kort",
+    "phoneMax": "Telefoonnummer is te lang",
+    "acceptTerms": "Je moet akkoord gaan met de voorwaarden",
+    "acceptPartnerTerms": "Je moet akkoord gaan met de partnervoorwaarden",
+    "acceptQuoteTerms": "Je moet de offertevoorwaarden accepteren",
+    "companyNameMin": "Bedrijfsnaam is te kort",
+    "companyNameMax": "Bedrijfsnaam is te lang",
+    "urlInvalid": "Ongeldige URL",
+    "kvkInvalid": "KvK-nummer moet 8 cijfers zijn",
+    "vatMax": "BTW-nummer is te lang",
+    "motivationMin": "Motivatie is te kort",
+    "motivationMax": "Motivatie is te lang",
+    "subjectMin": "Onderwerp is te kort",
+    "subjectMax": "Onderwerp is te lang",
+    "categoryRequired": "Kies een categorie",
+    "descriptionMin": "Beschrijving is te kort",
+    "descriptionMax": "Beschrijving is te lang",
+    "decisionRequired": "Kies een besluit",
+    "commentMax": "Toelichting is te lang",
+    "reviewCommentRequired": "Toelichting is verplicht bij dit besluit",
+    "quoteIdInvalid": "Ongeldige offerte",
+    "rejectReasonMin": "Reden is te kort",
+    "rejectReasonMax": "Reden is te lang"
+  },
+  "auth": {
+    "invalidCredentials": "E-mail of wachtwoord is onjuist",
+    "emailNotConfirmed": "Bevestig eerst je e-mailadres",
+    "userExists": "Er bestaat al een account met dit e-mailadres",
+    "weakPassword": "Kies een sterker wachtwoord",
+    "demoOnly": "Demomodus: registratie is alleen lokaal beschikbaar"
+  },
+  "payments": {
+    "checkoutBlocked": "Checkout geblokkeerd door beleid",
+    "neverLocalPaid": "Betalingen worden nooit lokaal als betaald gemarkeerd"
+  }
+}

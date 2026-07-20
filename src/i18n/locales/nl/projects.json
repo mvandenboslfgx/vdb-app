@@ -1,0 +1,36 @@
+{
+  "title": "Projecten",
+  "detail": "Projectdetails",
+  "empty": "Nog geen projecten.",
+  "emptyHint": "Zodra je een project start, verschijnt het hier.",
+  "loading": "Projecten laden…",
+  "error": "Projecten konden niet worden geladen.",
+  "progress": "Voortgang",
+  "nextMilestone": "Volgende mijlpaal",
+  "milestones": "Mijlpalen",
+  "updates": "Updates",
+  "noUpdates": "Nog geen updates.",
+  "requestCta": "Project aanvragen",
+  "request": {
+    "title": "Project aanvragen",
+    "subtitle": "Beschrijf wat je nodig hebt; wij nemen contact op.",
+    "projectTitle": "Projecttitel",
+    "description": "Omschrijving",
+    "submit": "Aanvraag versturen",
+    "success": "Je aanvraag is ontvangen."
+  },
+  "status": {
+    "request_received": "Aanvraag ontvangen",
+    "intake": "Intake",
+    "quote": "Offerte",
+    "accepted": "Geaccepteerd",
+    "planning": "Planning",
+    "in_progress": "In uitvoering",
+    "waiting_for_customer": "Wacht op klant",
+    "review": "Review",
+    "revision": "Revisie",
+    "completed": "Afgerond",
+    "paused": "Gepauzeerd",
+    "cancelled": "Geannuleerd"
+  }
+}

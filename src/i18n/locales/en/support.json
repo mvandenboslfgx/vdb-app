@@ -1,0 +1,39 @@
+{
+  "title": "Support",
+  "tickets": "Tickets",
+  "newTicket": "New ticket",
+  "empty": "No support tickets.",
+  "emptyHint": "Need help? Create a ticket.",
+  "loading": "Loading tickets…",
+  "error": "Tickets could not be loaded.",
+  "subject": "Subject",
+  "category": "Category",
+  "priority": "Priority",
+  "description": "Description",
+  "descriptionPlaceholder": "Describe your question or issue as clearly as possible.",
+  "submit": "Submit ticket",
+  "success": "Your ticket has been created.",
+  "categories": {
+    "billing": "Billing",
+    "project": "Project",
+    "technical": "Technical",
+    "account": "Account",
+    "other": "Other"
+  },
+  "priorities": {
+    "low": "Low",
+    "medium": "Normal",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "status": {
+    "new": "New",
+    "open": "Open",
+    "waiting_for_customer": "Waiting for customer",
+    "waiting_for_vdb": "Waiting for VDB",
+    "resolved": "Resolved",
+    "closed": "Closed"
+  },
+  "contactEmail": "Email support",
+  "contactWhatsApp": "WhatsApp support"
+}

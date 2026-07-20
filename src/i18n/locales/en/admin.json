@@ -1,0 +1,24 @@
+{
+  "title": "Admin",
+  "dashboard": "Admin dashboard",
+  "queue": "Queue",
+  "loading": "Loading dashboard…",
+  "error": "Admin data could not be loaded.",
+  "stats": {
+    "partnerApplications": "Partner applications",
+    "openTickets": "Open tickets",
+    "unreadMessages": "Unread messages",
+    "documentsPending": "Documents pending review",
+    "openPayments": "Open payments",
+    "commissionsReview": "Commissions under review",
+    "payoutRequests": "Payout requests",
+    "upcomingAppointments": "Upcoming appointments"
+  },
+  "actions": {
+    "approvePartner": "Approve partner",
+    "rejectPartner": "Reject partner",
+    "reviewDocument": "Review document",
+    "openTicket": "Open ticket"
+  },
+  "restricted": "You do not have access to this area."
+}

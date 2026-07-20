@@ -1,0 +1,39 @@
+{
+  "title": "Support",
+  "tickets": "Tickets",
+  "newTicket": "Nieuw ticket",
+  "empty": "Geen supporttickets.",
+  "emptyHint": "Heb je hulp nodig? Maak een ticket aan.",
+  "loading": "Tickets laden…",
+  "error": "Tickets konden niet worden geladen.",
+  "subject": "Onderwerp",
+  "category": "Categorie",
+  "priority": "Prioriteit",
+  "description": "Beschrijving",
+  "descriptionPlaceholder": "Beschrijf je vraag of probleem zo duidelijk mogelijk.",
+  "submit": "Ticket indienen",
+  "success": "Je ticket is aangemaakt.",
+  "categories": {
+    "billing": "Facturatie",
+    "project": "Project",
+    "technical": "Technisch",
+    "account": "Account",
+    "other": "Overig"
+  },
+  "priorities": {
+    "low": "Laag",
+    "medium": "Normaal",
+    "high": "Hoog",
+    "urgent": "Urgent"
+  },
+  "status": {
+    "new": "Nieuw",
+    "open": "Open",
+    "waiting_for_customer": "Wacht op klant",
+    "waiting_for_vdb": "Wacht op VDB",
+    "resolved": "Opgelost",
+    "closed": "Gesloten"
+  },
+  "contactEmail": "E-mail support",
+  "contactWhatsApp": "WhatsApp support"
+}

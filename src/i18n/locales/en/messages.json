@@ -1,0 +1,19 @@
+{
+  "title": "Messages",
+  "empty": "No conversations yet.",
+  "emptyHint": "Start a conversation via support or your project team.",
+  "loading": "Loading messages…",
+  "error": "Messages could not be loaded.",
+  "composerPlaceholder": "Type a message…",
+  "send": "Send",
+  "unread": "{{count}} unread",
+  "delivery": {
+    "sending": "Sending…",
+    "sent": "Sent",
+    "delivered": "Delivered",
+    "read": "Read",
+    "failed": "Failed"
+  },
+  "whatsapp": "WhatsApp",
+  "whatsappHint": "Prefer WhatsApp? Open a chat with VDB Digital."
+}

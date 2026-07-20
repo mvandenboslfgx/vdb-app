@@ -1,0 +1,33 @@
+{
+  "title": "Documenten",
+  "empty": "Nog geen documenten.",
+  "emptyHint": "Documenten van je projecten verschijnen hier.",
+  "loading": "Documenten laden…",
+  "error": "Documenten konden niet worden geladen.",
+  "version": "Versie {{version}}",
+  "upload": "Uploaden",
+  "review": "Review",
+  "approve": "Goedkeuren",
+  "requestChanges": "Wijzigingen vragen",
+  "reject": "Afwijzen",
+  "comment": "Toelichting",
+  "commentPlaceholder": "Licht je besluit toe…",
+  "scan": {
+    "pending": "Scan bezig",
+    "clean": "Schoon",
+    "flagged": "Gemarkeerd",
+    "failed": "Scan mislukt"
+  },
+  "status": {
+    "draft": "Concept",
+    "uploaded": "Geüpload",
+    "processing": "Verwerken",
+    "available": "Beschikbaar",
+    "under_review": "In review",
+    "approved": "Goedgekeurd",
+    "changes_requested": "Wijzigingen gevraagd",
+    "superseded": "Vervangen",
+    "archived": "Gearchiveerd",
+    "rejected": "Afgewezen"
+  }
+}

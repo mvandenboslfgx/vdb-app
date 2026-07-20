@@ -1,0 +1,36 @@
+{
+  "title": "Projects",
+  "detail": "Project details",
+  "empty": "No projects yet.",
+  "emptyHint": "Once a project starts, it will appear here.",
+  "loading": "Loading projects…",
+  "error": "Projects could not be loaded.",
+  "progress": "Progress",
+  "nextMilestone": "Next milestone",
+  "milestones": "Milestones",
+  "updates": "Updates",
+  "noUpdates": "No updates yet.",
+  "requestCta": "Request project",
+  "request": {
+    "title": "Request a project",
+    "subtitle": "Describe what you need and we will follow up.",
+    "projectTitle": "Project title",
+    "description": "Description",
+    "submit": "Submit request",
+    "success": "Your request was received."
+  },
+  "status": {
+    "request_received": "Request received",
+    "intake": "Intake",
+    "quote": "Quote",
+    "accepted": "Accepted",
+    "planning": "Planning",
+    "in_progress": "In progress",
+    "waiting_for_customer": "Waiting for customer",
+    "review": "Review",
+    "revision": "Revision",
+    "completed": "Completed",
+    "paused": "Paused",
+    "cancelled": "Cancelled"
+  }
+}

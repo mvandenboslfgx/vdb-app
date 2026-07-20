@@ -1,0 +1,25 @@
+{
+  "title": "Invoices",
+  "empty": "No invoices.",
+  "emptyHint": "Invoices appear here once they have been sent.",
+  "loading": "Loading invoices…",
+  "error": "Invoices could not be loaded.",
+  "number": "Invoice number",
+  "issueDate": "Issue date",
+  "dueDate": "Due date",
+  "amountDue": "Amount due",
+  "amountPaid": "Paid",
+  "payNow": "Pay now",
+  "downloadPdf": "Download PDF",
+  "reference": "Reference",
+  "status": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "viewed": "Viewed",
+    "partially_paid": "Partially paid",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "cancelled": "Cancelled",
+    "credited": "Credited"
+  }
+}

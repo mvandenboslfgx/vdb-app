@@ -1,0 +1,19 @@
+{
+  "title": "Berichten",
+  "empty": "Nog geen gesprekken.",
+  "emptyHint": "Start een gesprek via support of je projectteam.",
+  "loading": "Berichten laden…",
+  "error": "Berichten konden niet worden geladen.",
+  "composerPlaceholder": "Typ een bericht…",
+  "send": "Versturen",
+  "unread": "{{count}} ongelezen",
+  "delivery": {
+    "sending": "Verzenden…",
+    "sent": "Verzonden",
+    "delivered": "Afgeleverd",
+    "read": "Gelezen",
+    "failed": "Mislukt"
+  },
+  "whatsapp": "WhatsApp",
+  "whatsappHint": "Liever via WhatsApp? Open een chat met VDB Digital."
+}

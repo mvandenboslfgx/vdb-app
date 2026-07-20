@@ -1,0 +1,13 @@
+{
+  "title": "Meldingen",
+  "empty": "Geen meldingen.",
+  "emptyHint": "Belangrijke updates verschijnen hier.",
+  "loading": "Meldingen laden…",
+  "error": "Meldingen konden niet worden geladen.",
+  "markRead": "Markeer als gelezen",
+  "markAllRead": "Alles als gelezen",
+  "permissionTitle": "Meldingen inschakelen",
+  "permissionBody": "Blijf op de hoogte van projectupdates en berichten.",
+  "permissionAllow": "Toestaan",
+  "permissionLater": "Later"
+}

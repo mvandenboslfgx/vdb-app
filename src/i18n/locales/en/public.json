@@ -1,0 +1,24 @@
+{
+  "welcome": {
+    "title": "VDB Digital",
+    "subtitle": "Software & Project Portal",
+    "ctaLogin": "Sign in",
+    "ctaRegister": "Create account",
+    "ctaExplore": "Learn more",
+    "demoTitle": "Demo mode",
+    "demoHint": "Supabase is not configured. Enter as a demo role:",
+    "demoCustomer": "Demo customer",
+    "demoPartner": "Demo partner",
+    "demoAdmin": "Demo admin",
+    "openPrivacy": "Open privacy policy",
+    "openTerms": "Open terms"
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "body": "This is a summary of our privacy policy. The full text is available at vdbdigital.nl."
+  },
+  "terms": {
+    "title": "Terms and conditions",
+    "body": "This is a summary of our terms. The full text is available at vdbdigital.nl."
+  }
+}

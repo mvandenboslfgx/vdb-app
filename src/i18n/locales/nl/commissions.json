@@ -1,0 +1,22 @@
+{
+  "title": "Commissies",
+  "empty": "Nog geen commissies.",
+  "emptyHint": "Commissies verschijnen hier na goedgekeurde verkopen.",
+  "loading": "Commissies laden…",
+  "error": "Commissies konden niet worden geladen.",
+  "expectedRelease": "Verwachte vrijgave {{date}}",
+  "requestPayout": "Uitbetaling aanvragen",
+  "payoutDisabled": "Uitbetalingen zijn momenteel uitgeschakeld.",
+  "status": {
+    "pending": "In afwachting",
+    "awaiting_payment": "Wacht op betaling",
+    "payment_received": "Betaling ontvangen",
+    "under_review": "In review",
+    "approved": "Goedgekeurd",
+    "payable": "Uitbetaalbaar",
+    "payout_requested": "Uitbetaling aangevraagd",
+    "paid": "Uitbetaald",
+    "rejected": "Afgewezen",
+    "reversed": "Teruggedraaid"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "title": "Quotes",
+  "empty": "No quotes.",
+  "emptyHint": "When a quote is ready, it will appear here.",
+  "loading": "Loading quotes…",
+  "error": "Quotes could not be loaded.",
+  "validUntil": "Valid until {{date}}",
+  "subtotal": "Subtotal",
+  "vat": "VAT",
+  "total": "Total",
+  "accept": "Accept",
+  "reject": "Reject",
+  "acceptTerms": "I accept this quote and the related terms",
+  "rejectReason": "Reason for rejection",
+  "rejectReasonPlaceholder": "Briefly explain why you are rejecting the quote",
+  "acceptedSuccess": "Quote accepted.",
+  "rejectedSuccess": "Quote rejected.",
+  "status": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "viewed": "Viewed",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "expired": "Expired",
+    "withdrawn": "Withdrawn"
+  }
+}

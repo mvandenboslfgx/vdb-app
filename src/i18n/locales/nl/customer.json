@@ -1,0 +1,41 @@
+{
+  "dashboard": {
+    "title": "Overzicht",
+    "greeting": "Hallo {{name}}",
+    "greetingFallback": "Hallo",
+    "activeProjects": "Actieve projecten",
+    "openQuotes": "Openstaande offertes",
+    "openInvoices": "Openstaande facturen",
+    "unreadMessages": "Ongelezen berichten",
+    "upcomingAppointments": "Aankomende afspraken",
+    "documentsPending": "Documenten ter review",
+    "emptyProjects": "Je hebt nog geen actieve projecten.",
+    "emptyQuotes": "Geen openstaande offertes.",
+    "emptyInvoices": "Geen openstaande facturen.",
+    "ctaStart": "Neem contact op",
+    "quickActions": "Snel naar"
+  },
+  "profile": {
+    "title": "Profiel",
+    "edit": "Profiel bewerken",
+    "language": "Taal",
+    "notifications": "Meldingen",
+    "security": "Beveiliging",
+    "support": "Support",
+    "legal": "Juridisch",
+    "deleteAccount": "Account verwijderen"
+  },
+  "appointments": {
+    "title": "Afspraken",
+    "empty": "Geen aankomende afspraken.",
+    "request": "Afspraak aanvragen",
+    "status": {
+      "requested": "Aangevraagd",
+      "confirmed": "Bevestigd",
+      "rescheduled": "Verzet",
+      "cancelled": "Geannuleerd",
+      "completed": "Afgerond",
+      "no_show": "Niet verschenen"
+    }
+  }
+}

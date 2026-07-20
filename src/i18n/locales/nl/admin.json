@@ -1,0 +1,24 @@
+{
+  "title": "Beheer",
+  "dashboard": "Admindashboard",
+  "queue": "Wachtrij",
+  "loading": "Dashboard laden…",
+  "error": "Admingegevens konden niet worden geladen.",
+  "stats": {
+    "partnerApplications": "Partneraanvragen",
+    "openTickets": "Open tickets",
+    "unreadMessages": "Ongelezen berichten",
+    "documentsPending": "Documenten ter review",
+    "openPayments": "Open betalingen",
+    "commissionsReview": "Commissies in review",
+    "payoutRequests": "Uitbetalingsverzoeken",
+    "upcomingAppointments": "Aankomende afspraken"
+  },
+  "actions": {
+    "approvePartner": "Partner goedkeuren",
+    "rejectPartner": "Partner afwijzen",
+    "reviewDocument": "Document reviewen",
+    "openTicket": "Ticket openen"
+  },
+  "restricted": "Je hebt geen toegang tot dit gebied."
+}

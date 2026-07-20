@@ -1,0 +1,25 @@
+{
+  "title": "Facturen",
+  "empty": "Geen facturen.",
+  "emptyHint": "Facturen verschijnen hier zodra ze zijn verstuurd.",
+  "loading": "Facturen laden…",
+  "error": "Facturen konden niet worden geladen.",
+  "number": "Factuurnummer",
+  "issueDate": "Factuurdatum",
+  "dueDate": "Vervaldatum",
+  "amountDue": "Te betalen",
+  "amountPaid": "Betaald",
+  "payNow": "Nu betalen",
+  "downloadPdf": "PDF downloaden",
+  "reference": "Kenmerk",
+  "status": {
+    "draft": "Concept",
+    "sent": "Verstuurd",
+    "viewed": "Bekeken",
+    "partially_paid": "Gedeeltelijk betaald",
+    "paid": "Betaald",
+    "overdue": "Achterstallig",
+    "cancelled": "Geannuleerd",
+    "credited": "Gecrediteerd"
+  }
+}

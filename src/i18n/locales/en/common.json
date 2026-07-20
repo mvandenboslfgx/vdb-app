@@ -1,0 +1,76 @@
+{
+  "appName": "VDB Digital",
+  "loading": "Loading…",
+  "retry": "Try again",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "save": "Save",
+  "continue": "Continue",
+  "back": "Back",
+  "close": "Close",
+  "search": "Search",
+  "seeAll": "See all",
+  "yes": "Yes",
+  "no": "No",
+  "or": "or",
+  "optional": "Optional",
+  "required": "Required",
+  "offline": {
+    "title": "You are offline",
+    "description": "Some actions will work again once you are online.",
+    "banner": "You are offline"
+  },
+  "offlineHint": "Some actions will work again once you are online.",
+  "empty": "Nothing here yet",
+  "error": "Something went wrong",
+  "comingSoon": "Coming soon",
+  "demoMode": "Demo mode",
+  "demoModeHint": "Supabase is not configured. You are using local demo data.",
+  "status": {
+    "active": "Active",
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "tabs": {
+    "home": "Home",
+    "projects": "Projects",
+    "messages": "Messages",
+    "documents": "Documents",
+    "more": "More",
+    "leads": "Leads",
+    "commissions": "Commissions",
+    "marketing": "Marketing",
+    "approvals": "Approvals",
+    "tickets": "Tickets",
+    "finance": "Finance"
+  },
+  "switchArea": {
+    "customer": "Customer area",
+    "partner": "Partner area",
+    "admin": "Admin area"
+  },
+  "language": "Language",
+  "languageNl": "Nederlands",
+  "languageEn": "English",
+  "whatsapp": "WhatsApp",
+  "notFoundBody": "This page does not exist.",
+
+  "actions": {
+    "refresh": "Refresh",
+    "share": "Share",
+    "copy": "Copy",
+    "copied": "Copied",
+    "open": "Open",
+    "download": "Download",
+    "delete": "Delete",
+    "edit": "Edit",
+    "send": "Send",
+    "submit": "Submit"
+  },
+  "time": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "justNow": "Just now"
+  }
+}

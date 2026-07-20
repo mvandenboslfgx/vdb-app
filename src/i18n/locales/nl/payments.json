@@ -1,0 +1,28 @@
+{
+  "title": "Betalingen",
+  "checkout": "Afrekenen",
+  "redirecting": "Je wordt doorgestuurd naar de betaalomgeving…",
+  "success": "Betaling ontvangen. De status wordt bijgewerkt zodra dit bevestigd is.",
+  "pending": "Betaling in behandeling. Markeer nooit lokaal als betaald.",
+  "failed": "Betaling mislukt of geannuleerd.",
+  "policy": {
+    "checkoutDisabled": "Online betalen is momenteel niet beschikbaar.",
+    "restricted": "Dit product kan niet via de app worden afgerekend.",
+    "manualReview": "Deze betaling vereist handmatige controle. Neem contact op met support.",
+    "playBilling": "Digitale producten kunnen op Android niet via Mollie worden betaald volgens storebeleid.",
+    "maintenance": "Betalingen zijn tijdelijk uitgeschakeld wegens onderhoud."
+  },
+  "status": {
+    "created": "Aangemaakt",
+    "open": "Open",
+    "pending": "In behandeling",
+    "authorized": "Geautoriseerd",
+    "paid": "Betaald",
+    "failed": "Mislukt",
+    "expired": "Verlopen",
+    "canceled": "Geannuleerd",
+    "refunded": "Terugbetaald",
+    "partially_refunded": "Gedeeltelijk terugbetaald",
+    "charged_back": "Terugboeking"
+  }
+}

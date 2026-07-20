@@ -1,0 +1,53 @@
+{
+  "generic": "Something went wrong. Please try again.",
+  "network": "No network connection.",
+  "unauthorized": "You are not signed in.",
+  "forbidden": "You do not have permission for this action.",
+  "notFound": "Not found.",
+  "notFoundBody": "This page does not exist.",
+  "validation": {
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email address",
+    "passwordRequired": "Password is required",
+    "passwordMin": "Password must be at least 8 characters",
+    "passwordMax": "Password is too long",
+    "passwordMismatch": "Passwords do not match",
+    "confirmPasswordRequired": "Confirm your password",
+    "fullNameMin": "Name is too short",
+    "fullNameMax": "Name is too long",
+    "phoneMin": "Phone number is too short",
+    "phoneMax": "Phone number is too long",
+    "acceptTerms": "You must accept the terms",
+    "acceptPartnerTerms": "You must accept the partner terms",
+    "acceptQuoteTerms": "You must accept the quote terms",
+    "companyNameMin": "Company name is too short",
+    "companyNameMax": "Company name is too long",
+    "urlInvalid": "Invalid URL",
+    "kvkInvalid": "Chamber of Commerce number must be 8 digits",
+    "vatMax": "VAT number is too long",
+    "motivationMin": "Motivation is too short",
+    "motivationMax": "Motivation is too long",
+    "subjectMin": "Subject is too short",
+    "subjectMax": "Subject is too long",
+    "categoryRequired": "Choose a category",
+    "descriptionMin": "Description is too short",
+    "descriptionMax": "Description is too long",
+    "decisionRequired": "Choose a decision",
+    "commentMax": "Comment is too long",
+    "reviewCommentRequired": "A comment is required for this decision",
+    "quoteIdInvalid": "Invalid quote",
+    "rejectReasonMin": "Reason is too short",
+    "rejectReasonMax": "Reason is too long"
+  },
+  "auth": {
+    "invalidCredentials": "Email or password is incorrect",
+    "emailNotConfirmed": "Please confirm your email first",
+    "userExists": "An account with this email already exists",
+    "weakPassword": "Choose a stronger password",
+    "demoOnly": "Demo mode: registration is local only"
+  },
+  "payments": {
+    "checkoutBlocked": "Checkout blocked by policy",
+    "neverLocalPaid": "Payments are never marked paid locally"
+  }
+}

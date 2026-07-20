@@ -1,0 +1,340 @@
+{
+  "common": {
+    "brand": "VDB Digital",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "continue": "Continue",
+    "back": "Back",
+    "seeAll": "See all",
+    "signOut": "Sign out",
+    "errorTitle": "Something went wrong",
+    "errorDescription": "Please try again in a moment.",
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "Check back later or start something new.",
+    "offline": {
+      "title": "You're offline",
+      "description": "Some actions may be unavailable until you reconnect."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "This screen doesn't exist or was moved.",
+      "goHome": "Go home"
+    },
+    "language": "Language",
+    "notifications": "Notifications",
+    "whatsapp": "WhatsApp",
+    "profile": "Profile",
+    "comingSoon": "Coming soon"
+  },
+  "tabs": {
+    "home": "Home",
+    "projects": "Projects",
+    "messages": "Messages",
+    "more": "More",
+    "dashboard": "Dashboard",
+    "leads": "Leads",
+    "commissions": "Commissions",
+    "marketing": "Marketing",
+    "approvals": "Approvals",
+    "tickets": "Tickets",
+    "finance": "Finance"
+  },
+  "public": {
+    "welcomeTitle": "Software & Project Portal",
+    "welcomeSubtitle": "Track projects, quotes, invoices, and messages in one place.",
+    "login": "Sign in",
+    "register": "Create account",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "privacyTitle": "Privacy policy",
+    "privacyBody": "We process personal data to deliver the VDB Digital portal. Full details are published on our website.",
+    "termsTitle": "Terms of use",
+    "termsBody": "By using this app you agree to the VDB Digital terms of service published on our website."
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to your VDB Digital account.",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "confirmPassword": "Confirm password",
+    "loginCta": "Sign in",
+    "registerTitle": "Create your account",
+    "registerSubtitle": "Start as a customer. Partner access requires approval.",
+    "registerCta": "Register",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Reset password",
+    "forgotSubtitle": "We'll email you a secure reset link.",
+    "forgotCta": "Send reset link",
+    "forgotSent": "If an account exists, a reset email is on its way.",
+    "verifyTitle": "Verify your email",
+    "verifySubtitle": "Open the link we sent you, or request a new one.",
+    "verifyCta": "Resend verification",
+    "resetTitle": "Choose a new password",
+    "resetCta": "Update password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "demoHint": "Demo mode: any credentials work while Supabase is not configured."
+  },
+  "customer": {
+    "home": {
+      "greeting": "Welcome, {{name}}",
+      "openActions": "Open actions",
+      "projects": "Projects",
+      "quotes": "Quotes",
+      "invoices": "Invoices",
+      "messages": "Messages",
+      "appointments": "Appointments",
+      "requestProject": "Request project"
+    },
+    "projects": {
+      "title": "Projects",
+      "empty": "No projects yet",
+      "emptyDescription": "Request a project to get started.",
+      "requestTitle": "Request a project",
+      "requestCta": "Submit request",
+      "titleLabel": "Project title",
+      "descriptionLabel": "Description",
+      "detailTitle": "Project",
+      "progress": "Progress",
+      "nextMilestone": "Next milestone"
+    },
+    "messages": {
+      "title": "Messages",
+      "empty": "No conversations",
+      "emptyDescription": "Messages about your projects will appear here.",
+      "composerPlaceholder": "Write a message…",
+      "send": "Send"
+    },
+    "documents": {
+      "title": "Documents",
+      "empty": "No documents",
+      "version": "Version {{version}}"
+    },
+    "quotes": {
+      "title": "Quotes",
+      "empty": "No quotes",
+      "accept": "Accept quote",
+      "reject": "Reject quote",
+      "validUntil": "Valid until {{date}}",
+      "total": "Total"
+    },
+    "invoices": {
+      "title": "Invoices",
+      "empty": "No invoices",
+      "pay": "Pay invoice",
+      "payUnavailable": "Online payment is not available for this invoice.",
+      "due": "Due {{date}}",
+      "amountDue": "Amount due"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "empty": "No upcoming appointments"
+    },
+    "support": {
+      "title": "Support",
+      "empty": "No tickets",
+      "newTitle": "New support ticket",
+      "newCta": "Submit ticket",
+      "subject": "Subject",
+      "category": "Category",
+      "description": "Description"
+    },
+    "more": {
+      "title": "More",
+      "partnerApply": "Become a partner",
+      "accountDeletion": "Delete account",
+      "documents": "Documents",
+      "quotes": "Quotes",
+      "invoices": "Invoices",
+      "appointments": "Appointments",
+      "support": "Support",
+      "reviews": "Leave a review"
+    },
+    "accountDeletion": {
+      "title": "Delete account",
+      "body": "Account deletion is processed manually for compliance. Submit a request and we will confirm by email.",
+      "cta": "Request deletion"
+    },
+    "partnerApply": {
+      "title": "Partner application",
+      "body": "Apply to refer clients and earn commissions. Applications are reviewed by VDB Digital.",
+      "company": "Company name",
+      "cta": "Submit application"
+    },
+    "reviews": {
+      "title": "Leave a review",
+      "rating": "Rating",
+      "reviewTitle": "Title",
+      "body": "Your experience",
+      "consent": "I allow VDB Digital to publish this review",
+      "cta": "Submit review"
+    }
+  },
+  "partner": {
+    "dashboard": {
+      "title": "Partner dashboard",
+      "leads": "Leads",
+      "commissions": "Commissions",
+      "payouts": "Payouts",
+      "marketing": "Marketing assets"
+    },
+    "leads": {
+      "title": "Leads",
+      "empty": "No leads yet",
+      "newTitle": "Add lead",
+      "newCta": "Save lead",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "notes": "Notes"
+    },
+    "commissions": {
+      "title": "Commissions",
+      "empty": "No commissions yet"
+    },
+    "marketing": {
+      "title": "Marketing",
+      "empty": "No assets yet",
+      "partnerLink": "Your partner link",
+      "copyLink": "Copy link"
+    },
+    "payouts": {
+      "title": "Payouts",
+      "empty": "No payout requests",
+      "request": "Request payout"
+    },
+    "more": {
+      "title": "More",
+      "profile": "Profile",
+      "payouts": "Payouts"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin dashboard",
+      "partnerApplications": "Partner applications",
+      "openTickets": "Open tickets",
+      "unreadMessages": "Unread messages",
+      "documentsPending": "Documents pending",
+      "openPayments": "Open payments",
+      "commissionsReview": "Commissions under review",
+      "payoutRequests": "Payout requests",
+      "appointments": "Upcoming appointments"
+    },
+    "approvals": {
+      "title": "Partner approvals",
+      "empty": "No pending applications",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "tickets": {
+      "title": "Support tickets",
+      "empty": "No open tickets"
+    },
+    "finance": {
+      "title": "Finance",
+      "commissions": "Commissions",
+      "payouts": "Payouts",
+      "reviewNote": "Sensitive finance actions run on the server. Mobile shows review status only.",
+      "markReviewed": "Mark reviewed"
+    },
+    "more": {
+      "title": "More"
+    }
+  },
+  "status": {
+    "project": {
+      "request_received": "Request received",
+      "intake": "Intake",
+      "quote": "Quote",
+      "accepted": "Accepted",
+      "planning": "Planning",
+      "in_progress": "In progress",
+      "waiting_for_customer": "Waiting for you",
+      "review": "Review",
+      "revision": "Revision",
+      "completed": "Completed",
+      "paused": "Paused",
+      "cancelled": "Cancelled"
+    },
+    "quote": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "viewed": "Viewed",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "withdrawn": "Withdrawn"
+    },
+    "invoice": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "viewed": "Viewed",
+      "partially_paid": "Partially paid",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled",
+      "credited": "Credited"
+    },
+    "ticket": {
+      "new": "New",
+      "open": "Open",
+      "waiting_for_customer": "Waiting for customer",
+      "waiting_for_vdb": "Waiting for VDB",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "lead": {
+      "new": "New",
+      "contacted": "Contacted",
+      "qualified": "Qualified",
+      "proposal": "Proposal",
+      "won": "Won",
+      "lost": "Lost",
+      "invalid": "Invalid"
+    },
+    "commission": {
+      "pending": "Pending",
+      "awaiting_payment": "Awaiting payment",
+      "payment_received": "Payment received",
+      "under_review": "Under review",
+      "approved": "Approved",
+      "payable": "Payable",
+      "payout_requested": "Payout requested",
+      "paid": "Paid",
+      "rejected": "Rejected",
+      "reversed": "Reversed"
+    },
+    "appointment": {
+      "requested": "Requested",
+      "confirmed": "Confirmed",
+      "rescheduled": "Rescheduled",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "no_show": "No show"
+    },
+    "document": {
+      "draft": "Draft",
+      "uploaded": "Uploaded",
+      "processing": "Processing",
+      "available": "Available",
+      "under_review": "Under review",
+      "approved": "Approved",
+      "changes_requested": "Changes requested",
+      "superseded": "Superseded",
+      "archived": "Archived",
+      "rejected": "Rejected"
+    }
+  },
+  "payments": {
+    "policy": {
+      "checkoutDisabled": "Checkout is currently disabled.",
+      "restricted": "This product cannot be paid in-app.",
+      "manualReview": "This payment requires manual review.",
+      "playBilling": "Digital goods cannot be checked out on Android under current policy."
+    }
+  }
+}

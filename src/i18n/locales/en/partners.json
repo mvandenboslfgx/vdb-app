@@ -1,0 +1,35 @@
+{
+  "title": "Partners",
+  "dashboard": "Partner dashboard",
+  "apply": {
+    "title": "Become a partner",
+    "subtitle": "Apply as a VDB Digital partner and earn commission on referrals.",
+    "companyName": "Company name",
+    "contactName": "Contact person",
+    "email": "Email address",
+    "phone": "Phone number",
+    "website": "Website",
+    "kvkNumber": "Chamber of Commerce number",
+    "vatNumber": "VAT number",
+    "motivation": "Motivation",
+    "motivationPlaceholder": "Why do you want to become a partner and how will you refer customers?",
+    "acceptTerms": "I agree to the partner terms",
+    "submit": "Submit application",
+    "success": "Your partner application was received. We will be in touch.",
+    "pending": "Your application is under review."
+  },
+  "code": "Partner code",
+  "link": "Partner link",
+  "leads": "Leads",
+  "leadsEmpty": "No leads yet.",
+  "copyLink": "Copy link",
+  "status": {
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "under_review": "Under review",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "suspended": "Suspended",
+    "active": "Active"
+  }
+}

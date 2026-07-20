@@ -1,0 +1,27 @@
+{
+  "title": "Offertes",
+  "empty": "Geen offertes.",
+  "emptyHint": "Zodra er een offerte klaarstaat, zie je die hier.",
+  "loading": "Offertes laden…",
+  "error": "Offertes konden niet worden geladen.",
+  "validUntil": "Geldig tot {{date}}",
+  "subtotal": "Subtotaal",
+  "vat": "BTW",
+  "total": "Totaal",
+  "accept": "Accepteren",
+  "reject": "Afwijzen",
+  "acceptTerms": "Ik accepteer deze offerte en de bijbehorende voorwaarden",
+  "rejectReason": "Reden voor afwijzing",
+  "rejectReasonPlaceholder": "Vertel kort waarom je de offerte afwijst",
+  "acceptedSuccess": "Offerte geaccepteerd.",
+  "rejectedSuccess": "Offerte afgewezen.",
+  "status": {
+    "draft": "Concept",
+    "sent": "Verstuurd",
+    "viewed": "Bekeken",
+    "accepted": "Geaccepteerd",
+    "rejected": "Afgewezen",
+    "expired": "Verlopen",
+    "withdrawn": "Ingetrokken"
+  }
+}

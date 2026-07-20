@@ -1,0 +1,41 @@
+{
+  "dashboard": {
+    "title": "Overview",
+    "greeting": "Hello {{name}}",
+    "greetingFallback": "Hello",
+    "activeProjects": "Active projects",
+    "openQuotes": "Open quotes",
+    "openInvoices": "Open invoices",
+    "unreadMessages": "Unread messages",
+    "upcomingAppointments": "Upcoming appointments",
+    "documentsPending": "Documents pending review",
+    "emptyProjects": "You have no active projects yet.",
+    "emptyQuotes": "No open quotes.",
+    "emptyInvoices": "No open invoices.",
+    "ctaStart": "Get in touch",
+    "quickActions": "Quick links"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit profile",
+    "language": "Language",
+    "notifications": "Notifications",
+    "security": "Security",
+    "support": "Support",
+    "legal": "Legal",
+    "deleteAccount": "Delete account"
+  },
+  "appointments": {
+    "title": "Appointments",
+    "empty": "No upcoming appointments.",
+    "request": "Request appointment",
+    "status": {
+      "requested": "Requested",
+      "confirmed": "Confirmed",
+      "rescheduled": "Rescheduled",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "no_show": "No-show"
+    }
+  }
+}
