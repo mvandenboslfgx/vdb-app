@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { Text } from '@/design-system/Text';
 import { colors, radii, spacing } from '@/theme';
@@ -7,27 +7,39 @@ import { colors, radii, spacing } from '@/theme';
 export interface BrandMarkProps {
   subtitle?: string;
   compact?: boolean;
+  /** Hide wordmark text and show only the logo mark. */
+  markOnly?: boolean;
 }
 
-/** Temporary brand mark until official logo assets land in assets/brand. */
-export function BrandMark({ subtitle, compact = false }: BrandMarkProps) {
+const logoSource = require('../../assets/brand/logo-mark.png');
+
+/** Official VDB Digital brand mark + optional wordmark. */
+export function BrandMark({
+  subtitle,
+  compact = false,
+  markOnly = false,
+}: BrandMarkProps) {
+  const size = compact ? 40 : 56;
+
   return (
     <View style={[styles.wrap, compact && styles.compact]} accessibilityRole="header">
-      <View style={[styles.mark, compact && styles.markCompact]}>
-        <Text variant={compact ? 'label' : 'subtitle'} weight="bold" color="champagneGold">
-          VDB
-        </Text>
-      </View>
-      <View style={styles.textCol}>
-        <Text variant={compact ? 'body' : 'title'} weight="semibold">
-          VDB Digital
-        </Text>
-        {subtitle ? (
-          <Text variant="caption" color="textSecondary">
-            {subtitle}
+      <Image
+        source={logoSource}
+        style={{ width: size, height: size, borderRadius: radii.md }}
+        accessibilityLabel="VDB Digital"
+      />
+      {markOnly ? null : (
+        <View style={styles.textCol}>
+          <Text variant={compact ? 'body' : 'title'} weight="semibold">
+            VDB Digital
           </Text>
-        ) : null}
-      </View>
+          {subtitle ? (
+            <Text variant="caption" color="textSecondary">
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
+      )}
     </View>
   );
 }
@@ -40,20 +52,6 @@ const styles = StyleSheet.create({
   },
   compact: {
     gap: spacing.sm,
-  },
-  mark: {
-    width: 56,
-    height: 56,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.champagneGold,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surfaceElevated,
-  },
-  markCompact: {
-    width: 40,
-    height: 40,
   },
   textCol: {
     gap: 2,

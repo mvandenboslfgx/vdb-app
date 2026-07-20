@@ -17,8 +17,8 @@ The coding agent must not perform these without explicit approval.
 
 ## 2. Branding assets
 
-8. [ ] Place official logo files listed in `assets/brand/README.md`
-9. [ ] Replace placeholder adaptive icon / splash / notification icon
+8. [x] Place official logo mark (`assets/brand/logo-mark.png`) — received 2026-07-20
+9. [ ] Optional: horizontal lockups + dedicated white monochrome notification silhouette
 10. [ ] Provide Play Store feature graphic + screenshots (no real PII)
 
 ## 3. Backend migrations (explicit approval required)
