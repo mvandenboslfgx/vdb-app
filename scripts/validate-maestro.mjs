@@ -19,6 +19,10 @@ const REQUIRED = [
   '10-partner-lead.yaml',
   '11-commission-payout.yaml',
   '12-account-deletion.yaml',
+  '13-appointments.yaml',
+  '14-admin-project-creation.yaml',
+  '15-document-version-2.yaml',
+  '16-checkout-browser-return.yaml',
 ];
 
 let failed = 0;

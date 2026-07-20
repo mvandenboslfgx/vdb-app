@@ -1,0 +1,20 @@
+appId: nl.vdbdigital.app
+---
+# 16 — Checkout browser return (authoritative refresh)
+# Device execution: BLOCKED until adb available.
+# Fake provider only in demo/test; live Mollie remains fail-closed.
+- launchApp
+- tapOn:
+    id: "nav-invoices"
+    optional: true
+- tapOn:
+    id: "invoice-row-0"
+    optional: true
+- assertVisible:
+    id: "screen-invoice-detail"
+    optional: true
+- tapOn:
+    id: "btn-invoice-checkout"
+    optional: true
+- # After browser return the app resumes and refreshes invoice status.
+- takeScreenshot: "16-checkout-browser-return"
