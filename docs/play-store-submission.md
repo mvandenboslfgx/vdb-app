@@ -31,6 +31,15 @@ Provide Play Console reviewers:
 3. Notes: payments use Mollie **test** mode; no real charges
 4. Partner/admin features may be feature-flagged off
 
+## Preview / internal test readiness
+
+| Item | Status |
+|---|---|
+| Debug APK on device | **BLOCKED** — Android SDK missing |
+| EAS project linked | **BLOCKED BY EAS CONFIGURATION** |
+| Preview AAB built | Not started |
+| Play Store upload | **Forbidden** until explicit approval |
+
 ## Do not publish without
 
 - Owner approval
@@ -38,3 +47,5 @@ Provide Play Console reviewers:
 - Account deletion URL live
 - Production signing via EAS
 - Policy gate reviewed for catalog contents
+- Successful Samsung S25 device validation (Phase 6)
+
