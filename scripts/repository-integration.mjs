@@ -309,6 +309,124 @@ async function main() {
     fail('account_deletion_request_insert', e);
   }
 
+  // --- partner leads ---
+  try {
+    const { sb } = await asUser(apiUrl, anonKey, 'partner.active.a@local.vdb');
+    const email = `lead-${Date.now()}@example.com`;
+    const { data, error } = await sb.rpc('register_partner_lead', {
+      p_name: 'Integration Lead',
+      p_email: email,
+      p_consent_given: true,
+      p_campaign_code: 'integration-test',
+    });
+    if (error) throw error;
+    if (!data?.id || data.status !== 'new') throw new Error('unexpected lead result');
+    pass('partner_lead_register');
+    await sb.auth.signOut();
+  } catch (e) {
+    fail('partner_lead_register', e);
+  }
+
+  // --- partner payout requests (requires feature_flags partner.payouts=true, see seed-local-identities.mjs) ---
+  try {
+    const { sb } = await asUser(apiUrl, anonKey, 'partner.active.a@local.vdb');
+    const before = await sb.from('commissions').select('id').eq('status', 'payable');
+    if (before.error) throw before.error;
+    if (!before.data?.length) throw new Error('expected a payable commission for partner A (see seed)');
+
+    const { data, error } = await sb.rpc('request_commission_payout', {});
+    if (error) throw error;
+    if (!data?.id || data.status !== 'submitted') throw new Error('unexpected payout_requests result');
+
+    const after = await sb.from('commissions').select('id').eq('status', 'payable');
+    if (after.error) throw after.error;
+    if ((after.data ?? []).some((c) => before.data.some((b) => b.id === c.id))) {
+      throw new Error('payable commissions should have moved to payout_requested');
+    }
+
+    // Double-spend guard: no payable commissions left -> second request must fail closed.
+    const second = await sb.rpc('request_commission_payout', {});
+    if (!second.error) throw new Error('expected second payout request to fail (no payable commissions)');
+    pass('partner_payout_request_and_double_spend_guard');
+    await sb.auth.signOut();
+  } catch (e) {
+    fail('partner_payout_request_and_double_spend_guard', e);
+  }
+
+  try {
+    const { sb } = await asUser(apiUrl, anonKey, 'customer.a@local.vdb');
+    const { error } = await sb.rpc('request_commission_payout', {});
+    if (!error) throw new Error('customer must not be able to request a partner payout');
+    pass('customer_cannot_request_payout');
+    await sb.auth.signOut();
+  } catch (e) {
+    fail('customer_cannot_request_payout', e);
+  }
+
+  // --- admin support ticket replies ---
+  try {
+    const { sb: staffSb } = await asUser(apiUrl, anonKey, 'staff@local.vdb');
+    const { sb: customerSb } = await asUser(apiUrl, anonKey, 'customer.a@local.vdb');
+    const { data: tickets, error: ticketErr } = await customerSb
+      .from('support_tickets')
+      .select('id')
+      .limit(1);
+    if (ticketErr) throw ticketErr;
+    const ticketId = tickets?.[0]?.id;
+    if (!ticketId) throw new Error('expected a seeded support ticket for customer A');
+    await customerSb.auth.signOut();
+
+    const clientMessageId = `int-reply-${Date.now()}`;
+    const { data: reply, error: replyErr } = await staffSb.rpc('admin_reply_support_ticket', {
+      p_ticket_id: ticketId,
+      p_body: 'Integration reply from staff',
+      p_is_internal: false,
+      p_client_message_id: clientMessageId,
+    });
+    if (replyErr) throw replyErr;
+    if (!reply?.id) throw new Error('unexpected admin_reply_support_ticket result');
+
+    const dup = await staffSb.rpc('admin_reply_support_ticket', {
+      p_ticket_id: ticketId,
+      p_body: 'Integration reply from staff',
+      p_is_internal: false,
+      p_client_message_id: clientMessageId,
+    });
+    if (dup.error) throw dup.error;
+    if (dup.data.id !== reply.id) throw new Error('expected idempotent replay on client_message_id');
+
+    const { data: ticketAfter, error: afterErr } = await staffSb
+      .from('support_tickets')
+      .select('status')
+      .eq('id', ticketId)
+      .single();
+    if (afterErr) throw afterErr;
+    if (ticketAfter.status !== 'waiting_on_customer') {
+      throw new Error(`expected ticket to flip to waiting_on_customer, got ${ticketAfter.status}`);
+    }
+    pass('admin_reply_support_ticket_and_idempotency');
+    await staffSb.auth.signOut();
+  } catch (e) {
+    fail('admin_reply_support_ticket_and_idempotency', e);
+  }
+
+  try {
+    const { sb } = await asUser(apiUrl, anonKey, 'customer.a@local.vdb');
+    const { data: tickets } = await sb.from('support_tickets').select('id').limit(1);
+    const ticketId = tickets?.[0]?.id;
+    if (!ticketId) throw new Error('expected a seeded support ticket for customer A');
+    const { error } = await sb.rpc('admin_reply_support_ticket', {
+      p_ticket_id: ticketId,
+      p_body: 'Customer should not be able to reply as staff',
+      p_is_internal: false,
+    });
+    if (!error) throw new Error('customer must not be able to call admin_reply_support_ticket');
+    pass('customer_cannot_admin_reply');
+    await sb.auth.signOut();
+  } catch (e) {
+    fail('customer_cannot_admin_reply', e);
+  }
+
   const passed = results.filter((r) => r.status === 'pass').length;
   const failed = results.filter((r) => r.status === 'fail').length;
   console.log(

@@ -23,6 +23,10 @@ const REQUIRED = [
   '14-admin-project-creation.yaml',
   '15-document-version-2.yaml',
   '16-checkout-browser-return.yaml',
+  '17-customer-document-upload.yaml',
+  '19-partner-payout.yaml',
+  '20-admin-ticket-reply.yaml',
+  '21-admin-finance.yaml',
 ];
 
 let failed = 0;

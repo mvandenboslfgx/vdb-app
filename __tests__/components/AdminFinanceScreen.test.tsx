@@ -1,0 +1,109 @@
+import { fireEvent, renderWithProviders, screen, waitFor } from '../test-utils';
+
+import AdminFinanceScreen from '../../app/(admin)/finance/index';
+import {
+  approveCommission,
+  listFinanceItems,
+  listFinancePayoutRequests,
+  rejectPayoutRequest,
+} from '@/api/repositories/adminRepository';
+import { DomainError } from '@/lib/errors';
+import type { Commission, PayoutRequest } from '@/types/domain';
+
+jest.mock('@/api/repositories/adminRepository');
+
+const mockListFinanceItems = listFinanceItems as jest.MockedFunction<typeof listFinanceItems>;
+const mockListPayoutRequests = listFinancePayoutRequests as jest.MockedFunction<
+  typeof listFinancePayoutRequests
+>;
+const mockApproveCommission = approveCommission as jest.MockedFunction<typeof approveCommission>;
+const mockRejectPayoutRequest = rejectPayoutRequest as jest.MockedFunction<typeof rejectPayoutRequest>;
+
+function makeCommission(overrides: Partial<Commission> = {}): Commission {
+  return {
+    id: 'commission-1',
+    partnerId: 'partner-1',
+    saleLabel: 'Website redesign — Acme BV',
+    amountCents: 2000,
+    currency: 'EUR',
+    status: 'under_review',
+    expectedReleaseAt: null,
+    createdAt: '2026-07-01T00:00:00.000Z',
+    updatedAt: '2026-07-01T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+function makePayoutRequest(overrides: Partial<PayoutRequest> = {}): PayoutRequest {
+  return {
+    id: 'payout-1',
+    partnerId: 'partner-1',
+    payoutAccountId: 'account-1',
+    status: 'submitted',
+    amountCents: 3000,
+    currency: 'EUR',
+    submittedAt: '2026-07-02T00:00:00.000Z',
+    notes: null,
+    createdAt: '2026-07-02T00:00:00.000Z',
+    updatedAt: '2026-07-02T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+describe('AdminFinanceScreen', () => {
+  it('lists commissions under review and submitted payout requests', async () => {
+    mockListFinanceItems.mockResolvedValueOnce([makeCommission()]);
+    mockListPayoutRequests.mockResolvedValueOnce([makePayoutRequest()]);
+
+    await renderWithProviders(<AdminFinanceScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('screen-admin-finance')).toBeTruthy());
+    expect(screen.getByTestId('row-finance-commission-commission-1')).toBeTruthy();
+    expect(screen.getByTestId('row-finance-payout-payout-1')).toBeTruthy();
+  });
+
+  it('approves a commission once a reason is provided', async () => {
+    mockListFinanceItems.mockResolvedValueOnce([makeCommission()]);
+    mockListPayoutRequests.mockResolvedValueOnce([]);
+    mockApproveCommission.mockResolvedValueOnce({ id: 'commission-1', status: 'approved' });
+    mockListFinanceItems.mockResolvedValueOnce([]);
+    mockListPayoutRequests.mockResolvedValueOnce([]);
+
+    await renderWithProviders(<AdminFinanceScreen />);
+    await waitFor(() => expect(screen.getByTestId('row-finance-commission-commission-1')).toBeTruthy());
+
+    await fireEvent.press(screen.getByTestId('row-finance-commission-commission-1'));
+    await waitFor(() => expect(screen.getByTestId('btn-finance-approve-commission')).toBeTruthy());
+
+    expect(screen.getByTestId('btn-finance-approve-commission').props.accessibilityState?.disabled).toBe(
+      true,
+    );
+
+    await fireEvent.changeText(screen.getByTestId('input-finance-reason'), 'Verified with client');
+    await fireEvent.press(screen.getByTestId('btn-finance-approve-commission'));
+
+    await waitFor(() =>
+      expect(mockApproveCommission).toHaveBeenCalledWith('commission-1', 'Verified with client'),
+    );
+  });
+
+  it('shows an error when rejecting a payout request fails', async () => {
+    mockListFinanceItems.mockResolvedValueOnce([]);
+    mockListPayoutRequests.mockResolvedValueOnce([makePayoutRequest()]);
+    mockRejectPayoutRequest.mockRejectedValueOnce(
+      DomainError.validation('Payout rejection reason required'),
+    );
+
+    await renderWithProviders(<AdminFinanceScreen />);
+    await waitFor(() => expect(screen.getByTestId('row-finance-payout-payout-1')).toBeTruthy());
+
+    await fireEvent.press(screen.getByTestId('row-finance-payout-payout-1'));
+    await waitFor(() => expect(screen.getByTestId('btn-finance-reject-payout')).toBeTruthy());
+
+    await fireEvent.changeText(screen.getByTestId('input-finance-payout-reason'), 'Bank details invalid');
+    await fireEvent.press(screen.getByTestId('btn-finance-reject-payout'));
+
+    await waitFor(() => expect(screen.getByTestId('text-finance-error')).toBeTruthy());
+    expect(screen.getByText('Please check your input and try again.')).toBeTruthy();
+  });
+});
