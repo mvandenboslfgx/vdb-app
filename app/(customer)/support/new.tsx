@@ -35,19 +35,20 @@ export default function NewSupportTicketScreen() {
 
   if (done) {
     return (
-      <Screen>
+      <Screen testID="screen-support-new-success">
         <Text variant="title">{t('success')}</Text>
       </Screen>
     );
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-support-new">
       <Text variant="title">{t('newTicket')}</Text>
       <View style={styles.form}>
-        <TextInput label={t('subject')} value={subject} onChangeText={setSubject} />
-        <TextInput label={t('category')} value={category} onChangeText={setCategory} />
+        <TextInput testID="input-support-subject" label={t('subject')} value={subject} onChangeText={setSubject} />
+        <TextInput testID="input-support-category" label={t('category')} value={category} onChangeText={setCategory} />
         <TextInput
+          testID="input-support-description"
           label={t('description')}
           placeholder={t('descriptionPlaceholder')}
           value={description}
@@ -56,6 +57,7 @@ export default function NewSupportTicketScreen() {
           style={styles.area}
         />
         <Button
+          testID="btn-support-submit"
           title={t('submit')}
           variant="gold"
           fullWidth

@@ -12,6 +12,11 @@
   "reject": "Afwijzen",
   "comment": "Toelichting",
   "commentPlaceholder": "Licht je besluit toe…",
+  "commentRequired": "Voeg een toelichting toe voordat je wijzigingen aanvraagt.",
+  "open": "Document openen",
+  "openBlocked": "Dit bestand is gemarkeerd door de beveiligingsscan en kan niet worden geopend.",
+  "openError": "Dit document kon niet worden geopend.",
+  "requestingLink": "Beveiligde link aanvragen…",
   "scan": {
     "pending": "Scan bezig",
     "clean": "Schoon",

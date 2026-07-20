@@ -12,6 +12,11 @@
   "reject": "Reject",
   "comment": "Comment",
   "commentPlaceholder": "Explain your decision…",
+  "commentRequired": "Please add a comment before requesting changes.",
+  "open": "Open document",
+  "openBlocked": "This file failed its security scan and cannot be opened.",
+  "openError": "Could not open this document.",
+  "requestingLink": "Requesting secure link…",
   "scan": {
     "pending": "Scanning",
     "clean": "Clean",

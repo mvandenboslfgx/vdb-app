@@ -47,11 +47,12 @@ export default function ProjectsScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-projects-list">
       <Text variant="title" style={styles.title}>
         {t('title')}
       </Text>
       <Button
+        testID="btn-projects-request"
         title={t('requestCta')}
         variant="secondary"
         style={styles.cta}

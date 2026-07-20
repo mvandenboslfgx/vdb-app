@@ -57,7 +57,7 @@ export default function CustomerHomeScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-customer-dashboard">
       <Text variant="title">
         {t('dashboard.greeting', { name: data.welcomeName || profile?.fullName || '' })}
       </Text>
@@ -90,16 +90,17 @@ export default function CustomerHomeScreen() {
         />
       ) : (
         data.activeProjects.map((project) => (
-          <ListRow
-            key={project.id}
-            title={project.title}
-            subtitle={project.nextMilestone ?? project.description}
-            meta={`${project.progressPercent}%`}
-            right={
-              <StatusPill label={tp(`status.${project.status}`)} tone="gold" />
-            }
-            onPress={() => router.push(`/(customer)/projects/${project.id}`)}
-          />
+          <View key={project.id} testID={`dashboard-project-${project.id}`}>
+            <ListRow
+              title={project.title}
+              subtitle={project.nextMilestone ?? project.description}
+              meta={`${project.progressPercent}%`}
+              right={
+                <StatusPill label={tp(`status.${project.status}`)} tone="gold" />
+              }
+              onPress={() => router.push(`/(customer)/projects/${project.id}`)}
+            />
+          </View>
         ))
       )}
 

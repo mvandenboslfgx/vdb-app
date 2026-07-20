@@ -42,6 +42,10 @@ export default function CustomerMoreScreen() {
       />
       <ListRow title={tm('whatsapp')} subtitle={tm('whatsappHint')} onPress={() => void openWhatsApp()} />
       <ListRow
+        title={t('profile.notifications')}
+        onPress={() => router.push('/(customer)/more/notifications')}
+      />
+      <ListRow
         title={tp('apply.title')}
         onPress={() => router.push('/(customer)/more/partner-apply')}
       />

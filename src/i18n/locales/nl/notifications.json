@@ -9,5 +9,18 @@
   "permissionTitle": "Meldingen inschakelen",
   "permissionBody": "Blijf op de hoogte van projectupdates en berichten.",
   "permissionAllow": "Toestaan",
-  "permissionLater": "Later"
+  "permissionLater": "Later",
+  "prefs": {
+    "title": "Meldingsvoorkeuren",
+    "subtitle": "Kies welke updates je wilt ontvangen. Bezorging blijft uit tot push-credentials zijn geconfigureerd.",
+    "deliveryDisabled": "Pushbezorging is momenteel uitgeschakeld (fail-closed). Voorkeuren worden bewaard voor latere activering.",
+    "lockScreenHint": "Gevoelige chat- of factuurinhoud verschijnt standaard niet op het vergrendelscherm.",
+    "projectUpdates": "Projectupdates",
+    "messages": "Berichten",
+    "documents": "Documentbeoordelingen",
+    "quotesInvoices": "Offertes en facturen",
+    "marketing": "Tips en marketing",
+    "on": "Aan",
+    "off": "Uit"
+  }
 }

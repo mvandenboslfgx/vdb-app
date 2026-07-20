@@ -29,6 +29,13 @@
     "title": "Appointments",
     "empty": "No upcoming appointments.",
     "request": "Request appointment",
+    "bookCta": "Book appointment",
+    "cancel": "Cancel appointment",
+    "cancelConfirmTitle": "Cancel appointment",
+    "cancelConfirmMessage": "Are you sure you want to cancel this appointment?",
+    "cancelSuccess": "Your appointment has been cancelled.",
+    "cancelError": "Could not cancel this appointment.",
+    "timezoneLabel": "Times shown in Europe/Amsterdam",
     "status": {
       "requested": "Requested",
       "confirmed": "Confirmed",
@@ -36,6 +43,17 @@
       "cancelled": "Cancelled",
       "completed": "Completed",
       "no_show": "No-show"
+    },
+    "book": {
+      "title": "Book an appointment",
+      "subtitle": "Pick an available time slot. All times are shown in Europe/Amsterdam.",
+      "empty": "No available slots right now.",
+      "loading": "Loading available slots…",
+      "error": "Could not load available slots.",
+      "confirm": "Book this slot",
+      "success": "Your appointment has been booked.",
+      "slotTaken": "This slot was just booked by someone else. Please choose another time.",
+      "bookError": "Could not book this appointment. Please try again."
     }
   }
 }

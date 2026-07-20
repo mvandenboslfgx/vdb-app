@@ -47,7 +47,7 @@ export default function RegisterScreen() {
         phone: parsed.data.phone || undefined,
       });
       if (result.needsEmailConfirmation) {
-        router.replace('/(auth)/verify-email');
+        router.replace({ pathname: '/(auth)/verify-email', params: { email: parsed.data.email } });
       } else {
         router.replace(resolveHomeRoute(['customer']));
       }

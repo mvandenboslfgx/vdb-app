@@ -1,44 +1,55 @@
-import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { accountRepository, type AccountDeletionRequest } from '@/api/repositories/accountRepository';
 import { Button, Screen, Text, TextInput } from '@/design-system';
-import { useAuth } from '@/providers/AuthProvider';
+import { DomainError } from '@/lib/errors';
 import { spacing } from '@/theme';
 
 export default function AccountDeletionScreen() {
   const { t } = useTranslation('auth');
-  const router = useRouter();
-  const { signOut } = useAuth();
+  const { t: te } = useTranslation('errors');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [request, setRequest] = useState<AccountDeletionRequest | null>(null);
+
+  const confirmWord = t('accountDeletion.confirmWord');
+  const canSubmit = confirm.trim().toUpperCase() === confirmWord;
 
   async function onSubmit() {
-    if (confirm !== t('accountDeletion.confirmWord')) return;
+    if (!canSubmit || loading) return;
     setLoading(true);
+    setError(null);
     try {
-      // Server stub — never hard-deletes locally without edge function.
-      await new Promise((r) => setTimeout(r, 400));
-      setDone(true);
-      await signOut();
-      router.replace('/(public)');
+      // Real repository call — never a fake-only local logout. The account
+      // stays intact until the backend actually processes the request.
+      const result = await accountRepository.requestDeletion();
+      setRequest(result);
+    } catch (err) {
+      setError(err instanceof DomainError ? err.toUserMessage() : te('generic'));
     } finally {
       setLoading(false);
     }
   }
 
-  if (done) {
+  if (request) {
     return (
-      <Screen>
+      <Screen testID="screen-account-deletion-status">
         <Text variant="title">{t('accountDeletion.success')}</Text>
+        <Text variant="body" color="textSecondary" style={styles.subtitle}>
+          {t('accountDeletion.statusSubmitted')}
+        </Text>
+        <Text variant="caption" color="textMuted" testID="account-deletion-request-id">
+          {request.id} · {request.status}
+        </Text>
       </Screen>
     );
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-account-deletion">
       <Text variant="title">{t('accountDeletion.title')}</Text>
       <Text variant="body" color="textSecondary" style={styles.subtitle}>
         {t('accountDeletion.subtitle')}
@@ -46,19 +57,42 @@ export default function AccountDeletionScreen() {
       <Text variant="caption" color="warning" style={styles.warn}>
         {t('accountDeletion.warning')}
       </Text>
+
+      <View style={styles.consequences}>
+        <Text variant="label" color="textSecondary">
+          {t('accountDeletion.consequencesTitle')}
+        </Text>
+        <Text variant="caption" color="textMuted">
+          • {t('accountDeletion.consequence1')}
+        </Text>
+        <Text variant="caption" color="textMuted">
+          • {t('accountDeletion.consequence2')}
+        </Text>
+        <Text variant="caption" color="textMuted">
+          • {t('accountDeletion.consequence3')}
+        </Text>
+      </View>
+
       <View style={styles.form}>
         <TextInput
+          testID="input-account-deletion-confirm"
           label={t('accountDeletion.confirmLabel')}
           value={confirm}
           onChangeText={setConfirm}
           autoCapitalize="characters"
         />
+        {error ? (
+          <Text variant="caption" color="error" testID="account-deletion-error">
+            {error}
+          </Text>
+        ) : null}
         <Button
-          title={t('accountDeletion.submit')}
+          testID="btn-account-deletion-submit"
+          title={loading ? t('accountDeletion.submitting') : t('accountDeletion.submit')}
           variant="danger"
           fullWidth
           loading={loading}
-          disabled={confirm !== t('accountDeletion.confirmWord')}
+          disabled={!canSubmit}
           onPress={() => void onSubmit()}
         />
       </View>
@@ -68,6 +102,7 @@ export default function AccountDeletionScreen() {
 
 const styles = StyleSheet.create({
   subtitle: { marginTop: spacing.sm, marginBottom: spacing.md },
-  warn: { marginBottom: spacing.xl },
+  warn: { marginBottom: spacing.lg },
+  consequences: { gap: spacing.xs, marginBottom: spacing.xl },
   form: { gap: spacing.lg },
 });

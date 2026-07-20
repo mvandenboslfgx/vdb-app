@@ -28,9 +28,10 @@ export default function ProjectRequestScreen() {
 
   if (done) {
     return (
-      <Screen>
+      <Screen testID="screen-project-request-success">
         <Text variant="title">{t('request.success')}</Text>
         <Button
+          testID="btn-project-request-done"
           title={t('title')}
           variant="gold"
           style={styles.cta}
@@ -41,18 +42,20 @@ export default function ProjectRequestScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-project-request">
       <Text variant="title">{t('request.title')}</Text>
       <Text variant="body" color="textSecondary" style={styles.subtitle}>
         {t('request.subtitle')}
       </Text>
       <View style={styles.form}>
         <TextInput
+          testID="input-project-request-title"
           label={t('request.projectTitle')}
           value={title}
           onChangeText={setTitle}
         />
         <TextInput
+          testID="input-project-request-description"
           label={t('request.description')}
           value={description}
           onChangeText={setDescription}
@@ -60,6 +63,7 @@ export default function ProjectRequestScreen() {
           style={styles.area}
         />
         <Button
+          testID="btn-project-request-submit"
           title={t('request.submit')}
           variant="gold"
           fullWidth

@@ -58,7 +58,7 @@ export default function ProjectDetailScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-project-detail">
       <View style={styles.header}>
         <Text variant="title">{project.title}</Text>
         <StatusPill label={t(`status.${project.status}`)} tone="gold" />

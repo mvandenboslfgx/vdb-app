@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { AppState, Platform, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as WebBrowser from 'expo-web-browser';
 
@@ -14,6 +14,7 @@ import {
   StatusPill,
   Text,
 } from '@/design-system';
+import { DomainError } from '@/lib/errors';
 import { formatCurrency, formatDate } from '@/lib/format';
 import type { Invoice } from '@/types/domain';
 import { spacing } from '@/theme';
@@ -23,11 +24,13 @@ export default function InvoiceDetailScreen() {
   const { t } = useTranslation('invoices');
   const { t: tp } = useTranslation('payments');
   const { t: tc } = useTranslation('common');
+  const { t: te } = useTranslation('errors');
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const [payMessage, setPayMessage] = useState<string | null>(null);
+  const [payError, setPayError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -46,10 +49,21 @@ export default function InvoiceDetailScreen() {
     void load();
   }, [load]);
 
+  // After browser checkout return (deep link or app resume), refresh authoritative status.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        void load();
+      }
+    });
+    return () => sub.remove();
+  }, [load]);
+
   async function onPay() {
-    if (!invoice) return;
+    if (!invoice || busy) return;
     setBusy(true);
     setPayMessage(null);
+    setPayError(null);
     try {
       const platform =
         Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web';
@@ -61,11 +75,15 @@ export default function InvoiceDetailScreen() {
       if (result.allowed && result.checkoutUrl) {
         await WebBrowser.openBrowserAsync(result.checkoutUrl);
         setPayMessage(tp('redirecting'));
+        // Authoritative status is always re-fetched — never trust client-side paid claims.
+        await load();
       } else if (!result.allowed) {
         const key = result.messageKey ?? 'payments.policy.checkoutDisabled';
         const localKey = key.replace(/^payments\./, '');
         setPayMessage(tp(localKey as 'policy.checkoutDisabled'));
       }
+    } catch (err) {
+      setPayError(err instanceof DomainError ? err.toUserMessage() : te('generic'));
     } finally {
       setBusy(false);
     }
@@ -79,7 +97,7 @@ export default function InvoiceDetailScreen() {
   const canPay = ['sent', 'viewed', 'partially_paid', 'overdue'].includes(invoice.status);
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-invoice-detail">
       <Text variant="title">{invoice.number}</Text>
       <StatusPill label={t(`status.${invoice.status}`)} tone="gold" />
       <View style={styles.meta}>
@@ -100,13 +118,24 @@ export default function InvoiceDetailScreen() {
       </View>
 
       {payMessage ? (
-        <Text variant="body" color="warning" style={styles.message}>
+        <Text variant="body" color="warning" style={styles.message} testID="invoice-pay-message">
           {payMessage}
+        </Text>
+      ) : null}
+      {payError ? (
+        <Text variant="caption" color="error" style={styles.message} testID="invoice-pay-error">
+          {payError}
         </Text>
       ) : null}
 
       {canPay ? (
-        <Button title={t('payNow')} variant="gold" loading={busy} onPress={() => void onPay()} />
+        <Button
+          testID="btn-invoice-checkout"
+          title={t('payNow')}
+          variant="gold"
+          loading={busy}
+          onPress={() => void onPay()}
+        />
       ) : null}
     </Screen>
   );

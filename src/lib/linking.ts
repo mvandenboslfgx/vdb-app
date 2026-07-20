@@ -15,6 +15,7 @@ export type DeepLinkTarget =
   | { type: 'partner' }
   | { type: 'admin' }
   | { type: 'home' }
+  | { type: 'paymentReturn'; invoiceId?: string; paymentId?: string }
   | { type: 'unknown'; reason: string };
 
 const ALLOWED_HOSTS = new Set(['vdbdigital.nl', 'www.vdbdigital.nl']);
@@ -57,6 +58,19 @@ function parseAppPath(pathname: string, searchParams: URLSearchParams): DeepLink
       return { type: 'partner' };
     case 'admin':
       return { type: 'admin' };
+    case 'payments':
+    case 'checkout':
+    case 'payment-return': {
+      // /app/payments/return?invoiceId=… or /app/checkout/return
+      const invoiceId =
+        searchParams.get('invoiceId') ?? searchParams.get('invoice_id') ?? undefined;
+      const paymentId =
+        searchParams.get('paymentId') ?? searchParams.get('payment_id') ?? undefined;
+      if (id === 'return' || root === 'payment-return') {
+        return { type: 'paymentReturn', invoiceId, paymentId };
+      }
+      return { type: 'paymentReturn', invoiceId: id ?? invoiceId, paymentId };
+    }
     default:
       return { type: 'unknown', reason: `unmapped_path:${normalized}` };
   }
@@ -129,6 +143,10 @@ export function deepLinkToHref(target: DeepLinkTarget): string | null {
       return '/(admin)/dashboard';
     case 'home':
       return '/(customer)/home';
+    case 'paymentReturn':
+      return target.invoiceId
+        ? `/(customer)/invoices/${target.invoiceId}`
+        : '/(customer)/invoices';
     case 'unknown':
       return null;
   }

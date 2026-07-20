@@ -60,7 +60,7 @@ export default function MessageThreadScreen() {
   }
 
   return (
-    <Screen padded={false} style={styles.screen}>
+    <Screen padded={false} style={styles.screen} testID="screen-message-thread">
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id}
@@ -68,7 +68,7 @@ export default function MessageThreadScreen() {
         renderItem={({ item }) => {
           const mine = item.senderId === profile?.id;
           return (
-            <View style={[styles.bubble, mine ? styles.mine : styles.theirs]}>
+            <View style={[styles.bubble, mine ? styles.mine : styles.theirs]} testID={`message-${item.id}`}>
               {!mine ? (
                 <Text variant="caption" color="champagneGold">
                   {item.senderName}
@@ -81,12 +81,14 @@ export default function MessageThreadScreen() {
       />
       <View style={styles.composer}>
         <TextInput
+          testID="input-message-body"
           placeholder={t('composerPlaceholder')}
           value={body}
           onChangeText={setBody}
           style={styles.input}
         />
         <Button
+          testID="btn-message-send"
           title={t('send')}
           variant="gold"
           loading={sending}

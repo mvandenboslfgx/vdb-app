@@ -9,5 +9,18 @@
   "permissionTitle": "Enable notifications",
   "permissionBody": "Stay up to date on project updates and messages.",
   "permissionAllow": "Allow",
-  "permissionLater": "Later"
+  "permissionLater": "Later",
+  "prefs": {
+    "title": "Notification preferences",
+    "subtitle": "Choose which updates you want to receive. Delivery stays off until push credentials are configured.",
+    "deliveryDisabled": "Push delivery is currently disabled (fail-closed). Preferences are saved for when delivery is activated.",
+    "lockScreenHint": "Sensitive chat or invoice content is never shown on the lock screen by default.",
+    "projectUpdates": "Project updates",
+    "messages": "Messages",
+    "documents": "Document reviews",
+    "quotesInvoices": "Quotes and invoices",
+    "marketing": "Tips and marketing",
+    "on": "On",
+    "off": "Off"
+  }
 }

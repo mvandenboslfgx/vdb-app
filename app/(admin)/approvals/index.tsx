@@ -17,13 +17,11 @@ import {
   Screen,
   Text,
 } from '@/design-system';
-import { useAuth } from '@/providers/AuthProvider';
 import { spacing } from '@/theme';
 
 export default function ApprovalsScreen() {
   const { t } = useTranslation('admin');
   const { t: tc } = useTranslation('common');
-  const { profile } = useAuth();
   const [items, setItems] = useState<AdminQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -46,10 +44,9 @@ export default function ApprovalsScreen() {
   }, [load]);
 
   async function onApprove(id: string) {
-    if (!profile) return;
     setBusyId(id);
     try {
-      await approvePartnerApplication(id, profile.id);
+      await approvePartnerApplication(id, 'Approved via mobile admin');
       await load();
     } finally {
       setBusyId(null);
@@ -57,10 +54,9 @@ export default function ApprovalsScreen() {
   }
 
   async function onReject(id: string) {
-    if (!profile) return;
     setBusyId(id);
     try {
-      await rejectPartnerApplication(id, profile.id, 'Rejected via mobile admin');
+      await rejectPartnerApplication(id, 'Rejected via mobile admin');
       await load();
     } finally {
       setBusyId(null);
@@ -73,17 +69,18 @@ export default function ApprovalsScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-admin-approvals">
       <Text variant="title">{t('queue')}</Text>
       {items.length === 0 ? (
         <EmptyState title={tc('empty')} />
       ) : (
         items.map((item) => (
-          <View key={item.id} style={styles.card}>
+          <View key={item.id} style={styles.card} testID={`approval-row-${item.id}`}>
             <ListRow title={item.title} subtitle={item.subtitle} />
             {item.type === 'partner_application' ? (
               <View style={styles.actions}>
                 <Button
+                  testID={`btn-approve-${item.id}`}
                   title={t('actions.approvePartner')}
                   variant="gold"
                   size="sm"
@@ -91,6 +88,7 @@ export default function ApprovalsScreen() {
                   onPress={() => void onApprove(item.id)}
                 />
                 <Button
+                  testID={`btn-reject-${item.id}`}
                   title={t('actions.rejectPartner')}
                   variant="danger"
                   size="sm"
@@ -110,3 +108,4 @@ const styles = StyleSheet.create({
   card: { marginBottom: spacing.lg },
   actions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm },
 });
+
