@@ -1,30 +1,20 @@
 # Manual owner actions — Matthijs
 
-Ordered checklist of actions that **only the owner / release engineer** can complete.
+## Immediate (device phase)
 
-> Backend remote migrations remain **NOT APPLIED**.
+1. [ ] Confirm website Supabase ref is `nhsrdnjfsxfikfbdmdfj` (no keys in chat)
+2. [ ] Install Android Studio + SDK Platform Tools (`docs/windows-android-setup-exact.md`)
+3. [ ] Set `ANDROID_HOME` / `JAVA_HOME`; verify `adb version`
+4. [ ] Enable USB debugging on Galaxy S25; accept RSA prompt; `adb devices` → `device`
 
-## Immediate (unblock device validation)
+## After SDK works
 
-1. [ ] Confirm website Supabase project ref is exactly `nhsrdnjfsxfikfbdmdfj` (dashboard only — no keys in chat)
-2. [ ] Install Android Studio + SDK Platform Tools per `docs/windows-android-setup-exact.md`
-3. [ ] Set `ANDROID_HOME` / `JAVA_HOME` and verify `adb devices` shows Galaxy S25
-4. [ ] Enable USB debugging + accept RSA prompt on S25
+5. [ ] From repo: `npx expo prebuild --clean` then `npx expo run:android` or `android\gradlew.bat assembleDebug`
+6. [ ] `adb install -r <debug.apk>` and fill `docs/samsung-s25-device-results.md`
+7. [ ] Optional: `eas login` + `eas init` (correct Expo project only)
 
-## Secrets & environments
+## Later (production — explicit approval)
 
-5. [ ] Keep local `.env` with `EXPO_PUBLIC_ENABLE_DEMO_MODE=false` + local Supabase URL/anon
-6. [ ] Add Supabase anon URL/key to EAS Secrets for development / preview / production when ready
-7. [ ] Store service role / Mollie **test** key server-side only
-8. [ ] Configure push credentials when push flag may be enabled
-
-## Backend (explicit approval required)
-
-9. [ ] Review local SQL under `supabase/migrations/` including RPC migration `20260720101500_*`
-10. [ ] Staging apply first; never production without runbook approval
-11. [ ] Deploy Edge Functions only after staging verification
-
-## EAS / Android release
-
-12. [ ] `eas login` + `eas init` (confirm correct Expo project — do not link a wrong existing project)
-13. [ ] Development build → install on S25 → fill `docs/samsung-s25-device-results.md`
+8. [ ] Staging migration apply + Edge deploy review
+9. [ ] Mollie **test** key server-side only
+10. [ ] Push credentials when flag may enable

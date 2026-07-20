@@ -12,11 +12,12 @@ export interface ListRowProps {
   left?: React.ReactNode;
   right?: React.ReactNode;
   onPress?: () => void;
+  testID?: string;
 }
 
-export function ListRow({ title, subtitle, meta, left, right, onPress }: ListRowProps) {
+export function ListRow({ title, subtitle, meta, left, right, onPress, testID }: ListRowProps) {
   return (
-    <Card onPress={onPress} style={styles.card}>
+    <Card testID={testID} onPress={onPress} style={styles.card}>
       <View style={styles.row}>
         {left ? <View style={styles.left}>{left}</View> : null}
         <View style={styles.content}>

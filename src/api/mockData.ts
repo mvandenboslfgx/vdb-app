@@ -12,12 +12,14 @@ import type {
   NotificationItem,
   PartnerProfile,
   Payment,
+  PayoutRequest,
   Profile,
   Project,
   ProjectMilestone,
   ProjectUpdate,
   Quote,
   SupportTicket,
+  SupportTicketMessage,
 } from '@/types/domain';
 
 export const DEMO_CUSTOMER_ID = 'demo-customer-0001';
@@ -455,22 +457,36 @@ export const mockLeads: Lead[] = [
   {
     id: 'lead-001',
     partnerId: DEMO_PARTNER_ID,
+    campaignCode: 'NOORDZEE',
     name: 'Tom Bakker',
     email: 'tom@bakker-media.nl',
     phone: '+31687654321',
+    interest: 'Webshop + branding',
     status: 'qualified',
     notes: 'Zoekt webshop + branding.',
+    consentGiven: true,
+    consentAt: daysAgo(12),
+    saleId: null,
+    convertedAt: null,
+    rejectedReason: null,
     createdAt: daysAgo(12),
     updatedAt: daysAgo(8),
   },
   {
     id: 'lead-002',
     partnerId: DEMO_PARTNER_ID,
+    campaignCode: null,
     name: 'Iris Jansen',
     email: 'iris@jansen-retail.nl',
     phone: null,
+    interest: null,
     status: 'contacted',
     notes: null,
+    consentGiven: true,
+    consentAt: daysAgo(4),
+    saleId: null,
+    convertedAt: null,
+    rejectedReason: null,
     createdAt: daysAgo(4),
     updatedAt: daysAgo(3),
   },
@@ -509,6 +525,20 @@ export const mockCommissions: Commission[] = [
     expectedReleaseAt: daysAgo(30),
     createdAt: daysAgo(60),
     updatedAt: daysAgo(35),
+  },
+];
+
+export const mockPayoutRequests: PayoutRequest[] = [];
+
+export const mockTicketMessages: SupportTicketMessage[] = [
+  {
+    id: 'ticket-msg-001',
+    ticketId: 'ticket-001',
+    authorId: DEMO_CUSTOMER_ID,
+    body: 'Klopt het bedrag op FAC-2026-0301? Ik mis de specificatie van uren.',
+    isInternal: false,
+    createdAt: daysAgo(4),
+    updatedAt: daysAgo(4),
   },
 ];
 
@@ -649,6 +679,8 @@ export const mockStore = {
   partner: { ...mockPartner },
   leads: [...mockLeads],
   commissions: [...mockCommissions],
+  payoutRequests: [...mockPayoutRequests],
+  ticketMessages: [...mockTicketMessages],
   notifications: [...mockNotifications],
   adminQueue: [...mockAdminQueue],
   adminStats: { ...mockAdminStats },

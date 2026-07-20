@@ -25,11 +25,18 @@ class MockPartnersRepository implements PartnersRepository {
     const lead: Lead = {
       id: `lead-${Date.now()}`,
       partnerId: mockPartner.id,
+      campaignCode: null,
       name: input.name,
       email: input.email,
       phone: input.phone ?? null,
+      interest: null,
       status: 'new',
       notes: input.notes ?? null,
+      consentGiven: true,
+      consentAt: new Date().toISOString(),
+      saleId: null,
+      convertedAt: null,
+      rejectedReason: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

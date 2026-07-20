@@ -12,14 +12,16 @@ export interface CardProps {
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
   elevated?: boolean;
+  testID?: string;
 }
 
-export function Card({ children, onPress, style, elevated = false }: CardProps) {
+export function Card({ children, onPress, style, elevated = false, testID }: CardProps) {
   if (onPress) {
     return (
       <Pressable
         accessibilityRole="button"
         onPress={onPress}
+        testID={testID}
         style={({ pressed }) => [
           styles.base,
           elevated && styles.elevated,
@@ -32,7 +34,11 @@ export function Card({ children, onPress, style, elevated = false }: CardProps) 
     );
   }
 
-  return <View style={[styles.base, elevated && styles.elevated, style]}>{children}</View>;
+  return (
+    <View testID={testID} style={[styles.base, elevated && styles.elevated, style]}>
+      {children}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
