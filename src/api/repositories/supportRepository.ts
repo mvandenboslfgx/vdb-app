@@ -1,21 +1,44 @@
 import { mockStore } from '@/api/mockData';
-import { delay, shouldUseMockApi } from '@/api/repositories/_utils';
-import { getSupabase } from '@/lib/supabase';
+import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
+import { DomainError, fromSupabaseError } from '@/lib/errors';
+import { mapSupportTicket, mapSupportTicketPriorityToDb } from '@/lib/mappers';
 import type { SupportTicket } from '@/types/domain';
 import type { SupportTicketInput } from '@/validation/support';
+
+/** support_tickets has no `description` column — the first ticket message carries it. */
+async function fetchDescriptions(
+  supabase: ReturnType<typeof requireLiveSupabase>,
+  ticketIds: string[],
+): Promise<Map<string, string>> {
+  if (ticketIds.length === 0) return new Map();
+  const { data, error } = await supabase
+    .from('support_ticket_messages')
+    .select('ticket_id, body, created_at')
+    .in('ticket_id', ticketIds)
+    .order('created_at', { ascending: true });
+  if (error) throw fromSupabaseError(error);
+  const map = new Map<string, string>();
+  for (const row of data ?? []) {
+    if (!map.has(row.ticket_id)) {
+      map.set(row.ticket_id, row.body);
+    }
+  }
+  return map;
+}
 
 export async function listTickets(): Promise<SupportTicket[]> {
   if (shouldUseMockApi()) {
     await delay();
     return [...mockStore.tickets];
   }
-  const supabase = getSupabase();
-  if (!supabase) return [...mockStore.tickets];
+  const supabase = requireLiveSupabase();
   const { data, error } = await supabase.from('support_tickets').select('*').order('created_at', {
     ascending: false,
   });
-  if (error) throw new Error(error.message);
-  return (data ?? []) as SupportTicket[];
+  if (error) throw fromSupabaseError(error);
+  const rows = data ?? [];
+  const descriptions = await fetchDescriptions(supabase, rows.map((r) => r.id));
+  return rows.map((row) => mapSupportTicket(row, descriptions.get(row.id) ?? ''));
 }
 
 export async function getTicket(id: string): Promise<SupportTicket | null> {
@@ -23,15 +46,16 @@ export async function getTicket(id: string): Promise<SupportTicket | null> {
     await delay();
     return mockStore.tickets.find((t) => t.id === id) ?? null;
   }
-  const supabase = getSupabase();
-  if (!supabase) return mockStore.tickets.find((t) => t.id === id) ?? null;
+  const supabase = requireLiveSupabase();
   const { data, error } = await supabase
     .from('support_tickets')
     .select('*')
     .eq('id', id)
     .maybeSingle();
-  if (error) throw new Error(error.message);
-  return data as SupportTicket | null;
+  if (error) throw fromSupabaseError(error);
+  if (!data) return null;
+  const descriptions = await fetchDescriptions(supabase, [data.id]);
+  return mapSupportTicket(data, descriptions.get(data.id) ?? '');
 }
 
 export async function createTicket(input: SupportTicketInput): Promise<SupportTicket> {
@@ -51,22 +75,34 @@ export async function createTicket(input: SupportTicketInput): Promise<SupportTi
     return ticket;
   }
 
-  const supabase = getSupabase();
-  if (!supabase) throw new Error('Supabase is not configured');
-  const { data, error } = await supabase
+  const supabase = requireLiveSupabase();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) {
+    throw DomainError.unauthorized('You must be signed in to create a support ticket.');
+  }
+
+  const { data: ticket, error: ticketError } = await supabase
     .from('support_tickets')
     .insert({
       subject: input.subject,
       category: input.category,
-      priority: input.priority,
-      description: input.description,
+      priority: mapSupportTicketPriorityToDb(input.priority),
       project_id: input.projectId || null,
-      status: 'new',
+      requester_id: userData.user.id,
+      status: 'open',
     })
     .select('*')
     .single();
-  if (error) throw new Error(error.message);
-  return data as SupportTicket;
+  if (ticketError) throw fromSupabaseError(ticketError);
+
+  const { error: messageError } = await supabase.from('support_ticket_messages').insert({
+    ticket_id: ticket.id,
+    author_id: userData.user.id,
+    body: input.description,
+  });
+  if (messageError) throw fromSupabaseError(messageError);
+
+  return mapSupportTicket(ticket, input.description);
 }
 
 export const supportRepository = {
