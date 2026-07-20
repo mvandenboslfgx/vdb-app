@@ -18,5 +18,29 @@
     "paid": "Paid",
     "rejected": "Rejected",
     "reversed": "Reversed"
+  },
+  "payouts": {
+    "title": "Payouts",
+    "balanceLabel": "Payable balance",
+    "commissionsTitle": "Payable commissions",
+    "noPayable": "You have no payable commissions right now.",
+    "historyTitle": "Payout requests",
+    "historyEmpty": "No payout requests yet.",
+    "error": {
+      "partner_payouts_disabled": "Payouts are currently disabled.",
+      "suspended": "Your partner account is suspended.",
+      "insufficient_balance": "The requested amount exceeds your payable balance.",
+      "no_payable_commissions": "You have no payable commissions right now.",
+      "unknown": "Something went wrong. Please try again."
+    },
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "under_review": "Under review",
+      "approved": "Approved",
+      "paid": "Paid",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    }
   }
 }

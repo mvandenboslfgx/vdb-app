@@ -27,10 +27,32 @@ export function usePartnerLink() {
   return useQuery({ queryKey: ['partner', 'link'], queryFn: partnerRepository.partnerLink });
 }
 
+export function usePayableBalance() {
+  return useQuery({
+    queryKey: ['partner', 'payableBalance'],
+    queryFn: partnerRepository.getPayableBalance,
+  });
+}
+
+export function usePayoutRequests() {
+  return useQuery({
+    queryKey: ['partner', 'payoutRequests'],
+    queryFn: partnerRepository.listPayoutRequests,
+  });
+}
+
 export function useRequestPayout() {
+  const qc = useQueryClient();
   return useMutation({
-    mutationFn: (commissionIds?: string[]) =>
-      partnerRepository.requestPayout(commissionIds ?? []),
+    mutationFn: ({ commissionIds, amountCents }: { commissionIds?: string[]; amountCents?: number } = {}) =>
+      partnerRepository.requestPayout(commissionIds ?? [], amountCents),
+    onSuccess: async () => {
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['partner', 'commissions'] }),
+        qc.invalidateQueries({ queryKey: ['partner', 'payableBalance'] }),
+        qc.invalidateQueries({ queryKey: ['partner', 'payoutRequests'] }),
+      ]);
+    },
   });
 }
 

@@ -1,9 +1,25 @@
 import type { AdminQueueItem } from '@/api/mockData';
-import { mockStore } from '@/api/mockData';
+import { DEMO_STAFF_ID, mockStore } from '@/api/mockData';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
+import { listMessages } from '@/api/repositories/supportRepository';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
-import { mapCommission, mapSupportTicket } from '@/lib/mappers';
-import type { AdminDashboardStats, Commission, SupportTicket } from '@/types/domain';
+import {
+  mapCommission,
+  mapLead,
+  mapPayoutRequest,
+  mapSupportTicket,
+  mapSupportTicketMessage,
+} from '@/lib/mappers';
+import type {
+  AdminDashboardStats,
+  Commission,
+  Lead,
+  PayoutRequest,
+  SupportTicket,
+  SupportTicketMessage,
+  SupportTicketStatus,
+} from '@/types/domain';
+import { createIdempotencyKey } from '@/lib/idempotency';
 
 export async function getAdminDashboard(): Promise<{
   stats: AdminDashboardStats;
@@ -309,6 +325,258 @@ export async function listFinanceItems(): Promise<Commission[]> {
   return (data ?? []).map((row) => mapCommission(row));
 }
 
+/** Lists every partner lead (staff see all rows via RLS on `partner_leads`). */
+export async function listPartnerLeads(): Promise<Lead[]> {
+  if (shouldUseMockApi()) {
+    await delay();
+    return [...mockStore.leads];
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase
+    .from('partner_leads')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw fromSupabaseError(error);
+  return (data ?? []).map(mapLead);
+}
+
+export async function getPartnerLead(id: string): Promise<Lead | null> {
+  if (shouldUseMockApi()) {
+    await delay();
+    return mockStore.leads.find((l) => l.id === id) ?? null;
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.from('partner_leads').select('*').eq('id', id).maybeSingle();
+  if (error) throw fromSupabaseError(error);
+  return data ? mapLead(data) : null;
+}
+
+export type LeadQualifyStatus = 'contacted' | 'qualified' | 'rejected' | 'invalid';
+
+/**
+ * Transitions a lead's status via the staff-only `admin_qualify_lead` RPC.
+ * A reason is required for rejected/invalid (both client-side and, again,
+ * inside the RPC) and is stored in `partner_lead_staff_notes`, never on a
+ * column partners can read.
+ */
+export async function qualifyPartnerLead(
+  leadId: string,
+  status: LeadQualifyStatus,
+  reason?: string,
+): Promise<Lead> {
+  if ((status === 'rejected' || status === 'invalid') && !reason?.trim()) {
+    throw DomainError.validation('A reason is required to reject or invalidate a lead');
+  }
+  if (shouldUseMockApi()) {
+    await delay();
+    const lead = mockStore.leads.find((l) => l.id === leadId);
+    if (!lead) throw DomainError.notFound('Lead not found');
+    if (lead.status === 'converted') {
+      throw DomainError.forbidden('A converted lead cannot be re-qualified.');
+    }
+    lead.status = status;
+    lead.rejectedReason = status === 'rejected' || status === 'invalid' ? reason ?? null : lead.rejectedReason;
+    lead.updatedAt = new Date().toISOString();
+    return { ...lead };
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.rpc('admin_qualify_lead', {
+    p_lead_id: leadId,
+    p_status: status,
+    p_reason: reason || undefined,
+  });
+  if (error) throw fromSupabaseError(error);
+  return mapLead(data);
+}
+
+/**
+ * Converts a qualified lead into a won sale via the staff-only
+ * `admin_convert_lead` RPC. The RPC prevents converting the same lead twice
+ * and never re-opens a rejected/invalid lead for conversion.
+ */
+export async function convertPartnerLead(leadId: string, saleId?: string): Promise<Lead> {
+  if (shouldUseMockApi()) {
+    await delay();
+    const lead = mockStore.leads.find((l) => l.id === leadId);
+    if (!lead) throw DomainError.notFound('Lead not found');
+    if (lead.status === 'converted') {
+      throw DomainError.forbidden('This lead has already been converted.');
+    }
+    lead.status = 'converted';
+    lead.convertedAt = new Date().toISOString();
+    lead.saleId = saleId ?? lead.saleId;
+    lead.updatedAt = new Date().toISOString();
+    return { ...lead };
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.rpc('admin_convert_lead', {
+    p_lead_id: leadId,
+    p_sale_id: saleId || undefined,
+  });
+  if (error) throw fromSupabaseError(error);
+  return mapLead(data);
+}
+
+/** Lists submitted/under_review payout requests across all partners (staff-only via RLS). */
+export async function listFinancePayoutRequests(): Promise<PayoutRequest[]> {
+  if (shouldUseMockApi()) {
+    await delay();
+    return [...mockStore.payoutRequests];
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase
+    .from('payout_requests')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw fromSupabaseError(error);
+  return (data ?? []).map(mapPayoutRequest);
+}
+
+/** Rejects a payout request via `reject_payout_request`. Staff-only; requires a reason; reverts commissions to payable. */
+export async function rejectPayoutRequest(
+  payoutId: string,
+  reason: string,
+): Promise<{ id: string; status: 'rejected' }> {
+  if (!reason.trim()) {
+    throw DomainError.validation('Payout rejection reason required');
+  }
+  if (shouldUseMockApi()) {
+    await delay();
+    const payout = mockStore.payoutRequests.find((p) => p.id === payoutId);
+    if (payout) {
+      payout.status = 'rejected';
+      payout.notes = reason;
+      payout.updatedAt = new Date().toISOString();
+    }
+    return { id: payoutId, status: 'rejected' };
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.rpc('reject_payout_request', {
+    p_payout_id: payoutId,
+    p_reason: reason,
+  });
+  if (error) throw fromSupabaseError(error);
+  const row = mapPayoutRequest(data);
+  return { id: row.id, status: 'rejected' };
+}
+
+/** Lists a ticket's messages; delegates to supportRepository (RLS already exposes internal notes to staff). */
+export const listTicketMessages = listMessages;
+
+async function replyToTicket(
+  ticketId: string,
+  body: string,
+  isInternal: boolean,
+  clientMessageId?: string,
+): Promise<SupportTicketMessage> {
+  if (!body.trim()) {
+    throw DomainError.validation('A reply body is required');
+  }
+  if (shouldUseMockApi()) {
+    await delay();
+    const now = new Date().toISOString();
+    const message: SupportTicketMessage = {
+      id: `ticket-msg-${Date.now()}`,
+      ticketId,
+      authorId: DEMO_STAFF_ID,
+      body: body.trim(),
+      isInternal,
+      createdAt: now,
+      updatedAt: now,
+    };
+    mockStore.ticketMessages.push(message);
+    if (!isInternal) {
+      const ticket = mockStore.tickets.find((t) => t.id === ticketId);
+      if (ticket && ticket.status !== 'resolved' && ticket.status !== 'closed') {
+        ticket.status = 'waiting_for_customer';
+        ticket.updatedAt = now;
+      }
+    }
+    return message;
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.rpc('admin_reply_support_ticket', {
+    p_ticket_id: ticketId,
+    p_body: body.trim(),
+    p_is_internal: isInternal,
+    p_client_message_id: clientMessageId ?? createIdempotencyKey('ticket-reply'),
+  });
+  if (error) throw fromSupabaseError(error);
+  return mapSupportTicketMessage(data);
+}
+
+/** Sends a customer-visible reply via `admin_reply_support_ticket`. Staff-only; also flips the ticket to waiting_for_customer. */
+export async function replyPublic(
+  ticketId: string,
+  body: string,
+  clientMessageId?: string,
+): Promise<SupportTicketMessage> {
+  return replyToTicket(ticketId, body, false, clientMessageId);
+}
+
+/** Adds a staff-only internal note via `admin_reply_support_ticket`. Never visible to the customer; never changes ticket status. */
+export async function replyInternal(
+  ticketId: string,
+  body: string,
+  clientMessageId?: string,
+): Promise<SupportTicketMessage> {
+  return replyToTicket(ticketId, body, true, clientMessageId);
+}
+
+export type AdminTicketStatus = 'open' | 'in_progress' | 'waiting_on_customer' | 'resolved' | 'closed';
+
+/** Transitions ticket status via `admin_update_ticket_status`. Staff-only; a reason is required to resolve/close. */
+export async function updateTicketStatus(
+  ticketId: string,
+  status: AdminTicketStatus,
+  reason?: string,
+  assignee?: string,
+): Promise<SupportTicket> {
+  if ((status === 'resolved' || status === 'closed') && !reason?.trim()) {
+    throw DomainError.validation('A reason is required to resolve or close a ticket');
+  }
+  if (shouldUseMockApi()) {
+    await delay();
+    const ticket = mockStore.tickets.find((t) => t.id === ticketId);
+    if (!ticket) throw DomainError.notFound('Ticket not found');
+    const domainStatus: SupportTicketStatus = status === 'in_progress'
+      ? 'waiting_for_vdb'
+      : status === 'waiting_on_customer'
+        ? 'waiting_for_customer'
+        : status;
+    ticket.status = domainStatus;
+    ticket.updatedAt = new Date().toISOString();
+    return { ...ticket };
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.rpc('admin_update_ticket_status', {
+    p_ticket_id: ticketId,
+    p_status: status,
+    p_reason: reason || undefined,
+    p_assignee: assignee || undefined,
+  });
+  if (error) throw fromSupabaseError(error);
+  return mapSupportTicket(data);
+}
+
+/** Assigns a ticket to a staff member via `admin_assign_ticket`. Staff-only; the assignee must also be staff. */
+export async function assignTicket(ticketId: string, assignee: string): Promise<SupportTicket> {
+  if (shouldUseMockApi()) {
+    await delay();
+    const ticket = mockStore.tickets.find((t) => t.id === ticketId);
+    if (!ticket) throw DomainError.notFound('Ticket not found');
+    ticket.updatedAt = new Date().toISOString();
+    return { ...ticket };
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase.rpc('admin_assign_ticket', {
+    p_ticket_id: ticketId,
+    p_assignee: assignee,
+  });
+  if (error) throw fromSupabaseError(error);
+  return mapSupportTicket(data);
+}
+
 export const adminRepository = {
   getDashboard: getAdminDashboard,
   getDashboardBundle: getAdminDashboardBundle,
@@ -320,19 +588,31 @@ export const adminRepository = {
   approveCommission,
   rejectCommission,
   processPayoutRequest,
+  rejectPayoutRequest,
+  listFinancePayoutRequests,
   createProjectFromRequest,
   markDocumentScanClean,
   listAdminTickets,
   listFinanceItems,
+  listPartnerLeads,
+  getPartnerLead,
+  qualifyPartnerLead,
+  convertPartnerLead,
+  listTicketMessages,
+  replyPublic,
+  replyInternal,
+  updateTicketStatus,
+  assignTicket,
   stats: getAdminDashboard,
   partnerApplications: listApprovals,
   listTickets: listAdminTickets,
   listCommissions: listFinanceItems,
+  listLeads: listPartnerLeads,
+  listPayoutRequests: listFinancePayoutRequests,
   reviewPartnerApplication: async (id: string, decision: 'approve' | 'reject') => {
     if (decision === 'approve') {
       return approvePartnerApplication(id);
     }
     return rejectPartnerApplication(id, 'Rejected from mobile admin');
   },
-  markFinanceReviewed: async (id: string) => ({ id, reviewed: true as const }),
 };

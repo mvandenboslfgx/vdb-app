@@ -36,13 +36,56 @@ export function useAdminFinance() {
   });
 }
 
-export function useMarkFinanceReviewed() {
+export function useAdminPayoutRequests() {
+  return useQuery({
+    queryKey: ['admin', 'payoutRequests'],
+    queryFn: adminRepository.listPayoutRequests,
+  });
+}
+
+function useInvalidateFinance() {
   const qc = useQueryClient();
+  return async () => {
+    await Promise.all([
+      qc.invalidateQueries({ queryKey: ['admin', 'finance'] }),
+      qc.invalidateQueries({ queryKey: ['admin', 'payoutRequests'] }),
+      qc.invalidateQueries({ queryKey: ['admin', 'stats'] }),
+    ]);
+  };
+}
+
+export function useApproveCommission() {
+  const invalidate = useInvalidateFinance();
   return useMutation({
-    mutationFn: adminRepository.markFinanceReviewed,
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ['admin', 'finance'] });
-      await qc.invalidateQueries({ queryKey: ['admin', 'stats'] });
-    },
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      adminRepository.approveCommission(id, reason),
+    onSuccess: invalidate,
+  });
+}
+
+export function useRejectCommission() {
+  const invalidate = useInvalidateFinance();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      adminRepository.rejectCommission(id, reason),
+    onSuccess: invalidate,
+  });
+}
+
+export function useProcessPayoutRequest() {
+  const invalidate = useInvalidateFinance();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      adminRepository.processPayoutRequest(id, reason),
+    onSuccess: invalidate,
+  });
+}
+
+export function useRejectPayoutRequest() {
+  const invalidate = useInvalidateFinance();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      adminRepository.rejectPayoutRequest(id, reason),
+    onSuccess: invalidate,
   });
 }

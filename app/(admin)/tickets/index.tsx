@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +18,7 @@ export default function AdminTicketsScreen() {
   const { t } = useTranslation('support');
   const { t: ta } = useTranslation('admin');
   const { t: tc } = useTranslation('common');
+  const router = useRouter();
   const [items, setItems] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -37,13 +39,13 @@ export default function AdminTicketsScreen() {
     void load();
   }, [load]);
 
-  if (loading) return <LoadingState />;
+  if (loading) return <LoadingState label={t('loading')} />;
   if (error) {
     return <ErrorState title={ta('error')} retryLabel={tc('retry')} onRetry={() => void load()} />;
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-admin-tickets">
       <Text variant="title">{t('tickets')}</Text>
       {items.length === 0 ? (
         <EmptyState title={t('empty')} />
@@ -51,9 +53,11 @@ export default function AdminTicketsScreen() {
         items.map((ticket) => (
           <ListRow
             key={ticket.id}
+            testID={`row-ticket-${ticket.id}`}
             title={ticket.subject}
             subtitle={ticket.description}
             right={<StatusPill label={t(`status.${ticket.status}`)} tone="gold" />}
+            onPress={() => router.push(`/(admin)/tickets/${ticket.id}`)}
           />
         ))
       )}

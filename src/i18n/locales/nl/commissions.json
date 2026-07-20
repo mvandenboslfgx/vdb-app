@@ -18,5 +18,29 @@
     "paid": "Uitbetaald",
     "rejected": "Afgewezen",
     "reversed": "Teruggedraaid"
+  },
+  "payouts": {
+    "title": "Uitbetalingen",
+    "balanceLabel": "Uitbetaalbaar saldo",
+    "commissionsTitle": "Uitbetaalbare commissies",
+    "noPayable": "Je hebt momenteel geen uitbetaalbare commissies.",
+    "historyTitle": "Uitbetalingsverzoeken",
+    "historyEmpty": "Nog geen uitbetalingsverzoeken.",
+    "error": {
+      "partner_payouts_disabled": "Uitbetalingen zijn momenteel uitgeschakeld.",
+      "suspended": "Je partneraccount is opgeschort.",
+      "insufficient_balance": "Het aangevraagde bedrag overschrijdt je uitbetaalbare saldo.",
+      "no_payable_commissions": "Je hebt momenteel geen uitbetaalbare commissies.",
+      "unknown": "Er is iets misgegaan. Probeer het opnieuw."
+    },
+    "status": {
+      "draft": "Concept",
+      "submitted": "Ingediend",
+      "under_review": "In review",
+      "approved": "Goedgekeurd",
+      "paid": "Uitbetaald",
+      "rejected": "Afgewezen",
+      "cancelled": "Geannuleerd"
+    }
   }
 }

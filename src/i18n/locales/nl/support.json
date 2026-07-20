@@ -35,5 +35,25 @@
     "closed": "Gesloten"
   },
   "contactEmail": "E-mail support",
-  "contactWhatsApp": "WhatsApp support"
+  "contactWhatsApp": "WhatsApp support",
+  "detail": {
+    "title": "Ticketdetail",
+    "threadTitle": "Berichten",
+    "threadEmpty": "Nog geen berichten.",
+    "internalNote": "Interne notitie",
+    "replyPlaceholder": "Schrijf een reactie die de klant ziet…",
+    "notePlaceholder": "Schrijf een notitie die alleen medewerkers zien…",
+    "sendReply": "Reactie versturen",
+    "sendNote": "Interne notitie opslaan",
+    "reasonRequired": "Een reden is verplicht om een ticket op te lossen of te sluiten.",
+    "statusReasonPlaceholder": "Reden voor deze statuswijziging (verplicht bij oplossen/sluiten)…",
+    "actions": {
+      "open": "Heropenen",
+      "in_progress": "In behandeling nemen",
+      "waiting_on_customer": "Wacht op klant",
+      "resolved": "Oplossen",
+      "closed": "Sluiten"
+    },
+    "error": "Er is iets misgegaan. Probeer het opnieuw."
+  }
 }

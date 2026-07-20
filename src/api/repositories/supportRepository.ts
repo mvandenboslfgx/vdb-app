@@ -1,8 +1,12 @@
 import { mockStore } from '@/api/mockData';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
-import { mapSupportTicket, mapSupportTicketPriorityToDb } from '@/lib/mappers';
-import type { SupportTicket } from '@/types/domain';
+import {
+  mapSupportTicket,
+  mapSupportTicketMessage,
+  mapSupportTicketPriorityToDb,
+} from '@/lib/mappers';
+import type { SupportTicket, SupportTicketMessage } from '@/types/domain';
 import type { SupportTicketInput } from '@/validation/support';
 
 /** support_tickets has no `description` column — the first ticket message carries it. */
@@ -105,8 +109,29 @@ export async function createTicket(input: SupportTicketInput): Promise<SupportTi
   return mapSupportTicket(ticket, input.description);
 }
 
+/**
+ * Lists a ticket's messages in chronological order. RLS already hides
+ * internal notes from non-staff (see support_ticket_messages_select in
+ * 20260720101300_rls_policies.sql) -- this never filters client-side.
+ */
+export async function listMessages(ticketId: string): Promise<SupportTicketMessage[]> {
+  if (shouldUseMockApi()) {
+    await delay();
+    return mockStore.ticketMessages.filter((m) => m.ticketId === ticketId);
+  }
+  const supabase = requireLiveSupabase();
+  const { data, error } = await supabase
+    .from('support_ticket_messages')
+    .select('*')
+    .eq('ticket_id', ticketId)
+    .order('created_at', { ascending: true });
+  if (error) throw fromSupabaseError(error);
+  return (data ?? []).map(mapSupportTicketMessage);
+}
+
 export const supportRepository = {
   list: listTickets,
   get: getTicket,
   create: createTicket,
+  listMessages,
 };

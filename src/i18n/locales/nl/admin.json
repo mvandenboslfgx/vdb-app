@@ -18,7 +18,22 @@
     "approvePartner": "Partner goedkeuren",
     "rejectPartner": "Partner afwijzen",
     "reviewDocument": "Document reviewen",
-    "openTicket": "Ticket openen"
+    "openTicket": "Ticket openen",
+    "approveCommission": "Commissie goedkeuren",
+    "rejectCommission": "Commissie afwijzen",
+    "processPayout": "Uitbetaling markeren als betaald",
+    "rejectPayout": "Uitbetaling afwijzen"
   },
-  "restricted": "Je hebt geen toegang tot dit gebied."
+  "restricted": "Je hebt geen toegang tot dit gebied.",
+  "leads": {
+    "title": "Partnerleads",
+    "reason": "Reden",
+    "reasonPlaceholder": "Licht je besluit toe (verplicht bij afwijzen/ongeldig maken)…",
+    "markContacted": "Markeer als benaderd",
+    "qualify": "Kwalificeren",
+    "reject": "Afwijzen",
+    "markInvalid": "Markeer als ongeldig",
+    "convert": "Omzetten naar verkoop",
+    "finalState": "Deze lead is in een definitieve status en kan niet meer worden gewijzigd."
+  }
 }

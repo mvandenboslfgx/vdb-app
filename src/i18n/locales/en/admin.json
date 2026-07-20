@@ -18,7 +18,22 @@
     "approvePartner": "Approve partner",
     "rejectPartner": "Reject partner",
     "reviewDocument": "Review document",
-    "openTicket": "Open ticket"
+    "openTicket": "Open ticket",
+    "approveCommission": "Approve commission",
+    "rejectCommission": "Reject commission",
+    "processPayout": "Mark payout paid",
+    "rejectPayout": "Reject payout"
   },
-  "restricted": "You do not have access to this area."
+  "restricted": "You do not have access to this area.",
+  "leads": {
+    "title": "Partner leads",
+    "reason": "Reason",
+    "reasonPlaceholder": "Explain your decision (required to reject/invalidate)…",
+    "markContacted": "Mark contacted",
+    "qualify": "Qualify",
+    "reject": "Reject",
+    "markInvalid": "Mark invalid",
+    "convert": "Convert to sale",
+    "finalState": "This lead is in a final state and can no longer be changed."
+  }
 }
