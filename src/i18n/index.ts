@@ -1,5 +1,5 @@
 import * as Localization from 'expo-localization';
-import i18n from 'i18next';
+import { createInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import adminEn from './locales/en/admin.json';
@@ -114,6 +114,8 @@ function detectDeviceLanguage(): AppLanguage {
   return 'nl';
 }
 
+export const i18n = createInstance();
+
 let initialized = false;
 
 export function initI18n(language?: AppLanguage): typeof i18n {
@@ -157,5 +159,4 @@ export async function setAppLanguage(language: AppLanguage): Promise<void> {
   await i18n.changeLanguage(language);
 }
 
-export { i18n };
 export default i18n;

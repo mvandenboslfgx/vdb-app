@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { Text } from '@/design-system/Text';
-import { colors, radii, spacing } from '@/theme';
+import { radii, spacing } from '@/theme';
 
 export interface BrandMarkProps {
   subtitle?: string;

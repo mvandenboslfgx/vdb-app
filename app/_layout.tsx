@@ -5,12 +5,18 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
+import { ConfigurationErrorScreen } from '@/components/ConfigurationErrorScreen';
+import { clientEnv } from '@/config/env';
 import { AppProviders } from '@/providers/AppProviders';
 import { colors } from '@/theme';
 
 export { ErrorBoundary } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
+
+function needsConfigurationGate(): boolean {
+  return !clientEnv.hasSupabaseConfig && !clientEnv.useMockData;
+}
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -29,6 +35,15 @@ export default function RootLayout() {
 
   if (!loaded) {
     return null;
+  }
+
+  if (needsConfigurationGate()) {
+    return (
+      <ConfigurationErrorScreen
+        title="Configuration required"
+        message="Supabase is not configured and demo mode is disabled. The app will not silently fall back to demo data."
+      />
+    );
   }
 
   return (

@@ -65,3 +65,7 @@ coverage/
 # Sentry / local tooling
 .sentryclirc
 *.log
+
+# Local Supabase runtime
+supabase/.temp/
+supabase/.branches/
