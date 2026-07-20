@@ -72,5 +72,26 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "justNow": "Just now"
+  },
+  "diagnostics": {
+    "title": "Development diagnostics",
+    "subtitle": "Safe connectivity probes for local development. No secrets are shown.",
+    "noSecrets": "Never paste API keys or tokens from this screen into chats or tickets.",
+    "refresh": "Re-run probes",
+    "blockedTitle": "Diagnostics unavailable",
+    "blockedBody": "This screen is only available when APP_ENV is development.",
+    "appEnv": "App environment",
+    "adapter": "Repository adapter",
+    "supabaseHost": "Supabase host",
+    "hasConfig": "Supabase configured",
+    "demoMode": "Demo adapter active",
+    "appVersion": "Version name",
+    "buildNumber": "Version code",
+    "auth": "Auth",
+    "database": "Database",
+    "realtime": "Realtime",
+    "storage": "Storage",
+    "push": "Push delivery",
+    "checkout": "Checkout provider"
   }
 }

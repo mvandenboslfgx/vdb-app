@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Divider, ListRow, Screen, Text } from '@/design-system';
+import { isDevelopment } from '@/config/env';
 import { getCurrentLanguage, i18n } from '@/i18n';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
 import { useAuth } from '@/providers/AuthProvider';
@@ -45,6 +46,13 @@ export default function CustomerMoreScreen() {
         title={t('profile.notifications')}
         onPress={() => router.push('/(customer)/more/notifications')}
       />
+      {isDevelopment ? (
+        <ListRow
+          testID="nav-dev-diagnostics"
+          title={tc('diagnostics.title')}
+          onPress={() => router.push('/(customer)/more/diagnostics')}
+        />
+      ) : null}
       <ListRow
         title={tp('apply.title')}
         onPress={() => router.push('/(customer)/more/partner-apply')}

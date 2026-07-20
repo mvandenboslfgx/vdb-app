@@ -72,5 +72,26 @@
     "today": "Vandaag",
     "yesterday": "Gisteren",
     "justNow": "Zojuist"
+  },
+  "diagnostics": {
+    "title": "Development diagnostics",
+    "subtitle": "Veilige connectiviteitsprobes voor lokale ontwikkeling. Geen secrets zichtbaar.",
+    "noSecrets": "Plak nooit API-keys of tokens van dit scherm in chats of tickets.",
+    "refresh": "Probes opnieuw",
+    "blockedTitle": "Diagnostics niet beschikbaar",
+    "blockedBody": "Dit scherm is alleen beschikbaar wanneer APP_ENV=development.",
+    "appEnv": "App-omgeving",
+    "adapter": "Repository-adapter",
+    "supabaseHost": "Supabase-host",
+    "hasConfig": "Supabase geconfigureerd",
+    "demoMode": "Demo-adapter actief",
+    "appVersion": "Versienaam",
+    "buildNumber": "Versiecode",
+    "auth": "Auth",
+    "database": "Database",
+    "realtime": "Realtime",
+    "storage": "Storage",
+    "push": "Pushbezorging",
+    "checkout": "Checkoutprovider"
   }
 }
