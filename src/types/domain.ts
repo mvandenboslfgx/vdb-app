@@ -86,14 +86,16 @@ export type InvoiceStatus =
   | 'cancelled'
   | 'credited';
 
-export type LeadStatus =
-  | 'new'
-  | 'contacted'
-  | 'qualified'
-  | 'proposal'
-  | 'won'
-  | 'lost'
-  | 'invalid';
+export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'rejected' | 'invalid';
+
+export type PayoutRequestStatus =
+  | 'draft'
+  | 'submitted'
+  | 'under_review'
+  | 'approved'
+  | 'paid'
+  | 'rejected'
+  | 'cancelled';
 
 export type PartnerApplicationStatus =
   | 'draft'
@@ -284,11 +286,18 @@ export interface PartnerProfile extends Timestamps {
 export interface Lead extends Timestamps {
   id: string;
   partnerId: string;
+  campaignCode: string | null;
   name: string;
   email: string;
   phone: string | null;
+  interest: string | null;
   status: LeadStatus;
   notes: string | null;
+  consentGiven: boolean;
+  consentAt: string | null;
+  saleId: string | null;
+  convertedAt: string | null;
+  rejectedReason: string | null;
 }
 
 export interface Commission extends Timestamps {
@@ -299,6 +308,25 @@ export interface Commission extends Timestamps {
   currency: 'EUR';
   status: CommissionStatus;
   expectedReleaseAt: string | null;
+}
+
+export interface PayoutRequest extends Timestamps {
+  id: string;
+  partnerId: string;
+  payoutAccountId: string;
+  status: PayoutRequestStatus;
+  amountCents: number;
+  currency: 'EUR';
+  submittedAt: string | null;
+  notes: string | null;
+}
+
+export interface SupportTicketMessage extends Timestamps {
+  id: string;
+  ticketId: string;
+  authorId: string;
+  body: string;
+  isInternal: boolean;
 }
 
 export interface NotificationItem extends Timestamps {

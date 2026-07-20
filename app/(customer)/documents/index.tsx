@@ -1,9 +1,11 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { listDocuments } from '@/api/repositories/documentsRepository';
 import {
+  Button,
   EmptyState,
   ErrorState,
   ListRow,
@@ -13,6 +15,7 @@ import {
   Text,
 } from '@/design-system';
 import type { Document } from '@/types/domain';
+import { spacing } from '@/theme';
 
 export default function DocumentsScreen() {
   const { t } = useTranslation('documents');
@@ -44,8 +47,15 @@ export default function DocumentsScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-documents">
       <Text variant="title">{t('title')}</Text>
+      <Button
+        testID="btn-document-upload-cta"
+        title={t('upload')}
+        variant="gold"
+        style={styles.cta}
+        onPress={() => router.push('/(customer)/documents/upload')}
+      />
       {items.length === 0 ? (
         <EmptyState title={t('empty')} description={t('emptyHint')} />
       ) : (
@@ -62,3 +72,7 @@ export default function DocumentsScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  cta: { marginVertical: spacing.lg },
+});

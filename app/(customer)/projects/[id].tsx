@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import {
   listUpdates,
 } from '@/api/repositories/projectsRepository';
 import {
+  Button,
   ErrorState,
   LoadingState,
   Screen,
@@ -20,8 +21,10 @@ import { spacing } from '@/theme';
 
 export default function ProjectDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
   const { t } = useTranslation('projects');
   const { t: tc } = useTranslation('common');
+  const { t: td } = useTranslation('documents');
   const [project, setProject] = useState<Project | null>(null);
   const [milestones, setMilestones] = useState<ProjectMilestone[]>([]);
   const [updates, setUpdates] = useState<ProjectUpdate[]>([]);
@@ -63,6 +66,13 @@ export default function ProjectDetailScreen() {
         <Text variant="title">{project.title}</Text>
         <StatusPill label={t(`status.${project.status}`)} tone="gold" />
       </View>
+      <Button
+        testID="btn-project-upload-document"
+        title={td('upload')}
+        variant="secondary"
+        style={styles.uploadCta}
+        onPress={() => router.push(`/(customer)/documents/upload?projectId=${project.id}`)}
+      />
       <Text variant="body" color="textSecondary" style={styles.body}>
         {project.description}
       </Text>
@@ -109,6 +119,7 @@ export default function ProjectDetailScreen() {
 
 const styles = StyleSheet.create({
   header: { gap: spacing.md, marginBottom: spacing.lg },
+  uploadCta: { marginBottom: spacing.lg, alignSelf: 'flex-start' },
   body: { marginBottom: spacing.md },
   meta: { marginTop: spacing.sm },
   section: { marginTop: spacing['2xl'], marginBottom: spacing.md },

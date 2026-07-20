@@ -1,10 +1,12 @@
 import { mockStore } from '@/api/mockData';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
+import { createIdempotencyKey } from '@/lib/idempotency';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
 import { mapDocument } from '@/lib/mappers';
 import type { Tables } from '@/types/database.generated';
 import type { Document, DocumentStatus } from '@/types/domain';
 import type { DocumentReviewDecisionInput } from '@/validation/documents';
+import { documentUploadSchema } from '@/validation/documents';
 
 type DocumentRow = Tables<'documents'>;
 type DocumentVersionRow = Tables<'document_versions'>;
@@ -226,6 +228,155 @@ export async function createSignedUrl(documentId: string): Promise<DocumentDownl
 /** @deprecated Prefer createSignedUrl */
 export const getDocumentDownloadLink = createSignedUrl;
 
+export interface UploadProjectDocumentInput {
+  /** Project to attach the document to. `null`/omitted for a personal, non-project upload. */
+  projectId?: string | null;
+  /** Add a new version to an existing document instead of creating one. */
+  documentId?: string | null;
+  title: string;
+  category?: string | null;
+  /** Local file URI as returned by expo-document-picker. */
+  uri: string;
+  mimeType: string;
+  fileName: string;
+  byteSize: number;
+  /** Supplied by the caller to make retries safe; generated when omitted. */
+  clientUploadId?: string;
+  /**
+   * Coarse progress (0-100). supabase-js's storage upload has no native
+   * progress events in React Native, so this reports fixed milestones
+   * (validated -> uploaded -> registered) rather than byte-level progress.
+   */
+  onProgress?: (percent: number) => void;
+}
+
+function sanitizeFileName(fileName: string): string {
+  const trimmed = fileName.trim().replace(/[\\/]/g, '_');
+  return trimmed.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-140) || 'file';
+}
+
+/**
+ * Uploads a customer/staff document: validates the file client-side (defense
+ * in depth -- the storage bucket policies and `register_document_upload` RPC
+ * independently re-check everything), uploads the bytes to the private
+ * `documents` bucket, then registers the version via the RPC so
+ * `scan_status` always starts at `pending` and can only ever be flipped by
+ * staff (`mark_document_scan_clean`).
+ */
+export async function uploadProjectDocument(input: UploadProjectDocumentInput): Promise<Document> {
+  const parsed = documentUploadSchema.safeParse({
+    projectId: input.projectId ?? null,
+    title: input.title,
+    category: input.category ?? '',
+    fileName: input.fileName,
+    mimeType: input.mimeType,
+    byteSize: input.byteSize,
+  });
+  if (!parsed.success) {
+    throw DomainError.validation(parsed.error.issues[0]?.message ?? 'Invalid upload');
+  }
+
+  const clientUploadId = input.clientUploadId ?? createIdempotencyKey('doc');
+
+  if (shouldUseMockApi()) {
+    await delay(150);
+    input.onProgress?.(40);
+    await delay(150);
+    input.onProgress?.(80);
+
+    const now = new Date().toISOString();
+    const existing = input.documentId
+      ? mockStore.documents.find((d) => d.id === input.documentId)
+      : undefined;
+
+    const doc: Document = existing
+      ? {
+          ...existing,
+          title: input.title,
+          status: 'uploaded',
+          currentVersion: existing.currentVersion + 1,
+          mimeType: input.mimeType,
+          sizeBytes: input.byteSize,
+          scanStatus: 'pending',
+          updatedAt: now,
+        }
+      : {
+          id: `doc-${Date.now()}`,
+          projectId: input.projectId ?? null,
+          title: input.title,
+          status: 'uploaded',
+          currentVersion: 1,
+          mimeType: input.mimeType,
+          sizeBytes: input.byteSize,
+          scanStatus: 'pending',
+          createdAt: now,
+          updatedAt: now,
+        };
+
+    if (existing) {
+      const idx = mockStore.documents.findIndex((d) => d.id === existing.id);
+      mockStore.documents[idx] = doc;
+    } else {
+      mockStore.documents.unshift(doc);
+    }
+    input.onProgress?.(100);
+    return doc;
+  }
+
+  const supabase = requireLiveSupabase();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) {
+    throw DomainError.unauthorized('You must be signed in to upload a document.');
+  }
+
+  const scope = input.projectId ?? userData.user.id;
+  const storagePath = `${scope}/${clientUploadId}/${sanitizeFileName(input.fileName)}`;
+
+  input.onProgress?.(10);
+  let blob: Blob;
+  try {
+    const response = await fetch(input.uri);
+    blob = await response.blob();
+  } catch (err) {
+    throw DomainError.configuration('Could not read the selected file.', { cause: err });
+  }
+  input.onProgress?.(40);
+
+  const { error: uploadError } = await supabase.storage.from(DOCUMENTS_BUCKET).upload(storagePath, blob, {
+    contentType: input.mimeType,
+    upsert: false,
+  });
+  if (uploadError) throw fromSupabaseError(uploadError);
+  input.onProgress?.(75);
+
+  const { data: registered, error: rpcError } = await supabase.rpc('register_document_upload', {
+    p_title: input.title,
+    p_storage_path: storagePath,
+    p_mime_type: input.mimeType,
+    p_byte_size: input.byteSize,
+    p_client_upload_id: clientUploadId,
+    p_project_id: input.projectId ?? undefined,
+    p_category: input.category || undefined,
+    p_checksum_sha256: undefined,
+    p_document_id: input.documentId ?? undefined,
+  });
+  if (rpcError) {
+    await supabase.storage
+      .from(DOCUMENTS_BUCKET)
+      .remove([storagePath])
+      .catch(() => undefined);
+    throw fromSupabaseError(rpcError);
+  }
+  input.onProgress?.(100);
+
+  const documentRow = registered as DocumentRow;
+  const versions = await fetchVersions(
+    supabase,
+    documentRow.current_version_id ? [documentRow.current_version_id] : [],
+  );
+  return toDocuments([documentRow], versions)[0]!;
+}
+
 export const documentsRepository = {
   list: listDocuments,
   get: getDocument,
@@ -234,4 +385,5 @@ export const documentsRepository = {
   requestChanges,
   createSignedUrl,
   getDownloadLink: createSignedUrl,
+  upload: uploadProjectDocument,
 };

@@ -477,6 +477,7 @@ export type Database = {
         Row: {
           byte_size: number
           checksum_sha256: string | null
+          client_upload_id: string | null
           created_at: string
           document_id: string
           id: string
@@ -492,6 +493,7 @@ export type Database = {
         Insert: {
           byte_size: number
           checksum_sha256?: string | null
+          client_upload_id?: string | null
           created_at?: string
           document_id: string
           id?: string
@@ -507,6 +509,7 @@ export type Database = {
         Update: {
           byte_size?: number
           checksum_sha256?: string | null
+          client_upload_id?: string | null
           created_at?: string
           document_id?: string
           id?: string
@@ -1034,6 +1037,113 @@ export type Database = {
             columns: ["partner_id"]
             isOneToOne: false
             referencedRelation: "partner_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_lead_staff_notes: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          lead_id: string
+          note: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          lead_id: string
+          note: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          lead_id?: string
+          note?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_lead_staff_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "partner_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_leads: {
+        Row: {
+          campaign_code: string | null
+          consent_at: string | null
+          consent_given: boolean
+          converted_at: string | null
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          interest: string | null
+          name: string
+          notes: string | null
+          partner_id: string
+          phone: string | null
+          rejected_reason: string | null
+          sale_id: string | null
+          status: Database["public"]["Enums"]["partner_lead_status"]
+          updated_at: string
+        }
+        Insert: {
+          campaign_code?: string | null
+          consent_at?: string | null
+          consent_given?: boolean
+          converted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          email: string
+          id?: string
+          interest?: string | null
+          name: string
+          notes?: string | null
+          partner_id: string
+          phone?: string | null
+          rejected_reason?: string | null
+          sale_id?: string | null
+          status?: Database["public"]["Enums"]["partner_lead_status"]
+          updated_at?: string
+        }
+        Update: {
+          campaign_code?: string | null
+          consent_at?: string | null
+          consent_given?: boolean
+          converted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          id?: string
+          interest?: string | null
+          name?: string
+          notes?: string | null
+          partner_id?: string
+          phone?: string | null
+          rejected_reason?: string | null
+          sale_id?: string | null
+          status?: Database["public"]["Enums"]["partner_lead_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_leads_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partner_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_leads_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
             referencedColumns: ["id"]
           },
         ]
@@ -2041,6 +2151,7 @@ export type Database = {
           attachment_path: string | null
           author_id: string
           body: string
+          client_message_id: string | null
           created_at: string
           deleted_at: string | null
           id: string
@@ -2052,6 +2163,7 @@ export type Database = {
           attachment_path?: string | null
           author_id: string
           body: string
+          client_message_id?: string | null
           created_at?: string
           deleted_at?: string | null
           id?: string
@@ -2063,6 +2175,7 @@ export type Database = {
           attachment_path?: string | null
           author_id?: string
           body?: string
+          client_message_id?: string | null
           created_at?: string
           deleted_at?: string | null
           id?: string
@@ -2303,7 +2416,144 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_assign_ticket: {
+        Args: { p_assignee: string; p_ticket_id: string }
+        Returns: {
+          assigned_to: string | null
+          category: string | null
+          closed_at: string | null
+          conversation_id: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          priority: Database["public"]["Enums"]["support_ticket_priority"]
+          project_id: string | null
+          requester_id: string
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["support_ticket_status"]
+          subject: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "support_tickets"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_convert_lead: {
+        Args: { p_lead_id: string; p_sale_id?: string }
+        Returns: {
+          campaign_code: string | null
+          consent_at: string | null
+          consent_given: boolean
+          converted_at: string | null
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          interest: string | null
+          name: string
+          notes: string | null
+          partner_id: string
+          phone: string | null
+          rejected_reason: string | null
+          sale_id: string | null
+          status: Database["public"]["Enums"]["partner_lead_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_leads"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_dashboard_stats: { Args: never; Returns: Json }
+      admin_qualify_lead: {
+        Args: { p_lead_id: string; p_reason?: string; p_status: string }
+        Returns: {
+          campaign_code: string | null
+          consent_at: string | null
+          consent_given: boolean
+          converted_at: string | null
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          interest: string | null
+          name: string
+          notes: string | null
+          partner_id: string
+          phone: string | null
+          rejected_reason: string | null
+          sale_id: string | null
+          status: Database["public"]["Enums"]["partner_lead_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_leads"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_reply_support_ticket: {
+        Args: {
+          p_body: string
+          p_client_message_id?: string
+          p_is_internal?: boolean
+          p_ticket_id: string
+        }
+        Returns: {
+          attachment_path: string | null
+          author_id: string
+          body: string
+          client_message_id: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          is_internal: boolean
+          ticket_id: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "support_ticket_messages"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_update_ticket_status: {
+        Args: {
+          p_assignee?: string
+          p_reason?: string
+          p_status: string
+          p_ticket_id: string
+        }
+        Returns: {
+          assigned_to: string | null
+          category: string | null
+          closed_at: string | null
+          conversation_id: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          priority: Database["public"]["Enums"]["support_ticket_priority"]
+          project_id: string | null
+          requester_id: string
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["support_ticket_status"]
+          subject: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "support_tickets"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_work_queue: { Args: never; Returns: Json }
       approve_commission: {
         Args: { p_commission_id: string; p_reason: string }
@@ -2339,6 +2589,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      can_upload_to_documents_path: {
+        Args: { p_object_name: string }
+        Returns: boolean
       }
       cancel_appointment: {
         Args: { p_appointment_id: string; p_reason?: string }
@@ -2409,6 +2663,74 @@ export type Database = {
         Args: { p_payout_id: string; p_reason: string }
         Returns: Json
       }
+      register_document_upload: {
+        Args: {
+          p_byte_size: number
+          p_category?: string
+          p_checksum_sha256?: string
+          p_client_upload_id: string
+          p_document_id?: string
+          p_mime_type: string
+          p_project_id?: string
+          p_storage_path: string
+          p_title: string
+        }
+        Returns: {
+          category: string | null
+          created_at: string
+          current_version_id: string | null
+          deleted_at: string | null
+          id: string
+          owner_user_id: string
+          project_id: string | null
+          requires_customer_approval: boolean
+          status: Database["public"]["Enums"]["document_status"]
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "documents"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      register_partner_lead: {
+        Args: {
+          p_campaign_code?: string
+          p_consent_given: boolean
+          p_email: string
+          p_interest?: string
+          p_name: string
+          p_notes?: string
+          p_phone?: string
+        }
+        Returns: {
+          campaign_code: string | null
+          consent_at: string | null
+          consent_given: boolean
+          converted_at: string | null
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          interest: string | null
+          name: string
+          notes: string | null
+          partner_id: string
+          phone: string | null
+          rejected_reason: string | null
+          sale_id: string | null
+          status: Database["public"]["Enums"]["partner_lead_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_leads"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       reject_commission: {
         Args: { p_commission_id: string; p_reason: string }
         Returns: Json
@@ -2416,6 +2738,30 @@ export type Database = {
       reject_partner_application: {
         Args: { p_application_id: string; p_reason: string }
         Returns: Json
+      }
+      reject_payout_request: {
+        Args: { p_payout_id: string; p_reason: string }
+        Returns: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          id: string
+          notes: string | null
+          paid_at: string | null
+          partner_id: string
+          payout_account_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["payout_request_status"]
+          submitted_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payout_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       reject_quote: {
         Args: { p_quote_id: string; p_reason?: string }
@@ -2446,9 +2792,72 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      request_commission_payout: {
+        Args: {
+          p_amount_cents?: number
+          p_commission_ids?: string[]
+          p_payout_account_id?: string
+        }
+        Returns: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          id: string
+          notes: string | null
+          paid_at: string | null
+          partner_id: string
+          payout_account_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["payout_request_status"]
+          submitted_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payout_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       suspend_partner: {
         Args: { p_partner_id: string; p_reason: string }
         Returns: Json
+      }
+      update_partner_lead_contact: {
+        Args: {
+          p_interest?: string
+          p_lead_id: string
+          p_mark_contacted?: boolean
+          p_name?: string
+          p_notes?: string
+          p_phone?: string
+        }
+        Returns: {
+          campaign_code: string | null
+          consent_at: string | null
+          consent_given: boolean
+          converted_at: string | null
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          interest: string | null
+          name: string
+          notes: string | null
+          partner_id: string
+          phone: string | null
+          rejected_reason: string | null
+          sale_id: string | null
+          status: Database["public"]["Enums"]["partner_lead_status"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "partner_leads"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       write_audit_log: {
         Args: {
@@ -2533,6 +2942,13 @@ export type Database = {
         | "approved"
         | "rejected"
         | "suspended"
+      partner_lead_status:
+        | "new"
+        | "contacted"
+        | "qualified"
+        | "converted"
+        | "rejected"
+        | "invalid"
       payment_status:
         | "created"
         | "open"
@@ -2814,6 +3230,14 @@ export const Constants = {
         "approved",
         "rejected",
         "suspended",
+      ],
+      partner_lead_status: [
+        "new",
+        "contacted",
+        "qualified",
+        "converted",
+        "rejected",
+        "invalid",
       ],
       payment_status: [
         "created",

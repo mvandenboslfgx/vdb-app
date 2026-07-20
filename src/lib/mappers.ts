@@ -4,7 +4,7 @@
  * These are intentionally pure and defensive: they never fabricate business
  * data. Where the current schema does not (yet) carry a field the domain type
  * needs, we derive a deterministic value from what *is* present (e.g. a quote
- * title from its number) instead of inventing content — real gaps should
+ * title from its number) instead of inventing content -- real gaps should
  * surface as empty/neutral values, never as demo content.
  */
 import type { Tables } from '@/types/database.generated';
@@ -18,12 +18,14 @@ import type {
   Lead,
   Message,
   PartnerProfile,
+  PayoutRequest,
   Project,
   ProjectMilestone,
   ProjectUpdate,
   Quote,
   QuoteItem,
   SupportTicket,
+  SupportTicketMessage,
 } from '@/types/domain';
 
 type ProjectRow = Tables<'projects'>;
@@ -42,6 +44,9 @@ type AvailabilitySlotRow = Tables<'availability_slots'>;
 type CommissionRow = Tables<'commissions'>;
 type PartnerProfileRow = Tables<'partner_profiles'>;
 type TermsVersionRow = Tables<'terms_versions'>;
+type PartnerLeadRow = Tables<'partner_leads'>;
+type PayoutRequestRow = Tables<'payout_requests'>;
+type SupportTicketMessageRow = Tables<'support_ticket_messages'>;
 
 function readMetadata(metadata: unknown): Record<string, unknown> {
   return typeof metadata === 'object' && metadata !== null && !Array.isArray(metadata)
@@ -342,26 +347,52 @@ export function mapPartnerProfile(
   };
 }
 
-/** No `leads` table exists in the current schema — kept for the future shape. */
-export function mapLead(row: {
-  id: string;
-  partner_id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  status: Lead['status'];
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-}): Lead {
+/** Maps a `payout_requests` row (see 20260720101700_payouts_support_finance.sql) to the domain shape. */
+export function mapPayoutRequest(row: PayoutRequestRow): PayoutRequest {
   return {
     id: row.id,
     partnerId: row.partner_id,
+    payoutAccountId: row.payout_account_id,
+    status: row.status,
+    amountCents: row.amount_cents,
+    currency: 'EUR',
+    submittedAt: row.submitted_at,
+    notes: row.notes,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+/** Maps a `support_ticket_messages` row to the domain shape. */
+export function mapSupportTicketMessage(row: SupportTicketMessageRow): SupportTicketMessage {
+  return {
+    id: row.id,
+    ticketId: row.ticket_id,
+    authorId: row.author_id,
+    body: row.body,
+    isInternal: row.is_internal,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+/** Maps a `partner_leads` row (see 20260720101600_business_flow_completion.sql) to the domain shape. */
+export function mapLead(row: PartnerLeadRow): Lead {
+  return {
+    id: row.id,
+    partnerId: row.partner_id,
+    campaignCode: row.campaign_code,
     name: row.name,
     email: row.email,
     phone: row.phone,
+    interest: row.interest,
     status: row.status,
     notes: row.notes,
+    consentGiven: row.consent_given,
+    consentAt: row.consent_at,
+    saleId: row.sale_id,
+    convertedAt: row.converted_at,
+    rejectedReason: row.rejected_reason,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

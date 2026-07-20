@@ -1,11 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { listLeads } from '@/api/repositories/partnersRepository';
+import { listPartnerLeads } from '@/api/repositories/adminRepository';
 import {
-  Button,
   EmptyState,
   ErrorState,
   ListRow,
@@ -15,7 +13,6 @@ import {
   Text,
 } from '@/design-system';
 import type { Lead } from '@/types/domain';
-import { spacing } from '@/theme';
 
 const STATUS_TONE: Record<Lead['status'], 'neutral' | 'gold' | 'success' | 'error'> = {
   new: 'neutral',
@@ -26,8 +23,9 @@ const STATUS_TONE: Record<Lead['status'], 'neutral' | 'gold' | 'success' | 'erro
   invalid: 'error',
 };
 
-export default function LeadsScreen() {
-  const { t } = useTranslation('partners');
+export default function AdminLeadsScreen() {
+  const { t } = useTranslation('admin');
+  const { t: tp } = useTranslation('partners');
   const { t: tc } = useTranslation('common');
   const router = useRouter();
   const [items, setItems] = useState<Lead[]>([]);
@@ -38,7 +36,7 @@ export default function LeadsScreen() {
     setLoading(true);
     setError(false);
     try {
-      setItems(await listLeads());
+      setItems(await listPartnerLeads());
     } catch {
       setError(true);
     } finally {
@@ -50,37 +48,27 @@ export default function LeadsScreen() {
     void load();
   }, [load]);
 
-  if (loading) return <LoadingState />;
+  if (loading) return <LoadingState label={t('loading')} />;
   if (error) {
-    return <ErrorState title={t('leads')} retryLabel={tc('retry')} onRetry={() => void load()} />;
+    return <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />;
   }
 
   return (
-    <Screen scroll testID="screen-leads">
-      <Text variant="title">{t('leads')}</Text>
-      <Button
-        testID="btn-lead-new"
-        title={tc('actions.submit')}
-        variant="gold"
-        style={styles.cta}
-        onPress={() => router.push('/(partner)/leads/new')}
-      />
+    <Screen scroll testID="screen-admin-leads">
+      <Text variant="title">{t('leads.title')}</Text>
       {items.length === 0 ? (
-        <EmptyState title={t('leadsEmpty')} />
+        <EmptyState title={tp('leadsEmpty')} />
       ) : (
         items.map((lead) => (
           <ListRow
             key={lead.id}
             title={lead.name}
             subtitle={lead.email}
-            right={<StatusPill label={t(`leadStatus.${lead.status}`)} tone={STATUS_TONE[lead.status]} />}
+            right={<StatusPill label={tp(`leadStatus.${lead.status}`)} tone={STATUS_TONE[lead.status]} />}
+            onPress={() => router.push(`/(admin)/leads/${lead.id}`)}
           />
         ))
       )}
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  cta: { marginVertical: spacing.lg },
-});

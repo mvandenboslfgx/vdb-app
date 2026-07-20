@@ -17,6 +17,10 @@ export default function AdminMoreScreen() {
     <Screen scroll>
       <Text variant="title">{t('title')}</Text>
       <ListRow
+        title={t('leads.title')}
+        onPress={() => router.push('/(admin)/leads')}
+      />
+      <ListRow
         title={tc('switchArea.customer')}
         onPress={() => router.replace('/(customer)')}
       />

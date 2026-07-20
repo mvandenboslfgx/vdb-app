@@ -37,7 +37,17 @@
     "reviewCommentRequired": "Toelichting is verplicht bij dit besluit",
     "quoteIdInvalid": "Ongeldige offerte",
     "rejectReasonMin": "Reden is te kort",
-    "rejectReasonMax": "Reden is te lang"
+    "rejectReasonMax": "Reden is te lang",
+    "documentTitleMin": "Documenttitel is te kort",
+    "documentTitleMax": "Documenttitel is te lang",
+    "documentCategoryMax": "Categorie is te lang",
+    "documentFileRequired": "Kies een bestand om te uploaden",
+    "documentMimeNotAllowed": "Dit bestandstype is niet toegestaan",
+    "documentTooLarge": "Dit bestand is groter dan de limiet van 25MB",
+    "projectRequired": "Kies een geldig project",
+    "leadNameMin": "Naam van de lead is te kort",
+    "leadNameMax": "Naam van de lead is te lang",
+    "leadConsentRequired": "Toestemming van de lead is verplicht"
   },
   "auth": {
     "invalidCredentials": "E-mail of wachtwoord is onjuist",

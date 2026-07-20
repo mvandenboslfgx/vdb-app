@@ -31,5 +31,16 @@
     "rejected": "Rejected",
     "suspended": "Suspended",
     "active": "Active"
+  },
+  "leadInterest": "Interest",
+  "leadNotes": "Notes",
+  "leadConsent": "The lead agreed to be contacted about VDB Digital services",
+  "leadStatus": {
+    "new": "New",
+    "contacted": "Contacted",
+    "qualified": "Qualified",
+    "converted": "Converted",
+    "rejected": "Rejected",
+    "invalid": "Invalid"
   }
 }

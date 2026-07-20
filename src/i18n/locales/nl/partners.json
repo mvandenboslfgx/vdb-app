@@ -31,5 +31,16 @@
     "rejected": "Afgewezen",
     "suspended": "Opgeschort",
     "active": "Actief"
+  },
+  "leadInterest": "Interesse",
+  "leadNotes": "Notities",
+  "leadConsent": "De lead heeft toestemming gegeven om benaderd te worden over VDB Digital diensten",
+  "leadStatus": {
+    "new": "Nieuw",
+    "contacted": "Benaderd",
+    "qualified": "Gekwalificeerd",
+    "converted": "Geconverteerd",
+    "rejected": "Afgewezen",
+    "invalid": "Ongeldig"
   }
 }

@@ -37,7 +37,17 @@
     "reviewCommentRequired": "A comment is required for this decision",
     "quoteIdInvalid": "Invalid quote",
     "rejectReasonMin": "Reason is too short",
-    "rejectReasonMax": "Reason is too long"
+    "rejectReasonMax": "Reason is too long",
+    "documentTitleMin": "Document title is too short",
+    "documentTitleMax": "Document title is too long",
+    "documentCategoryMax": "Category is too long",
+    "documentFileRequired": "Choose a file to upload",
+    "documentMimeNotAllowed": "This file type is not allowed",
+    "documentTooLarge": "This file is larger than the 25MB limit",
+    "projectRequired": "Choose a valid project",
+    "leadNameMin": "Lead name is too short",
+    "leadNameMax": "Lead name is too long",
+    "leadConsentRequired": "Lead consent is required"
   },
   "auth": {
     "invalidCredentials": "Email or password is incorrect",

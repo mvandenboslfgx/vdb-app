@@ -122,6 +122,7 @@ async function wipeSeedDomain(db, ids) {
     'project_activity','project_updates','project_milestones','project_members','projects',
     'commission_events','commissions','sale_attributions','sales',
     'partner_links','partner_codes',
+    'partner_lead_staff_notes','partner_leads',
   ];
   for (const table of tables) {
     const { error } = await db.from(table).delete().neq('id', '00000000-0000-0000-0000-000000000000');
@@ -162,6 +163,16 @@ async function main() {
   }
 
   await wipeSeedDomain(db, ids);
+
+  // LOCAL ONLY: enable partner payouts so payout RPC + UI can be exercised
+  // in local testing. Never enable this in a remote/production seed.
+  {
+    const { error } = await db
+      .from('feature_flags')
+      .update({ enabled: true })
+      .eq('key', 'partner.payouts');
+    if (error) console.warn('enable partner.payouts flag:', error.message);
+  }
 
   const customerA = ids['customer.a@local.vdb'];
   const customerB = ids['customer.b@local.vdb'];
@@ -443,8 +454,21 @@ async function main() {
     },
   ]);
 
-  // Sale + commission for partner A (partner cannot update)
+  // Sale + commissions for partner A (partner cannot update).
+  // Three commissions covering the flows under test:
+  //  - pending: not yet actionable by anyone
+  //  - under_review: admin finance approve/reject flow (Goal E)
+  //  - payable: partner payout request flow (Goal C)
   if (ppA?.id) {
+    await db.from('payout_accounts').insert({
+      partner_id: ppA.id,
+      account_holder_name: 'Partner Active A',
+      iban_encrypted: 'seed-encrypted-iban-partner-a',
+      bic: 'ABNANL2A',
+      country: 'NL',
+      is_default: true,
+    });
+
     const { data: sale } = await db
       .from('sales')
       .insert({
@@ -458,14 +482,77 @@ async function main() {
       .select('id')
       .single();
 
-    await db.from('commissions').insert({
-      sale_id: sale.id,
-      partner_id: ppA.id,
-      status: 'pending',
-      basis_amount_cents: 10000,
-      rate_bps: 1000,
-      commission_amount_cents: 1000,
-      currency: 'EUR',
+    await db.from('commissions').insert([
+      {
+        sale_id: sale.id,
+        partner_id: ppA.id,
+        status: 'pending',
+        basis_amount_cents: 10000,
+        rate_bps: 1000,
+        commission_amount_cents: 1000,
+        currency: 'EUR',
+      },
+      {
+        sale_id: sale.id,
+        partner_id: ppA.id,
+        status: 'under_review',
+        basis_amount_cents: 20000,
+        rate_bps: 1000,
+        commission_amount_cents: 2000,
+        currency: 'EUR',
+      },
+      {
+        sale_id: sale.id,
+        partner_id: ppA.id,
+        status: 'payable',
+        basis_amount_cents: 30000,
+        rate_bps: 1000,
+        commission_amount_cents: 3000,
+        currency: 'EUR',
+      },
+    ]);
+  }
+
+  // Partner leads (isolation + staff-notes tests)
+  let leadA;
+  if (ppA?.id) {
+    const { data } = await db
+      .from('partner_leads')
+      .insert({
+        partner_id: ppA.id,
+        campaign_code: 'local-seed',
+        name: 'Lead For Partner A',
+        email: 'lead.a@example.com',
+        phone: '+31600000001',
+        interest: 'kitchen renovation',
+        notes: 'Seed lead (partner A)',
+        consent_given: true,
+        consent_at: new Date().toISOString(),
+        status: 'new',
+        created_by: partnerA,
+      })
+      .select('id')
+      .single();
+    leadA = data;
+    if (leadA?.id) {
+      await db.from('partner_lead_staff_notes').insert({
+        lead_id: leadA.id,
+        note: 'Internal staff note (seed) - partner must never see this',
+        created_by: staff,
+      });
+    }
+  }
+
+  if (ppB?.id) {
+    await db.from('partner_leads').insert({
+      partner_id: ppB.id,
+      campaign_code: 'local-seed',
+      name: 'Lead For Partner B',
+      email: 'lead.b@example.com',
+      consent_given: true,
+      consent_at: new Date().toISOString(),
+      status: 'new',
+      created_by: partnerB,
     });
   }
 
