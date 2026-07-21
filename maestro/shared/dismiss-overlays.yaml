@@ -1,0 +1,18 @@
+# Shared: dismiss Samsung Pass / autofill save overlays (NL)
+appId: nl.vdbdigital.app
+---
+- tapOn:
+    id: "android:id/autofill_save_no"
+    optional: true
+- tapOn:
+    text: "Annuleren"
+    optional: true
+- tapOn:
+    text: "Nee"
+    optional: true
+- tapOn:
+    text: "Cancel"
+    optional: true
+- tapOn:
+    id: "android:id/autofill_save_never_allow"
+    optional: true

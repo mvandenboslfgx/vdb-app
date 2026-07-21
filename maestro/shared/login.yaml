@@ -3,9 +3,16 @@
 # Password is shell-safe LocalTestVdb2026 (no !).
 appId: nl.vdbdigital.app
 ---
+- runFlow:
+    file: dismiss-overlays.yaml
+- extendedWaitUntil:
+    visible:
+      id: "btn-public-login"
+    timeout: 30000
 - tapOn:
     id: "btn-public-login"
-    optional: true
+- runFlow:
+    file: dismiss-overlays.yaml
 - extendedWaitUntil:
     visible:
       id: "auth-login-screen"
@@ -20,3 +27,5 @@ appId: nl.vdbdigital.app
 - inputText: "LocalTestVdb2026"
 - tapOn:
     id: "auth-login-submit"
+- runFlow:
+    file: dismiss-overlays.yaml
