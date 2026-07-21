@@ -1,23 +1,23 @@
 # Manual owner actions — Matthijs
 
-## Done (2026-07-21)
+## Done
 
-- [x] Java / `JAVA_HOME` / `ANDROID_HOME` / `adb`
-- [x] Node / npm
-- [x] S25 `adb devices` → `device` (`SM_S931B`)
-- [x] Docker Desktop + `npx supabase start`
-- [x] `adb reverse` 54321 + 8081
-- [x] Debug APK install `nl.vdbdigital.app`
-- [x] Cold start without fatal crash (login UI visible)
+- [x] Android toolchain + S25 `device`
+- [x] Docker + local Supabase + `adb reverse`
+- [x] Debug APK install + cold start
+- [x] Development diagnostics probes (auth/db/realtime/storage)
+- [x] Customer smoke navigation
+- [x] Maestro CLI installed; 20 flows executed on device (0 PASS — flows need rewrite)
 
-## Remaining for android-device-pass tag
+## Remaining before android-device-pass tag
 
-1. [ ] Manual auth + customer/partner/admin flows on S25
-2. [ ] Development diagnostics probes (auth/db/realtime/storage)
-3. [ ] Maestro device execution (20 flows)
-4. [ ] Re-run quality gates; update evidence docs
-5. [ ] Optional EAS link for preview AAB (**BLOCKED BY EAS** until then)
+1. [ ] Rewrite Maestro flows to real NL testIDs + logged-out start + seed logins
+2. [ ] Complete partner + admin primary flows on S25 (manual or fixed Maestro)
+3. [ ] Document upload, quote accept, checkout return, appointments
+4. [ ] Accessibility Scanner pass
+5. [ ] Re-run full quality gates green (`lint`, `typecheck`, tests, RLS, …)
+6. [ ] Optional EAS project link for preview AAB
 
-## Forbidden without explicit approval
+## Forbidden without approval
 
 Remote migrations · live Mollie · production push · Git push · Play Store upload

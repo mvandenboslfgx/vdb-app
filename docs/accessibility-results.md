@@ -1,12 +1,16 @@
 # Accessibility results
 
-**Date:** 2026-07-20  
-**Status:** **BLOCKED** — no device Accessibility Scanner run.
+**Date:** 2026-07-21  
+**Status:** PARTIAL — no Accessibility Scanner APK run this session.
 
 | Check | Result |
 |---|---|
-| Screen reader labels audit on device | BLOCKED |
-| Contrast / large text on S25 | BLOCKED |
-| Touch targets | PARTIAL (design system present; not device-verified) |
+| Visible button labels (NL) | PASS (smoke) — Inloggen, Meer, tab labels present |
+| Form labels on login | PASS — E-mailadres / Wachtwoord |
+| Error message on bad login | PASS — visible wrong-password copy |
+| Touch targets | PENDING — not measured |
+| Screen reader / TalkBack | PENDING |
+| Contrast / large text / focus order | PENDING |
+| Android Accessibility Scanner | PENDING / BLOCKED — tool not run |
 
-Re-run with Android Accessibility Scanner after install.
+Manual TalkBack + Scanner recommended before Play internal test.

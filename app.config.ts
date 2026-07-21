@@ -20,9 +20,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: 'nl.vdbdigital.app',
     versionCode: VERSION_CODE,
-    // Required for local Supabase over HTTP via adb reverse (127.0.0.1).
-    // Production/preview builds must use HTTPS — do not ship cleartext to prod without review.
-    usesCleartextTraffic: true,
     adaptiveIcon: {
       foregroundImage: './assets/images/android-icon-foreground.png',
       backgroundImage: './assets/images/android-icon-background.png',

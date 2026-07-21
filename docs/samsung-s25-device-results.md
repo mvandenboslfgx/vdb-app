@@ -1,45 +1,96 @@
-# Samsung Galaxy S25 device results (Phase 6)
+# Samsung Galaxy S25 device results (Phase 6 — full validation attempt)
 
 **Date:** 2026-07-21  
-**Device:** serial `R3GYC00EBYY`, model `SM_S931B`, ABI `arm64-v8a`
+**Device:** `R3GYC00EBYY` / `SM_S931B` / `arm64-v8a`  
+**Package:** `nl.vdbdigital.app` 1.0.0 (1)  
+**Connectivity:** `adb reverse` tcp:54321 + tcp:8081 → local Supabase + Metro  
+**End status:** **SAMSUNG S25 DEVICE PASS WITH LIMITATIONS — PRODUCTION NOT ACTIVATED**  
+**Tag `vdb-mobile-v1-android-device-pass`:** **NOT created** (Maestro device 0/20 PASS; partner/admin deep flows incomplete)
 
-## Install + cold start
+## Environment re-check
+
+| Check | Result |
+|---|---|
+| `adb devices` | PASS — `device` |
+| `adb reverse --list` | PASS — 54321, 8081 |
+| Supabase auth/REST | PASS — HTTP 200 |
+| App PID after cold start | PASS — process alive |
+| Metro | PASS — bundle loaded earlier |
+
+## Development diagnostics (physical S25)
+
+Opened via Meer → Development diagnostics (`nav-dev-diagnostics` / `screen-dev-diagnostics`).
+
+| Probe | Result |
+|---|---|
+| App-omgeving | `development` |
+| Repository-adapter | `supabase` |
+| Demo-adapter actief | `false` |
+| Supabase-host | `http://127.0.0.1:54321` (no keys) |
+| Auth | `[ok] session present` |
+| Database | `[ok] feature_flags readable` |
+| Realtime | `[ok] ok` |
+| Storage | `[ok] ok` |
+| Pushbezorging | `fail-closed` |
+| Checkoutprovider | `fail-closed` |
+| Secrets on screen | **PASS** — UI secret scan `NO_SECRETS_IN_UI` |
+| Edge Functions probe | **N/A** — not on diagnostics screen; local edge_runtime was stopped in `supabase start` output |
+
+## Cold start + logcat (this session)
+
+| Check | Result |
+|---|---|
+| `logcat -c` + force-stop + start | PASS |
+| FATAL / AndroidRuntime E for app | none observed |
+| First UI | Login / public home / dashboard depending on session |
+
+## Auth (physical)
 
 | Check | Result | Notes |
 |---|---|---|
-| `adb install -r` debug APK | **PASS** | Streamed Install Success |
-| Package present | **PASS** | `package:nl.vdbdigital.app` |
-| versionName / versionCode | **PASS** | `1.0.0` / `1` |
-| minSdk / targetSdk (device) | **PASS** | 24 / 36 |
-| `adb reverse` 54321 + 8081 | **PASS** | UsbFfs listed |
-| Local Supabase auth/REST | **PASS** | HTTP 200 (PC; reverse to device) |
-| Metro bundler | **PASS** | Bundled entry.js ~70.7s (3404 modules) |
-| Cold start (`am start` MainActivity) | **PASS** | PID alive; `topResumedActivity` = MainActivity |
-| Splash → first UI | **PASS** | UI dump shows `Inloggen` (login) |
-| Immediate native crash | **PASS** | no `FATAL EXCEPTION` / `AndroidRuntime` E for app |
-| React Native boot | **PASS** | `Running "main"` fabric=true; Sentry disabled (no DSN) |
-| Expo Go used | **No** | |
+| Login customer.a (seed) | PASS (earlier in session) | Dashboard `Hallo Customer A` |
+| Wrong password | PASS | UI `E-mail of wachtwoord is onjuist` / `login-error` |
+| Logout | PASS | After logout, restart shows login/public |
+| Re-login / session restore | PARTIAL | Adb password `!` / `@` escaping flaky across runs |
+| Register new account | PENDING | Not executed this pass |
+| Password-reset deep link | PENDING | Forgot-password UI seen earlier; full deep link not proven |
+| Secure route without session | PARTIAL | Post-logout lands on public/login |
 
-## Cleaned log fragments (no tokens/PII)
+## Customer flows (physical smoke)
 
-```
-ReactNativeJS: Running "main" with {"rootTag":1,"initialProps":{},"fabric":true}
-ReactNativeJS: [observability] Sentry disabled (no DSN)
-ReactNative: [GESTURE HANDLER] Initialize gesture handler ...
-Metro: Android Bundled 70657ms node_modules\expo-router\entry.js (3404 modules)
-```
-
-Non-fatal noise ignored: Samsung `libpenguin.so` / MinkIPC (system), not app crash.
-
-## Not yet executed (remain PENDING / BLOCKED for pass-tag)
-
-| Area | Status |
+| Flow | Result |
 |---|---|
-| Auth register/login/session restore | PENDING |
-| Customer / partner / admin primary flows | PENDING |
-| Diagnostics screen probes on device | PENDING |
-| Maestro device flows (20) | PENDING |
-| Performance / a11y scanner | PENDING |
-| Full quality-gate re-run after device work | PENDING |
+| Dashboard | PASS (`screen-customer-dashboard`) |
+| Project list/detail | PASS (`screen-project-detail`, seeded project) |
+| Status/mijlpalen visible | PASS (Intake / seed copy) |
+| Messages tab + chat open | PASS |
+| Support screen | PARTIAL |
+| Documents list | PASS |
+| Quotes list + detail | PASS |
+| Invoices list | PASS |
+| Document upload / scan / signed URL / approve | PENDING |
+| Quote accept + double-submit | PENDING |
+| Fake checkout + browser return | PENDING |
+| Appointments book/move/cancel | PENDING |
+| Notification prefs | PENDING |
+| Account deletion request | PENDING |
+| Realtime second session | PENDING |
 
-Do **not** create `vdb-mobile-v1-android-device-pass` until pending items above pass.
+## Partner / admin flows
+
+| Flow | Result |
+|---|---|
+| Partner / admin full primary suite | PENDING / BLOCKED by flaky adb login automation in later pass |
+| Isolation partner A vs B | PENDING |
+
+## Android behaviour
+
+| Check | Result |
+|---|---|
+| Back gesture (no crash) | PASS — process survived |
+| App resume after Home | PARTIAL — depends on session/login state |
+| File picker / browser return / network toggle / large text / dark mode / notification deeplink | PENDING |
+
+## Production actions
+
+Remote migrations · live Mollie · production push · Git push · Play upload: **not performed**.

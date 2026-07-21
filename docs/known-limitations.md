@@ -4,16 +4,17 @@
 
 | Area | Limitation |
 |---|---|
-| Android SDK / JDK / adb | **PASS** (`docs/android-environment-verification.md`) |
-| Debug APK / Gradle | **PASS** — artifact + SHA-256 (`docs/android-build-evidence.md`, `docs/android-apk-evidence.md`) |
-| Samsung S25 install & cold start | **PASS** — `nl.vdbdigital.app` installed; login UI; no fatal crash |
-| Manual primary flows on S25 | **PENDING** |
-| APK permissions trim | **PARTIAL** — CAMERA/RECORD_AUDIO/SYSTEM_ALERT_WINDOW + vendor badges for next prebuild |
-| Maestro device | Syntax 20/20; device execution **PENDING** |
-| Device performance / a11y scanner | **PENDING** |
-| Preview AAB / EAS | **BLOCKED BY EAS CONFIGURATION** — project not linked |
-| Mollie live | Fail-closed without owner test key |
-| Push delivery | Prefs UI only; external delivery BLOCKED |
-| Partner payouts | Local seed enables flag for tests; production flag stays off |
-| Official backend | OWNER CONFIRMATION REQUIRED for ref `nhsrdnjfsxfikfbdmdfj` |
-| Dev diagnostics screen | Available only when `APP_ENV=development` (More → Development diagnostics) |
+| Android toolchain + S25 USB | **PASS** |
+| Debug APK install + cold start | **PASS** |
+| Device diagnostics (auth/db/realtime/storage) | **PASS** (Edge Functions probe N/A on screen) |
+| Customer smoke (dashboard/projects/chat/docs/quotes/invoices) | **PASS** |
+| Auth wrong-password + logout | **PASS** |
+| Partner/admin deep flows | **PENDING** — adb credential automation flaky (`!` / `@`) |
+| Maestro device | **FAIL 0/20** — flows executed; testIDs/start-state mismatch (`docs/maestro-device-results.md`) |
+| Checkout browser return / appointments / upload / dual-session chat | **PENDING** |
+| Accessibility Scanner | **PENDING** |
+| Preview AAB / EAS | **BLOCKED BY EAS CONFIGURATION** |
+| Typecheck | Watch: Expo Router typed routes noise may appear after prebuild; `usesCleartextTraffic` removed from `app.config.ts` (debug cleartext still via RN merge) |
+| Mollie live / production push | Fail-closed / not activated |
+
+**Tag `vdb-mobile-v1-android-device-pass` not created.**
