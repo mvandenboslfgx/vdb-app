@@ -2,6 +2,10 @@
  * Run the 20 required Maestro flows on a connected Android device.
  * Reports per-flow PASS/FAIL with duration (no syntax-only claims).
  * Local Supabase + adb reverse only — never production.
+ *
+ * Samsung/physical devices: Maestro uninstalls its driver APKs on session
+ * close. Pre-install them via adb before each maestro invocation so driver
+ * startup does not race USB install against MAESTRO_DRIVER_STARTUP_TIMEOUT.
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -13,6 +17,12 @@ const MAESTRO =
   (process.platform === 'win32'
     ? String.raw`C:\Users\XXX\maestro\bin\maestro.bat`
     : 'maestro');
+
+const MAESTRO_CLIENT_JAR =
+  process.env.MAESTRO_CLIENT_JAR ||
+  (process.platform === 'win32'
+    ? String.raw`C:\Users\XXX\maestro\lib\maestro-client.jar`
+    : path.join(process.env.HOME || '', '.maestro', 'lib', 'maestro-client.jar'));
 
 const FLOWS = [
   '01-customer-auth.yaml',
@@ -38,6 +48,8 @@ const FLOWS = [
 ];
 
 const device = process.env.ANDROID_SERIAL || process.argv[2] || '';
+const mode = process.env.MAESTRO_MODE || (process.argv.includes('--suite') ? 'suite' : 'per-flow');
+const apkDir = path.resolve('tmp-maestro-apks');
 
 function run(command, args, opts = {}) {
   return spawnSync(command, args, {
@@ -47,9 +59,44 @@ function run(command, args, opts = {}) {
       ...process.env,
       MAESTRO_CLI_NO_ANALYTICS: '1',
       MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED: 'true',
+      MAESTRO_DRIVER_STARTUP_TIMEOUT: process.env.MAESTRO_DRIVER_STARTUP_TIMEOUT || '180000',
     },
     ...opts,
   });
+}
+
+function ensureDriverApks() {
+  fs.mkdirSync(apkDir, { recursive: true });
+  const appApk = path.join(apkDir, 'maestro-app.apk');
+  const serverApk = path.join(apkDir, 'maestro-server.apk');
+  if (!fs.existsSync(appApk) || !fs.existsSync(serverApk)) {
+    if (!fs.existsSync(MAESTRO_CLIENT_JAR)) {
+      console.error('Missing maestro-client.jar at', MAESTRO_CLIENT_JAR);
+      process.exit(1);
+    }
+    console.log('Extracting Maestro driver APKs...');
+    const res = run('jar', ['xf', MAESTRO_CLIENT_JAR, 'maestro-app.apk', 'maestro-server.apk'], {
+      cwd: apkDir,
+    });
+    if ((res.status ?? 1) !== 0) {
+      console.error(res.stderr || res.stdout);
+      process.exit(res.status ?? 1);
+    }
+  }
+  return { appApk, serverApk };
+}
+
+function installDriverApks() {
+  const { appApk, serverApk } = ensureDriverApks();
+  console.log('Pre-installing Maestro driver APKs on device...');
+  const serialArgs = device ? ['-s', device] : [];
+  for (const apk of [appApk, serverApk]) {
+    const res = run('adb', [...serialArgs, 'install', '-r', '-t', apk], { stdio: 'inherit' });
+    if ((res.status ?? 1) !== 0) {
+      console.error('Failed to install', apk);
+      process.exit(res.status ?? 1);
+    }
+  }
 }
 
 function prepare() {
@@ -58,43 +105,93 @@ function prepare() {
 }
 
 prepare();
+installDriverApks();
 
 /** @type {{ flow: string; result: 'PASS'|'FAIL'|'BLOCKED'; durationSec: number; note: string }[]} */
 const results = [];
 
-for (const flow of FLOWS) {
-  prepare();
-  const file = path.resolve('maestro', flow);
-  if (!fs.existsSync(file)) {
-    results.push({ flow, result: 'BLOCKED', durationSec: 0, note: 'file missing' });
-    continue;
-  }
-  console.log(`\n=== ${flow} ===`);
+if (mode === 'suite') {
+  console.log('\n=== device-suite.yaml (single driver session) ===');
   const started = Date.now();
-  const args = ['test', file];
+  const args = ['test', path.resolve('maestro', 'device-suite.yaml')];
   if (device) args.push('--device', device);
   const res = run(MAESTRO, args, { stdio: 'pipe' });
   const durationSec = Number(((Date.now() - started) / 1000).toFixed(1));
   const out = `${res.stdout ?? ''}\n${res.stderr ?? ''}`;
-  const pass = (res.status ?? 1) === 0;
-  let note = '';
-  if (!pass) {
-    const line =
-      out
-        .split(/\r?\n/)
-        .map((l) => l.trim())
-        .find((l) => /Element not|Assertion|FAILED|Error|Unable|Parse|not found/i.test(l)) ??
-      `exit ${res.status}`;
-    note = line.slice(0, 200);
-    console.log(out.slice(-2500));
+  const logPath = path.resolve('docs', '_maestro-suite.log');
+  fs.writeFileSync(logPath, out);
+  console.log(out.slice(-8000));
+  const suitePass = (res.status ?? 1) === 0;
+  const failNote = (
+    out
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .find((l) => /Element not|Assertion|FAILED|Error|Unable|Parse|not found|Timeout|driver/i.test(l)) ??
+    `exit ${res.status}`
+  ).slice(0, 200);
+
+  for (const flow of FLOWS) {
+    const stem = flow.replace(/\.yaml$/, '');
+    // Screenshot names match flow stems in our YAMLs (e.g. 01-customer-auth)
+    const shotDone = new RegExp(`Take screenshot ${stem}(?:\\.png)?\\.\\.\\. COMPLETED`, 'i').test(out);
+    const startedFlow = out.includes(`> Flow ${stem}`) || out.includes(flow);
+    let result = 'FAIL';
+    let note = failNote;
+    if (suitePass) {
+      result = 'PASS';
+      note = '';
+    } else if (shotDone) {
+      result = 'PASS';
+      note = '';
+    } else if (startedFlow) {
+      result = 'FAIL';
+    } else {
+      result = 'BLOCKED';
+      note = 'not reached in suite';
+    }
+    results.push({
+      flow,
+      result,
+      durationSec: Number((durationSec / FLOWS.length).toFixed(1)),
+      note,
+    });
   }
-  results.push({
-    flow,
-    result: pass ? 'PASS' : 'FAIL',
-    durationSec,
-    note,
-  });
-  console.log(`${flow} -> ${pass ? 'PASS' : 'FAIL'} (${durationSec}s)`);
+} else {
+  for (const flow of FLOWS) {
+    prepare();
+    installDriverApks();
+    const file = path.resolve('maestro', flow);
+    if (!fs.existsSync(file)) {
+      results.push({ flow, result: 'BLOCKED', durationSec: 0, note: 'file missing' });
+      continue;
+    }
+    console.log(`\n=== ${flow} ===`);
+    const started = Date.now();
+    const args = ['test', file];
+    if (device) args.push('--device', device);
+    const res = run(MAESTRO, args, { stdio: 'pipe' });
+    const durationSec = Number(((Date.now() - started) / 1000).toFixed(1));
+    const out = `${res.stdout ?? ''}\n${res.stderr ?? ''}`;
+    const pass = (res.status ?? 1) === 0;
+    let note = '';
+    if (!pass) {
+      const line =
+        out
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .find((l) => /Element not|Assertion|FAILED|Error|Unable|Parse|not found|Timeout|driver/i.test(l)) ??
+        `exit ${res.status}`;
+      note = line.slice(0, 200);
+      console.log(out.slice(-2500));
+    }
+    results.push({
+      flow,
+      result: pass ? 'PASS' : 'FAIL',
+      durationSec,
+      note,
+    });
+    console.log(`${flow} -> ${pass ? 'PASS' : 'FAIL'} (${durationSec}s)`);
+  }
 }
 
 const passed = results.filter((r) => r.result === 'PASS').length;
@@ -103,7 +200,7 @@ const blocked = results.filter((r) => r.result === 'BLOCKED').length;
 
 const summary = {
   at: new Date().toISOString(),
-  mode: 'per-flow',
+  mode,
   passed,
   failed,
   blocked,

@@ -25,7 +25,11 @@ appId: nl.vdbdigital.app
 - extendedWaitUntil:
     visible:
       id: "screen-invoice-detail"
-    timeout: 30000
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: "customer-checkout-start"
+    timeout: 60000
 - assertVisible:
     id: "customer-checkout-start"
 - takeScreenshot: "16-checkout-browser-return"

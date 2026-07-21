@@ -1,6 +1,6 @@
 appId: nl.vdbdigital.app
 ---
-# 09 - Admin partner approval (pending partner application from seed)
+# 09 - Admin partner approval (pending partner application from seed / flow 08)
 - clearState
 - launchApp
 - runFlow:
@@ -15,9 +15,10 @@ appId: nl.vdbdigital.app
     id: "tab-admin-approvals"
 - assertVisible:
     id: "screen-admin-approvals"
-- extendedWaitUntil:
-    visible:
-      id: "approval-row-0"
+- scrollUntilVisible:
+    element:
+      id: "admin-partner-approve"
+    direction: DOWN
     timeout: 20000
 - assertVisible:
     id: "admin-partner-approve"

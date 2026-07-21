@@ -80,11 +80,12 @@ async function findUserByEmail(admin, email) {
 async function upsertUser(admin, identity) {
   const existing = await findUserByEmail(admin, identity.email);
   if (existing) {
-    await admin.updateUserById(existing.id, {
+    const { error } = await admin.updateUserById(existing.id, {
       password: LOCAL_PASSWORD,
       email_confirm: true,
       user_metadata: { full_name: identity.full_name, locale: 'nl' },
     });
+    if (error) throw error;
     return existing.id;
   }
   const { data, error } = await admin.createUser({

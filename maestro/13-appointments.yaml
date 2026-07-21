@@ -13,12 +13,21 @@ appId: nl.vdbdigital.app
     timeout: 60000
 - tapOn:
     id: "tab-customer-more"
+- scrollUntilVisible:
+    element:
+      id: "nav-appointments"
+    direction: DOWN
+    timeout: 15000
 - tapOn:
     id: "nav-appointments"
-- assertVisible:
-    id: "screen-appointments"
+- extendedWaitUntil:
+    visible:
+      id: "screen-appointments"
+    timeout: 30000
 - tapOn:
     id: "btn-appointments-book"
-- assertVisible:
-    id: "screen-appointments-book"
+- extendedWaitUntil:
+    visible:
+      id: "screen-appointments-book"
+    timeout: 30000
 - takeScreenshot: "13-appointments"

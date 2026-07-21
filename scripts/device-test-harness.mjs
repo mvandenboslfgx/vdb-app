@@ -41,16 +41,56 @@ function reversePorts() {
   run('adb', ['reverse', '--list']);
 }
 
+function assertLocalStackHealthy() {
+  const health = runQuiet('curl.exe', [
+    '-s',
+    '-o',
+    'NUL',
+    '-w',
+    '%{http_code}',
+    'http://127.0.0.1:54321/auth/v1/health',
+  ]);
+  const code = (health.stdout ?? '').trim();
+  if (code !== '200') {
+    console.error(`Local Supabase auth unhealthy (HTTP ${code || 'none'}). Run: npx supabase start`);
+    process.exit(1);
+  }
+  const kong = runQuiet('docker', [
+    'ps',
+    '--filter',
+    'name=supabase_kong',
+    '--format',
+    '{{.Names}}',
+  ]);
+  const kongName = (kong.stdout ?? '').trim();
+  if (kongName && !kongName.includes('vdb-digital-mobile-local')) {
+    console.error(
+      `Wrong Supabase stack on :54321 (${kongName}). Stop other projects (e.g. vdbdigital2) and run: npx supabase start`,
+    );
+    process.exit(1);
+  }
+  const metro = runQuiet('curl.exe', ['-s', '-o', 'NUL', '-w', '%{http_code}', 'http://127.0.0.1:8081/status']);
+  const metroCode = (metro.stdout ?? '').trim();
+  if (metroCode !== '200') {
+    console.error(`Metro not reachable on :8081 (HTTP ${metroCode || 'none'}). Keep expo start running.`);
+    process.exit(1);
+  }
+  console.log(`Local stack OK (${kongName || 'kong'} + metro).`);
+}
+
 switch (cmd) {
   case 'prepare':
     prepareDevice();
     reversePorts();
+    assertLocalStackHealthy();
     break;
   case 'reset':
     prepareDevice();
     run('npx', ['supabase', 'db', 'reset']);
     run('node', ['scripts/seed-local-identities.mjs']);
+    run('node', ['scripts/verify-local-passwords.mjs']);
     reversePorts();
+    assertLocalStackHealthy();
     break;
   case 'seed':
     run('node', ['scripts/seed-local-identities.mjs']);

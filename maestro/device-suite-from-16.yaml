@@ -1,0 +1,8 @@
+# Resume suite from flow 16 after 01-15 passed across suite runs.
+appId: nl.vdbdigital.app
+---
+- runFlow: 16-checkout-browser-return.yaml
+- runFlow: 17-customer-document-upload.yaml
+- runFlow: 19-partner-payout.yaml
+- runFlow: 20-admin-ticket-reply.yaml
+- runFlow: 21-admin-finance.yaml

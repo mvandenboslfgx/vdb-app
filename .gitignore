@@ -69,3 +69,13 @@ coverage/
 # Local Supabase runtime
 supabase/.temp/
 supabase/.branches/
+
+# Maestro / device harness scratch
+tmp-maestro-apks/
+tmp-maestro-src/
+maestro/_probe-*.yaml
+docs/_maestro*
+docs/_m-*.log
+docs/_device-*.log
+docs/maestro-device-junit.xml
+docs/maestro-device-results.latest.json

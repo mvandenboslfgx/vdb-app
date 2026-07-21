@@ -31,7 +31,9 @@
     "device:test:customer": "node scripts/device-test-harness.mjs customer",
     "device:test:partner": "node scripts/device-test-harness.mjs partner",
     "device:test:admin": "node scripts/device-test-harness.mjs admin",
-    "device:test:maestro": "node scripts/run-maestro-device.mjs"
+    "device:test:maestro": "node scripts/run-maestro-device.mjs --suite",
+    "device:test:maestro:per-flow": "node scripts/run-maestro-device.mjs",
+    "device:test:verify-passwords": "node scripts/verify-local-passwords.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

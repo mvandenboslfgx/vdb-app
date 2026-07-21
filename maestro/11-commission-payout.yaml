@@ -13,8 +13,14 @@ appId: nl.vdbdigital.app
     timeout: 60000
 - tapOn:
     id: "partner-payout-request"
-- assertVisible:
-    id: "screen-partner-payouts"
+- extendedWaitUntil:
+    visible:
+      id: "screen-partner-payouts"
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: "btn-payout-request"
+    timeout: 60000
 - assertVisible:
     id: "btn-payout-request"
 - takeScreenshot: "11-commission-payout"

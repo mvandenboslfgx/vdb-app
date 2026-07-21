@@ -1,5 +1,5 @@
-# Shared: dismiss Samsung Pass / autofill / system overlays (NL + EN)
-# Do NOT press system Back — that exits the public landing screen.
+# Shared: dismiss Samsung Pass / autofill save prompts only.
+# Keep this minimal — long optional tap chains destabilize USB Maestro sessions.
 appId: nl.vdbdigital.app
 ---
 - tapOn:
@@ -9,23 +9,8 @@ appId: nl.vdbdigital.app
     id: "android:id/autofill_save_never_allow"
     optional: true
 - tapOn:
-    text: "Annuleren"
-    optional: true
-- tapOn:
     text: "Nee"
     optional: true
 - tapOn:
-    text: "Cancel"
-    optional: true
-- tapOn:
     text: "No"
-    optional: true
-- tapOn:
-    text: "Never"
-    optional: true
-- tapOn:
-    text: "Niet toestaan"
-    optional: true
-- tapOn:
-    text: "Don't allow"
     optional: true

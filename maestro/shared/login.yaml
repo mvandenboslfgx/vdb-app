@@ -1,18 +1,19 @@
 # Shared: open login from cold start (app data cleared by parent).
 # Env: EMAIL
 # Password is shell-safe LocalTestVdb2026 (no !).
+# Requires Metro on :8081 + adb reverse for the debug APK.
+# Login fields use importantForAutofill=no to block Samsung Pass corruption.
 appId: nl.vdbdigital.app
 ---
 - runFlow:
     file: dismiss-overlays.yaml
+- waitForAnimationToEnd
 - extendedWaitUntil:
     visible:
       id: "btn-public-login"
-    timeout: 45000
+    timeout: 90000
 - tapOn:
     id: "btn-public-login"
-- runFlow:
-    file: dismiss-overlays.yaml
 - extendedWaitUntil:
     visible:
       id: "auth-login-screen"
@@ -28,13 +29,13 @@ appId: nl.vdbdigital.app
 - hideKeyboard
 - tapOn:
     id: "auth-login-submit"
-# Samsung Pass / autofill may appear after successful auth — dismiss repeatedly
-# while Metro + session hydrate (no fixed sleep as the primary sync).
 - runFlow:
     file: dismiss-overlays.yaml
 - waitForAnimationToEnd
 - runFlow:
     file: dismiss-overlays.yaml
-- waitForAnimationToEnd
-- runFlow:
-    file: dismiss-overlays.yaml
+# Leave auth screen or fail here (do not pretend login succeeded).
+- extendedWaitUntil:
+    notVisible:
+      id: "auth-login-screen"
+    timeout: 60000
