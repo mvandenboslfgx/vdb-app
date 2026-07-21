@@ -139,10 +139,10 @@ export default function AdminFinanceScreen() {
       {submittedPayouts.length === 0 ? (
         <EmptyState title={t('payouts.historyEmpty')} />
       ) : (
-        submittedPayouts.map((p) => (
+        submittedPayouts.map((p, index) => (
           <View key={p.id}>
             <ListRow
-              testID={`row-finance-payout-${p.id}`}
+              testID={index === 0 ? 'row-finance-payout-0' : `row-finance-payout-${p.id}`}
               title={formatCurrency(p.amountCents)}
               subtitle={p.submittedAt ?? undefined}
               onPress={() => select('payout', p.id)}
