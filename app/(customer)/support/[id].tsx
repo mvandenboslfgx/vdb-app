@@ -39,7 +39,7 @@ export default function SupportTicketDetailScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-support-detail">
       <Text variant="title">{ticket.subject}</Text>
       <StatusPill label={t(`status.${ticket.status}`)} tone="gold" />
       <Text variant="caption" color="textMuted" style={styles.meta}>

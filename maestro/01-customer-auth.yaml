@@ -1,6 +1,6 @@
 appId: nl.vdbdigital.app
 ---
-# 01 — Customer auth (clear state, login customer.a)
+# 01 - Customer auth (clear state, login customer.a)
 # Start: logged out | User: customer.a@local.vdb | Locale: NL (testIDs)
 - clearState
 - launchApp
@@ -11,7 +11,7 @@ appId: nl.vdbdigital.app
 - extendedWaitUntil:
     visible:
       id: "customer-dashboard-screen"
-    timeout: 30000
+    timeout: 60000
 - assertVisible:
     id: "customer-dashboard-screen"
 - takeScreenshot: "01-customer-auth"

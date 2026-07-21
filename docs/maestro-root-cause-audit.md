@@ -37,6 +37,19 @@
 | 20 | 20-admin-ticket-reply.yaml | launchApp | ticket | fail | text Tickets | IDs yes | no | **yes** | seed | no | AUTH STATE MISMATCH | admin login |
 | 21 | 21-admin-finance.yaml | launchApp | finance | fail | text Finance | IDs yes | **yes** | yes | seed | no | LANGUAGE MISMATCH + WRONG START | Financiën + select row before approve |
 
-## Credential note
+## Fixes applied (Phase 7 — in progress)
 
-`LocalTest!Vdb2026` breaks adb/`!` escaping. Phase 7 switches local password to shell-safe `LocalTestVdb2026` (seed + docs + Maestro).
+| Area | Change |
+|---|---|
+| Credentials | Password `LocalTestVdb2026` (no `!`) in seed + Maestro + docs |
+| Start state | Every flow: `clearState` + `shared/login.yaml` with role EMAIL |
+| Selectors | Tab `tabBarButtonTestID`s; auth/customer/partner/admin testIDs; `*-row-0` fixtures |
+| YAML 16 | Parse fixed (no `- #` list comment) |
+| Flow 14 | Rewritten to admin approvals queue (no invent create-project UI) |
+| Overlays | `shared/dismiss-overlays.yaml` for Samsung Pass / autofill |
+| Harness | `npm run device:test:{prepare,reset,seed,customer,partner,admin,maestro}` |
+| Typecheck | `resolveHomeRoute(): Href`; TextInput blur typing fixed |
+
+## Remaining for 20/20 device PASS
+
+Reconnect S25, `npm run device:test:reset`, Metro + reverse, `npm run device:test:maestro`, then fix any REAL APP DEFECT / TIMING failures without arbitrary sleeps.

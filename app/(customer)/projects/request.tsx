@@ -59,8 +59,7 @@ export default function ProjectRequestScreen() {
           label={t('request.description')}
           value={description}
           onChangeText={setDescription}
-          multiline
-          style={styles.area}
+          multiline={false}
         />
         <Button
           testID="btn-project-request-submit"

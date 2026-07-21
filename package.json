@@ -26,10 +26,12 @@
     "test:maestro:syntax": "node scripts/validate-maestro.mjs",
     "device:test:reset": "node scripts/device-test-harness.mjs reset",
     "device:test:seed": "node scripts/device-test-harness.mjs seed",
+    "device:test:prepare": "node scripts/device-test-harness.mjs prepare",
     "device:test:reverse": "node scripts/device-test-harness.mjs reverse",
     "device:test:customer": "node scripts/device-test-harness.mjs customer",
     "device:test:partner": "node scripts/device-test-harness.mjs partner",
-    "device:test:admin": "node scripts/device-test-harness.mjs admin"
+    "device:test:admin": "node scripts/device-test-harness.mjs admin",
+    "device:test:maestro": "node scripts/run-maestro-device.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

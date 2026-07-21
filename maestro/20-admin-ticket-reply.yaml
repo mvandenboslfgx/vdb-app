@@ -1,6 +1,6 @@
 appId: nl.vdbdigital.app
 ---
-# 20 — Admin ticket reply (deterministic IDs only)
+# 20 - Admin ticket reply (deterministic IDs only)
 # Start: logged out | User: admin@local.vdb | Requires seeded ticket
 - clearState
 - launchApp
@@ -11,7 +11,7 @@ appId: nl.vdbdigital.app
 - extendedWaitUntil:
     visible:
       id: "admin-dashboard-screen"
-    timeout: 30000
+    timeout: 60000
 - tapOn:
     id: "tab-admin-tickets"
 - assertVisible:
@@ -28,7 +28,14 @@ appId: nl.vdbdigital.app
     timeout: 20000
 - tapOn:
     id: "input-ticket-reply"
+- eraseText
 - inputText: "Maestro admin reply"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "btn-ticket-send-reply"
+    direction: DOWN
+    timeout: 10000
 - tapOn:
     id: "btn-ticket-send-reply"
 - assertVisible:

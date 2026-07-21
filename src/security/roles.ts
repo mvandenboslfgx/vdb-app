@@ -52,6 +52,9 @@ export function isPartnerPending(roles: readonly AppRole[]): boolean {
 export function resolvePrimaryArea(
   roles: readonly AppRole[],
 ): 'admin' | 'partner' | 'customer' | 'public' {
+  if (roles.length === 0) {
+    return 'public';
+  }
   if (isAdmin(roles) || isStaff(roles)) {
     return 'admin';
   }

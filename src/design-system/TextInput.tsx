@@ -15,7 +15,17 @@ export interface TextInputProps extends RNTextInputProps {
   hint?: string;
 }
 
-export function TextInput({ label, error, hint, style, onFocus, onBlur, ...rest }: TextInputProps) {
+export function TextInput({
+  label,
+  error,
+  hint,
+  style,
+  onFocus,
+  onBlur,
+  onChangeText,
+  onEndEditing,
+  ...rest
+}: TextInputProps) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -36,6 +46,12 @@ export function TextInput({ label, error, hint, style, onFocus, onBlur, ...rest 
         onFocus={(e) => {
           setFocused(true);
           onFocus?.(e);
+        }}
+        onChangeText={onChangeText}
+        onEndEditing={(e) => {
+          // Maestro / some IMEs update native text without reliable onChangeText on multiline.
+          onChangeText?.(e.nativeEvent.text);
+          onEndEditing?.(e);
         }}
         onBlur={(e) => {
           setFocused(false);

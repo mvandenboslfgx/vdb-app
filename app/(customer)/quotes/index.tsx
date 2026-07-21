@@ -45,7 +45,7 @@ export default function QuotesScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-quotes">
       <Text variant="title">{t('title')}</Text>
       {items.length === 0 ? (
         <EmptyState title={t('empty')} description={t('emptyHint')} />

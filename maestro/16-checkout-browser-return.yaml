@@ -1,6 +1,6 @@
 appId: nl.vdbdigital.app
 ---
-# 16 — Checkout browser return (invoice detail + checkout CTA visible)
+# 16 - Checkout browser return (invoice detail + checkout CTA visible)
 # Browser return is asserted by remaining on invoice detail after optional checkout tap.
 - clearState
 - launchApp
@@ -11,15 +11,21 @@ appId: nl.vdbdigital.app
 - extendedWaitUntil:
     visible:
       id: "customer-dashboard-screen"
-    timeout: 30000
+    timeout: 60000
 - tapOn:
     id: "tab-customer-more"
 - tapOn:
     id: "nav-invoices"
+- extendedWaitUntil:
+    visible:
+      id: "invoice-row-0"
+    timeout: 20000
 - tapOn:
     id: "invoice-row-0"
-- assertVisible:
-    id: "screen-invoice-detail"
+- extendedWaitUntil:
+    visible:
+      id: "screen-invoice-detail"
+    timeout: 30000
 - assertVisible:
     id: "customer-checkout-start"
 - takeScreenshot: "16-checkout-browser-return"

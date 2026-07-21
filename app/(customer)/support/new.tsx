@@ -14,11 +14,17 @@ export default function NewSupportTicketScreen() {
   const [category, setCategory] = useState('other');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
+  const [error, setError] = useState(false);
+  const [validationError, setValidationError] = useState(false);
 
   async function onSubmit() {
-    if (!subject.trim() || !description.trim()) return;
+    if (!subject.trim() || !description.trim()) {
+      setValidationError(true);
+      return;
+    }
+    setValidationError(false);
     setLoading(true);
+    setError(false);
     try {
       const ticket = await createTicket({
         subject,
@@ -26,24 +32,27 @@ export default function NewSupportTicketScreen() {
         description,
         priority: 'medium',
       });
-      setDone(true);
       router.replace(`/(customer)/support/${ticket.id}`);
+    } catch {
+      setError(true);
     } finally {
       setLoading(false);
     }
   }
 
-  if (done) {
-    return (
-      <Screen testID="screen-support-new-success">
-        <Text variant="title">{t('success')}</Text>
-      </Screen>
-    );
-  }
-
   return (
     <Screen scroll testID="screen-support-new">
       <Text variant="title">{t('newTicket')}</Text>
+      {error ? (
+        <Text testID="support-error-message" variant="body" color="error">
+          {t('error')}
+        </Text>
+      ) : null}
+      {validationError ? (
+        <Text testID="support-validation-error" variant="body" color="error">
+          {t('descriptionPlaceholder')}
+        </Text>
+      ) : null}
       <View style={styles.form}>
         <TextInput testID="input-support-subject" label={t('subject')} value={subject} onChangeText={setSubject} />
         <TextInput testID="input-support-category" label={t('category')} value={category} onChangeText={setCategory} />
@@ -53,8 +62,8 @@ export default function NewSupportTicketScreen() {
           placeholder={t('descriptionPlaceholder')}
           value={description}
           onChangeText={setDescription}
-          multiline
-          style={styles.area}
+          // Single-line: Maestro IME reliably syncs onChangeText (multiline controlled fields stay empty).
+          multiline={false}
         />
         <Button
           testID="btn-support-submit"

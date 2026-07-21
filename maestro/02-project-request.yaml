@@ -1,7 +1,6 @@
 appId: nl.vdbdigital.app
 ---
-# 02 — Project request
-# Start: logged out → customer.a
+# 02 - Project request
 - clearState
 - launchApp
 - runFlow:
@@ -11,7 +10,7 @@ appId: nl.vdbdigital.app
 - extendedWaitUntil:
     visible:
       id: "customer-dashboard-screen"
-    timeout: 30000
+    timeout: 60000
 - tapOn:
     id: "tab-customer-projects"
 - tapOn:
@@ -20,10 +19,24 @@ appId: nl.vdbdigital.app
     id: "screen-project-request"
 - tapOn:
     id: "input-project-request-title"
+- eraseText
 - inputText: "Maestro project request"
 - tapOn:
     id: "input-project-request-description"
+- eraseText
 - inputText: "Created by Maestro device flow 02"
 - tapOn:
+    id: "input-project-request-title"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "btn-project-request-submit"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
     id: "btn-project-request-submit"
+- extendedWaitUntil:
+    visible:
+      id: "screen-project-request-success"
+    timeout: 20000
 - takeScreenshot: "02-project-request"

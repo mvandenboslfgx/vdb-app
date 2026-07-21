@@ -8,7 +8,7 @@ appId: nl.vdbdigital.app
 - extendedWaitUntil:
     visible:
       id: "btn-public-login"
-    timeout: 30000
+    timeout: 45000
 - tapOn:
     id: "btn-public-login"
 - runFlow:
@@ -25,7 +25,16 @@ appId: nl.vdbdigital.app
     id: "auth-password-input"
 - eraseText
 - inputText: "LocalTestVdb2026"
+- hideKeyboard
 - tapOn:
     id: "auth-login-submit"
+# Samsung Pass / autofill may appear after successful auth — dismiss repeatedly
+# while Metro + session hydrate (no fixed sleep as the primary sync).
+- runFlow:
+    file: dismiss-overlays.yaml
+- waitForAnimationToEnd
+- runFlow:
+    file: dismiss-overlays.yaml
+- waitForAnimationToEnd
 - runFlow:
     file: dismiss-overlays.yaml

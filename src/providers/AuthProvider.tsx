@@ -71,7 +71,6 @@ function mapProfileFromUser(
   roles: AppRole[] = ['customer'],
 ): Profile {
   const meta = user.user_metadata ?? {};
-  const safeRoles = roles.filter((role) => role === 'customer' || !isAdminLike(role));
   return {
     id: user.id,
     email: user.email ?? '',
@@ -79,15 +78,12 @@ function mapProfileFromUser(
     phone: typeof meta.phone === 'string' ? meta.phone : null,
     avatarUrl: typeof meta.avatar_url === 'string' ? meta.avatar_url : null,
     locale: meta.locale === 'en' ? 'en' : 'nl',
-    roles: safeRoles.length > 0 ? safeRoles : ['customer'],
+    // Keep DB roles intact — privileged roles are assigned server-side only.
+    roles: roles.length > 0 ? roles : ['customer'],
     emailVerified: Boolean(user.email_confirmed_at),
     createdAt: user.created_at,
     updatedAt: user.updated_at ?? user.created_at,
   };
-}
-
-function isAdminLike(role: AppRole): boolean {
-  return role === 'admin' || role === 'owner' || role === 'staff';
 }
 
 /** Strip any privileged roles that a client might try to claim during register. */
@@ -221,12 +217,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!supabase) {
         throw new Error('Supabase is not configured');
       }
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         throw new Error(error.message);
       }
+      // Apply session + roles before callers navigate — otherwise resolveHomeRoute([])
+      // treats an empty role list as customer and skips admin/partner areas.
+      await applySession(data.session);
     },
-    [isDemoMode],
+    [applySession, isDemoMode],
   );
 
   const signUp = useCallback(

@@ -1,8 +1,12 @@
-# Shared: dismiss Samsung Pass / autofill save overlays (NL)
+# Shared: dismiss Samsung Pass / autofill / system overlays (NL + EN)
+# Do NOT press system Back — that exits the public landing screen.
 appId: nl.vdbdigital.app
 ---
 - tapOn:
     id: "android:id/autofill_save_no"
+    optional: true
+- tapOn:
+    id: "android:id/autofill_save_never_allow"
     optional: true
 - tapOn:
     text: "Annuleren"
@@ -14,5 +18,14 @@ appId: nl.vdbdigital.app
     text: "Cancel"
     optional: true
 - tapOn:
-    id: "android:id/autofill_save_never_allow"
+    text: "No"
+    optional: true
+- tapOn:
+    text: "Never"
+    optional: true
+- tapOn:
+    text: "Niet toestaan"
+    optional: true
+- tapOn:
+    text: "Don't allow"
     optional: true

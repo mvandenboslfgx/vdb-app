@@ -1,6 +1,6 @@
 appId: nl.vdbdigital.app
 ---
-# 07 — Test checkout start (fake / fail-closed safe)
+# 07 - Test checkout start (fake / fail-closed safe)
 - clearState
 - launchApp
 - runFlow:
@@ -10,15 +10,21 @@ appId: nl.vdbdigital.app
 - extendedWaitUntil:
     visible:
       id: "customer-dashboard-screen"
-    timeout: 30000
+    timeout: 60000
 - tapOn:
     id: "tab-customer-more"
 - tapOn:
     id: "nav-invoices"
+- extendedWaitUntil:
+    visible:
+      id: "invoice-row-0"
+    timeout: 20000
 - tapOn:
     id: "invoice-row-0"
-- assertVisible:
-    id: "screen-invoice-detail"
+- extendedWaitUntil:
+    visible:
+      id: "screen-invoice-detail"
+    timeout: 30000
 - assertVisible:
     id: "customer-checkout-start"
 - takeScreenshot: "07-test-checkout"

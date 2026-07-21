@@ -380,6 +380,7 @@ async function main() {
       total_cents: 12100,
       created_by: staff,
       sent_at: new Date().toISOString(),
+      valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     })
     .select('id')
     .single();
@@ -405,6 +406,7 @@ async function main() {
       tax_cents: 2100,
       total_cents: 12100,
       issued_on: new Date().toISOString().slice(0, 10),
+      due_on: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     },
     {
       invoice_number: 'INV-LOCAL-SEED-B',
@@ -415,6 +417,7 @@ async function main() {
       tax_cents: 1050,
       total_cents: 6050,
       issued_on: new Date().toISOString().slice(0, 10),
+      due_on: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     },
   ]);
 

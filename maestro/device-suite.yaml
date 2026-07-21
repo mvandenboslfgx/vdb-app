@@ -1,0 +1,24 @@
+# Single Maestro session for all 20 required device flows.
+# One driver session avoids USB flakiness from per-flow install/uninstall.
+appId: nl.vdbdigital.app
+---
+- runFlow: 01-customer-auth.yaml
+- runFlow: 02-project-request.yaml
+- runFlow: 03-project-chat.yaml
+- runFlow: 04-support-ticket.yaml
+- runFlow: 05-document-review.yaml
+- runFlow: 06-quote-acceptance.yaml
+- runFlow: 07-test-checkout.yaml
+- runFlow: 08-partner-application.yaml
+- runFlow: 09-admin-partner-approval.yaml
+- runFlow: 10-partner-lead.yaml
+- runFlow: 11-commission-payout.yaml
+- runFlow: 12-account-deletion.yaml
+- runFlow: 13-appointments.yaml
+- runFlow: 14-admin-project-creation.yaml
+- runFlow: 15-document-version-2.yaml
+- runFlow: 16-checkout-browser-return.yaml
+- runFlow: 17-customer-document-upload.yaml
+- runFlow: 19-partner-payout.yaml
+- runFlow: 20-admin-ticket-reply.yaml
+- runFlow: 21-admin-finance.yaml
