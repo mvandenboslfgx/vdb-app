@@ -104,7 +104,10 @@ export default function InvoiceDetailScreen() {
     );
   }
 
-  const canPay = ['sent', 'viewed', 'partially_paid', 'overdue'].includes(invoice.status);
+  // Domain maps DB `issued` → `sent`. Keep both names so fixtures/UI stay aligned.
+  const canPay = ['issued', 'sent', 'viewed', 'partially_paid', 'overdue'].includes(
+    invoice.status,
+  );
 
   return (
     <Screen scroll testID="screen-invoice-detail">

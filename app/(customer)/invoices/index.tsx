@@ -39,13 +39,23 @@ export default function InvoicesScreen() {
     void load();
   }, [load]);
 
-  if (loading) return <LoadingState label={t('loading')} />;
+  if (loading) {
+    return (
+      <Screen testID="screen-invoices">
+        <LoadingState label={t('loading')} />
+      </Screen>
+    );
+  }
   if (error) {
-    return <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />;
+    return (
+      <Screen testID="screen-invoices">
+        <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />
+      </Screen>
+    );
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-invoices">
       <Text variant="title">{t('title')}</Text>
       {items.length === 0 ? (
         <EmptyState title={t('empty')} description={t('emptyHint')} />

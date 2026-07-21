@@ -22,9 +22,9 @@ describe('roles', () => {
     expect(isPartner(['customer'])).toBe(false);
   });
 
-  it('resolves customer by default', () => {
+  it('resolves customer when role is customer; public when roles empty', () => {
     expect(resolveHomeRoute(['customer'])).toBe('/(customer)');
-    expect(resolveHomeRoute([])).toBe('/(customer)');
+    expect(resolveHomeRoute([])).toBe('/(public)');
     expect(canAccessAdminArea(['customer'])).toBe(false);
     expect(canAccessPartnerArea(['customer'])).toBe(false);
   });

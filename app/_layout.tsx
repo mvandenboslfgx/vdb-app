@@ -23,8 +23,12 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  // Font download can fail transiently when Metro/adb reverse flaps; do not redbox the whole tree.
   useEffect(() => {
-    if (error) throw error;
+    if (error) {
+      console.warn('[fonts] SpaceMono failed to load; continuing with system fonts', error.message);
+      void SplashScreen.hideAsync();
+    }
   }, [error]);
 
   useEffect(() => {
@@ -33,7 +37,8 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
+  // Proceed once fonts resolve OR fail — never hang splash forever.
+  if (!loaded && !error) {
     return null;
   }
 
