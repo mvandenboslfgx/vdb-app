@@ -1,24 +1,22 @@
 # Manual owner actions — Matthijs
 
-## Immediate (device phase) — install blocked on USB
+## Immediate blockers (2026-07-21)
 
-1. [ ] Confirm website Supabase ref is `nhsrdnjfsxfikfbdmdfj` (no keys in chat)
-2. [x] Install Android Studio + SDK Platform Tools
-3. [x] Set `ANDROID_HOME` / `JAVA_HOME`; verify `java -version` and `adb version`
-4. [ ] Reconnect Galaxy S25 USB; unlock; accept RSA if needed; `adb devices` → `device` (`SM_S931B`)
-5. [ ] `adb reverse tcp:54321 tcp:54321` and `adb reverse tcp:8081 tcp:8081`
-6. [ ] `adb install -r android\app\build\outputs\apk\debug\app-debug.apk` (rebuild if tree cleaned)
-7. [ ] Start Metro (`npx expo start`); cold start; fill `docs/samsung-s25-device-results.md`
-8. [ ] Run Maestro device flows → `docs/maestro-device-results.md`
-9. [ ] Optional: `eas login` + `eas init` — preview AAB **BLOCKED BY EAS CONFIGURATION** until linked
+1. [ ] Connect S25 USB → `adb devices` shows `R3GYC00EBYY device` (not empty / unauthorized)
+2. [ ] Start **Docker Desktop** (engine running) so `npx supabase start` works
+3. [ ] `adb reverse tcp:54321 tcp:54321` and `adb reverse tcp:8081 tcp:8081`
+4. [ ] Reply in Cursor when both device + Docker are up so install/cold start can resume
 
-## Done this session
+## Already done
 
-- Debug APK built + inspected (`docs/android-build-evidence.md`, `docs/android-apk-evidence.md`)
+- [x] Java / `JAVA_HOME` / `ANDROID_HOME` / `adb`
+- [x] Node `v24.15.0` / npm `11.12.1`
+- [x] Debug APK built + inspected (`docs/android-apk-evidence.md`)
+- [x] Prebuild previously run (`android/` gitignored)
 
-## Later (production — explicit approval)
+## Later (after device install)
 
-12. [ ] Staging migration apply + Edge deploy review
-13. [ ] Mollie **test** key server-side only
-14. [ ] Push credentials when flag may enable
-15. [ ] Play Store internal testing / production signing — never without approval
+5. [ ] Cold start + logcat; fill `docs/samsung-s25-device-results.md`
+6. [ ] Maestro device flows → `docs/maestro-device-results.md`
+7. [ ] Optional: `eas login` + `eas init` — preview AAB **BLOCKED BY EAS CONFIGURATION** until linked
+8. [ ] Production actions only with explicit approval (migrations, Mollie, Play, push)
