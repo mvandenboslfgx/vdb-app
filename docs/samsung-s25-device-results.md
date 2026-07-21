@@ -4,8 +4,8 @@
 **Device:** `R3GYC00EBYY` / `SM_S931B` / `arm64-v8a`  
 **Package:** `nl.vdbdigital.app` 1.0.0 (1)  
 **Connectivity:** `adb reverse` tcp:54321 + tcp:8081 → local Supabase + Metro  
-**End status:** **SAMSUNG S25 DEVICE PASS WITH LIMITATIONS — PRODUCTION NOT ACTIVATED**  
-**Tag `vdb-mobile-v1-android-device-pass`:** **NOT created** (Maestro device 0/20 PASS; partner/admin deep flows incomplete)
+**End status:** **ANDROID TEST INFRASTRUCTURE BLOCKED — PRODUCTION NOT ACTIVATED**  
+**Tag `vdb-mobile-v1-android-device-pass`:** **NOT created** (requires one clean **20/20** Maestro session; open subset 16–21 was 5/5 PASS but full suite cut by competing `vdbdigital2` stack)
 
 ## Environment re-check
 

@@ -1,48 +1,57 @@
-# Maestro device results (Phase 7)
+# Maestro device results (recovery pass)
 
+**Status:** `ANDROID TEST INFRASTRUCTURE BLOCKED — PRODUCTION NOT ACTIVATED`  
 **Device:** Samsung S25 `R3GYC00EBYY` / `SM_S931B`  
-**Combined device evidence:** **15/20 PASS** (two healthy suite segments)  
-**Tag `vdb-mobile-v1-android-device-pass`:** not created (requires 20/20 in one clean validation)
+**Suite denominator (auto-discovered):** **20** — see `docs/maestro-suite-manifest.md`  
+**Tag `vdb-mobile-v1-android-device-pass`:** not created
 
-## Combined PASS map
+## A. Suite manifest
 
-| Flow | Status | Evidence |
+Executable flows = `maestro/<NN>-*.yaml` at suite root → **20 files**.  
+Numbering gap: no `18-*.yaml`. Reporting “16–21” means prefixes, not 21 flows.
+
+Score label must be **`20/20`**, never a hard-coded claim that disagrees with discovery.
+
+## B. Latest evidence (this recovery)
+
+### Open-flow subset (one runner session after clean reset)
+
+| Flow | Result | Duration |
 |---|---|---|
-| 01-customer-auth | PASS | suite 2026-07-21_214508 |
-| 02-project-request | PASS | same |
-| 03-project-chat | PASS | same |
-| 04-support-ticket | PASS | same |
-| 05-document-review | PASS | same |
-| 06-quote-acceptance | PASS | same |
-| 07-test-checkout | PASS | same |
-| 08-partner-application | PASS | same |
-| 09-admin-partner-approval | PASS | same |
-| 10-partner-lead | PASS | same |
-| 11-commission-payout | PASS | same |
-| 12-account-deletion | PASS | same |
-| 13-appointments | PASS | suite from-13 `docs/_maestro-from13b.log` |
-| 14-admin-project-creation | PASS | same |
-| 15-document-version-2 | PASS | same |
-| 16-checkout-browser-return | FAIL / OPEN | invoice detail assert; later auth flaky |
-| 17-customer-document-upload | OPEN | not reached |
-| 19-partner-payout | OPEN | not reached |
-| 20-admin-ticket-reply | OPEN | not reached |
-| 21-admin-finance | OPEN | not reached |
+| 16-checkout-browser-return | **PASS** | 176.8s |
+| 17-customer-document-upload | **PASS** | 137.1s |
+| 19-partner-payout | **PASS** | 100.2s |
+| 20-admin-ticket-reply | **PASS** | 103.2s |
+| 21-admin-finance | **PASS** | 93.8s |
 
-## Stabilization delivered
+Log: `docs/_maestro-from-16.log` · JSON: subset in `docs/maestro-device-results.latest.json` (overwritten by later runs).
 
-- Maestro driver APK pre-install (`scripts/run-maestro-device.mjs`)
-- Safe password `LocalTestVdb2026` + login autofill off
-- Harness refuses wrong Supabase kong (`vdbdigital2` port conflict)
-- Password verify after seed (`scripts/verify-local-passwords.mjs`)
-- Slim overlay dismissals; scroll to appointments; partner approve testIDs
+**This subset is not a full-suite PASS.**
 
-## Blockers for 20/20
+### Full suite attempt (single `device-suite.yaml` session)
 
-1. Docker: `supabase_db_vdb-digital-mobile-local` can exit; competing `vdbdigital2` reclaims :54321/:54322
-2. Remaining flows 16–21 need one continuous healthy stack session
-3. Full quality-gate re-run + cold-start logcat not completed in this pass
+| Field | Value |
+|---|---|
+| Start | 2026-07-21T21:39:58Z |
+| End | 2026-07-21T21:42:35Z |
+| Score | **0/20** (01 FAIL, 02–21 BLOCKED) |
+| Failure | Login stayed on `auth-login-screen`; UI showed wrong credentials + `fetch failed: unexpected end of stream on http://127.0.0.1:54321` |
+| Root cause | Competing `vdbdigital2` stack / mid-request API cut (see stability doc §6 hostile watchdog) |
 
-## Syntax
+Log: `docs/_maestro-full-suite.log`
 
-`npm run test:maestro:syntax` → 20/20 PASS (not device evidence).
+## C. Historical combined map (not definitive)
+
+Earlier segments reached ~15/20 across multiple runs. Combined maps are **historical only** and do not justify the android-device-pass tag.
+
+## D. Harness improvements shipped
+
+- Auto-discovered denominator (`scripts/maestro-suite-manifest.mjs`)
+- Hard fail on wrong stack / missing Metro / missing APK / unhealthy DB
+- `device:test:reset` waits for auth after `db reset`, pins APK SHA-256, clears app data
+- Font load no longer redboxes the whole app when Metro flaps
+- Pre-flow removal of `*vdbdigital2*` containers only
+
+## E. Blocker for tag
+
+One uninterrupted **20/20** run requires exclusive Docker: stop the parallel `vdbdigital2.0` Cursor agent watchdog that force-removes `vdb-digital-mobile-local` containers.
