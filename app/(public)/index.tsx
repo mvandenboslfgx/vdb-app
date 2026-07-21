@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import { BrandMark, Button, Divider, Screen, Text } from '@/design-system';
 import { useAuth } from '@/providers/AuthProvider';
-import { resolveHomeRoute } from '@/security/roles';
 import { spacing } from '@/theme';
 
 export default function PublicWelcomeScreen() {
@@ -15,13 +14,7 @@ export default function PublicWelcomeScreen() {
 
   function enterDemo(role: 'customer' | 'partner' | 'admin') {
     enterDemoAs(role);
-    const roles =
-      role === 'admin'
-        ? (['customer', 'staff', 'admin'] as const)
-        : role === 'partner'
-          ? (['customer', 'partner'] as const)
-          : (['customer'] as const);
-    router.replace(resolveHomeRoute(roles));
+    router.replace('/');
   }
 
   return (
@@ -35,12 +28,14 @@ export default function PublicWelcomeScreen() {
 
       <View style={styles.actions}>
         <Button
+          testID="btn-public-login"
           title={t('welcome.ctaLogin')}
           variant="gold"
           fullWidth
           onPress={() => router.push('/(auth)/login')}
         />
         <Button
+          testID="btn-public-register"
           title={t('welcome.ctaRegister')}
           variant="secondary"
           fullWidth

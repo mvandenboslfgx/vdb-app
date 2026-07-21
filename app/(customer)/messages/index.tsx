@@ -44,14 +44,15 @@ export default function MessagesScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-messages">
       <Text variant="title">{t('title')}</Text>
       {items.length === 0 ? (
         <EmptyState title={t('empty')} description={t('emptyHint')} />
       ) : (
-        items.map((c) => (
+        items.map((c, index) => (
           <ListRow
             key={c.id}
+            testID={index === 0 ? 'conversation-row-0' : `conversation-row-${c.id}`}
             title={c.title}
             subtitle={c.lastMessagePreview ?? undefined}
             meta={

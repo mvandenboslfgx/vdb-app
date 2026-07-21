@@ -1,13 +1,20 @@
 appId: nl.vdbdigital.app
 ---
-# 11 — Commission payout request
-# Device execution: BLOCKED until adb available.
-# Partner payouts remain fail-closed without feature flag + owner config.
+# 11 — Partner commissions / payout entry
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: partner.active.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "partner-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    id: "nav-partner-commissions"
-    optional: true
-- tapOn:
-    id: "btn-commission-request-payout"
-    optional: true
+    id: "partner-payout-request"
+- assertVisible:
+    id: "screen-partner-payouts"
+- assertVisible:
+    id: "btn-payout-request"
 - takeScreenshot: "11-commission-payout"

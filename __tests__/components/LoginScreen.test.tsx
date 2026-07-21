@@ -4,32 +4,39 @@ import LoginScreen from '../../app/(auth)/login';
 
 const mockSignIn = jest.fn();
 const mockUseAuth = jest.fn();
+const mockReplace = jest.fn();
 
 jest.mock('@/providers/AuthProvider', () => ({
   useAuth: () => mockUseAuth(),
+}));
+
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ replace: mockReplace, push: jest.fn() }),
+  Link: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 describe('LoginScreen', () => {
   beforeEach(() => {
     mockSignIn.mockReset();
     mockUseAuth.mockReset();
+    mockReplace.mockReset();
     mockUseAuth.mockReturnValue({ signIn: mockSignIn, isDemoMode: false });
   });
 
   it('renders the login form', async () => {
     await renderWithProviders(<LoginScreen />);
-    expect(screen.getByTestId('screen-auth-login')).toBeTruthy();
-    expect(screen.getByTestId('input-login-email')).toBeTruthy();
-    expect(screen.getByTestId('input-login-password')).toBeTruthy();
+    expect(screen.getByTestId('auth-login-screen')).toBeTruthy();
+    expect(screen.getByTestId('auth-email-input')).toBeTruthy();
+    expect(screen.getByTestId('auth-password-input')).toBeTruthy();
   });
 
   it('shows a validation error when submitting invalid credentials', async () => {
     await renderWithProviders(<LoginScreen />);
-    await fireEvent.changeText(screen.getByTestId('input-login-email'), 'not-an-email');
-    await fireEvent.changeText(screen.getByTestId('input-login-password'), '');
-    await fireEvent.press(screen.getByTestId('btn-login-submit'));
+    await fireEvent.changeText(screen.getByTestId('auth-email-input'), 'not-an-email');
+    await fireEvent.changeText(screen.getByTestId('auth-password-input'), '');
+    await fireEvent.press(screen.getByTestId('auth-login-submit'));
 
-    await waitFor(() => expect(screen.getByTestId('login-error')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('auth-error-message')).toBeTruthy());
     expect(mockSignIn).not.toHaveBeenCalled();
   });
 
@@ -37,9 +44,9 @@ describe('LoginScreen', () => {
     mockSignIn.mockResolvedValueOnce(undefined);
     await renderWithProviders(<LoginScreen />);
 
-    await fireEvent.changeText(screen.getByTestId('input-login-email'), 'demo@vdbdigital.nl');
-    await fireEvent.changeText(screen.getByTestId('input-login-password'), 'supersecret');
-    await fireEvent.press(screen.getByTestId('btn-login-submit'));
+    await fireEvent.changeText(screen.getByTestId('auth-email-input'), 'demo@vdbdigital.nl');
+    await fireEvent.changeText(screen.getByTestId('auth-password-input'), 'supersecret');
+    await fireEvent.press(screen.getByTestId('auth-login-submit'));
 
     await waitFor(() => expect(mockSignIn).toHaveBeenCalledWith('demo@vdbdigital.nl', 'supersecret'));
   });
@@ -48,11 +55,11 @@ describe('LoginScreen', () => {
     mockSignIn.mockRejectedValueOnce(new Error('Invalid login credentials'));
     await renderWithProviders(<LoginScreen />);
 
-    await fireEvent.changeText(screen.getByTestId('input-login-email'), 'demo@vdbdigital.nl');
-    await fireEvent.changeText(screen.getByTestId('input-login-password'), 'supersecret');
-    await fireEvent.press(screen.getByTestId('btn-login-submit'));
+    await fireEvent.changeText(screen.getByTestId('auth-email-input'), 'demo@vdbdigital.nl');
+    await fireEvent.changeText(screen.getByTestId('auth-password-input'), 'supersecret');
+    await fireEvent.press(screen.getByTestId('auth-login-submit'));
 
-    await waitFor(() => expect(screen.getByTestId('login-error')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('auth-error-message')).toBeTruthy());
   });
 
   it('shows the demo mode hint when isDemoMode is true', async () => {

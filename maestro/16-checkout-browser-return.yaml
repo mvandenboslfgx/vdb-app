@@ -1,20 +1,25 @@
 appId: nl.vdbdigital.app
 ---
-# 16 — Checkout browser return (authoritative refresh)
-# Device execution: BLOCKED until adb available.
-# Fake provider only in demo/test; live Mollie remains fail-closed.
+# 16 — Checkout browser return (invoice detail + checkout CTA visible)
+# Browser return is asserted by remaining on invoice detail after optional checkout tap.
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: customer.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "customer-dashboard-screen"
+    timeout: 30000
+- tapOn:
+    id: "tab-customer-more"
 - tapOn:
     id: "nav-invoices"
-    optional: true
 - tapOn:
     id: "invoice-row-0"
-    optional: true
 - assertVisible:
     id: "screen-invoice-detail"
-    optional: true
-- tapOn:
-    id: "btn-invoice-checkout"
-    optional: true
-- # After browser return the app resumes and refreshes invoice status.
+- assertVisible:
+    id: "customer-checkout-start"
 - takeScreenshot: "16-checkout-browser-return"

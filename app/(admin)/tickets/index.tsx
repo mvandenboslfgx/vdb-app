@@ -50,10 +50,10 @@ export default function AdminTicketsScreen() {
       {items.length === 0 ? (
         <EmptyState title={t('empty')} />
       ) : (
-        items.map((ticket) => (
+        items.map((ticket, index) => (
           <ListRow
             key={ticket.id}
-            testID={`row-ticket-${ticket.id}`}
+            testID={index === 0 ? 'row-ticket-0' : `row-ticket-${ticket.id}`}
             title={ticket.subject}
             subtitle={ticket.description}
             right={<StatusPill label={t(`status.${ticket.status}`)} tone="gold" />}

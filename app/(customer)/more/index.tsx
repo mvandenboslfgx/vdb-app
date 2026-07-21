@@ -37,12 +37,14 @@ export default function CustomerMoreScreen() {
       <Text variant="title">{t('profile.title')}</Text>
 
       <ListRow
+        testID="nav-language-toggle"
         title={tc('language')}
         subtitle={lang === 'nl' ? tc('languageNl') : tc('languageEn')}
         onPress={() => void toggleLanguage()}
       />
       <ListRow title={tm('whatsapp')} subtitle={tm('whatsappHint')} onPress={() => void openWhatsApp()} />
       <ListRow
+        testID="nav-notifications"
         title={t('profile.notifications')}
         onPress={() => router.push('/(customer)/more/notifications')}
       />
@@ -54,40 +56,59 @@ export default function CustomerMoreScreen() {
         />
       ) : null}
       <ListRow
+        testID="nav-partner-apply"
         title={tp('apply.title')}
         onPress={() => router.push('/(customer)/more/partner-apply')}
       />
       <ListRow
+        testID="nav-account-delete"
         title={t('profile.deleteAccount')}
         onPress={() => router.push('/(customer)/more/account-deletion')}
       />
-      <ListRow title={t('profile.support')} onPress={() => router.push('/(customer)/support')} />
-      <ListRow title={tc('tabs.documents')} onPress={() => router.push('/(customer)/documents')} />
       <ListRow
+        testID="nav-support"
+        title={t('profile.support')}
+        onPress={() => router.push('/(customer)/support')}
+      />
+      <ListRow
+        testID="nav-documents"
+        title={tc('tabs.documents')}
+        onPress={() => router.push('/(customer)/documents')}
+      />
+      <ListRow
+        testID="nav-quotes"
         title={t('dashboard.openQuotes')}
         onPress={() => router.push('/(customer)/quotes')}
       />
       <ListRow
+        testID="nav-invoices"
         title={t('dashboard.openInvoices')}
         onPress={() => router.push('/(customer)/invoices')}
       />
       <ListRow
+        testID="nav-appointments"
         title={t('appointments.title')}
         onPress={() => router.push('/(customer)/appointments')}
       />
 
       {canAccessPartnerArea(roles) ? (
         <ListRow
+          testID="nav-switch-partner"
           title={tc('switchArea.partner')}
           onPress={() => router.replace('/(partner)')}
         />
       ) : null}
       {canAccessAdminArea(roles) ? (
-        <ListRow title={tc('switchArea.admin')} onPress={() => router.replace('/(admin)')} />
+        <ListRow
+          testID="nav-switch-admin"
+          title={tc('switchArea.admin')}
+          onPress={() => router.replace('/(admin)')}
+        />
       ) : null}
 
       <Divider />
       <Button
+        testID="auth-logout-button"
         title={ta('signOut')}
         variant="danger"
         style={styles.signOut}

@@ -57,7 +57,7 @@ export default function CustomerHomeScreen() {
   }
 
   return (
-    <Screen scroll testID="screen-customer-dashboard">
+    <Screen scroll testID="customer-dashboard-screen">
       <Text variant="title">
         {t('dashboard.greeting', { name: data.welcomeName || profile?.fullName || '' })}
       </Text>

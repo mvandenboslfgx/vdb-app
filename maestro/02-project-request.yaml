@@ -1,22 +1,29 @@
 appId: nl.vdbdigital.app
 ---
 # 02 — Project request
-# Device execution: BLOCKED until adb available.
+# Start: logged out → customer.a
+- clearState
 - launchApp
-- assertVisible:
-    id: "screen-customer-home"
-    optional: true
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: customer.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "customer-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    id: "btn-project-request"
-    optional: true
+    id: "tab-customer-projects"
+- tapOn:
+    id: "btn-projects-request"
 - assertVisible:
     id: "screen-project-request"
-    optional: true
-- inputText:
-    id: "input-project-title"
-    text: "Maestro project request"
-    optional: true
+- tapOn:
+    id: "input-project-request-title"
+- inputText: "Maestro project request"
+- tapOn:
+    id: "input-project-request-description"
+- inputText: "Created by Maestro device flow 02"
 - tapOn:
     id: "btn-project-request-submit"
-    optional: true
 - takeScreenshot: "02-project-request"

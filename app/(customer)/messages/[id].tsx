@@ -81,14 +81,14 @@ export default function MessageThreadScreen() {
       />
       <View style={styles.composer}>
         <TextInput
-          testID="input-message-body"
+          testID="customer-chat-input"
           placeholder={t('composerPlaceholder')}
           value={body}
           onChangeText={setBody}
           style={styles.input}
         />
         <Button
-          testID="btn-message-send"
+          testID="customer-chat-send"
           title={t('send')}
           variant="gold"
           loading={sending}

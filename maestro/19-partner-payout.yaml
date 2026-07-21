@@ -1,18 +1,22 @@
 appId: nl.vdbdigital.app
 ---
-# 19 — Partner payout request (request_commission_payout RPC, see
-# 20260720101700_payouts_support_finance.sql). Fails closed without the
-# partner.payouts feature flag (enabled for local testing by
-# scripts/seed-local-identities.mjs — never in production).
-# Device execution: BLOCKED until adb available.
+# 19 — Partner payout screen
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: partner.active.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "partner-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    text: "Commissions"
-    optional: true
-- tapOn:
-    id: "btn-payout-request"
-    optional: true
+    id: "partner-payout-request"
+- assertVisible:
+    id: "screen-partner-payouts"
 - assertVisible:
     id: "text-payout-balance"
-    optional: true
+- assertVisible:
+    id: "btn-payout-request"
 - takeScreenshot: "19-partner-payout"

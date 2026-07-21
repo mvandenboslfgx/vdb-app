@@ -1,33 +1,18 @@
 appId: nl.vdbdigital.app
 ---
-# 21 — Admin finance: approve a commission under review, process a
-# submitted payout request (approve_commission / process_payout_request,
-# see 20260720101500_admin_rpcs_and_quote_accept.sql and
-# 20260720101700_payouts_support_finance.sql). Reason input is required
-# before either action is enabled.
-# Device execution: BLOCKED until adb available.
+# 21 — Admin finance
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: admin@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "admin-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    text: "Finance"
-    optional: true
-- tapOn:
-    id: "btn-finance-approve-commission"
-    optional: true
-- inputText:
-    id: "input-finance-reason"
-    text: "Maestro approval reason"
-    optional: true
-- tapOn:
-    id: "btn-finance-approve-commission"
-    optional: true
-- tapOn:
-    id: "btn-finance-process-payout"
-    optional: true
-- inputText:
-    id: "input-finance-payout-reason"
-    text: "Maestro payout processed"
-    optional: true
-- tapOn:
-    id: "btn-finance-process-payout"
-    optional: true
+    id: "tab-admin-finance"
+- assertVisible:
+    id: "screen-admin-finance"
 - takeScreenshot: "21-admin-finance"

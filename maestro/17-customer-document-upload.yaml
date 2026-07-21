@@ -1,24 +1,22 @@
 appId: nl.vdbdigital.app
 ---
-# 17 — Customer document upload (register_document_upload RPC, see
-# 20260720101600_business_flow_completion.sql). File picker interaction
-# is not scriptable headlessly, so the picker tap is optional.
-# Device execution: BLOCKED until adb available.
+# 17 — Customer document upload screen
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: customer.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "customer-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    text: "Documents"
-    optional: true
+    id: "tab-customer-more"
 - tapOn:
-    id: "btn-document-upload-cta"
-    optional: true
-- inputText:
-    id: "input-document-upload-title"
-    text: "Maestro Upload"
-    optional: true
+    id: "nav-documents"
 - tapOn:
-    id: "btn-document-upload-pick"
-    optional: true
-- tapOn:
-    id: "btn-document-upload-submit"
-    optional: true
+    id: "customer-document-upload"
+- assertVisible:
+    id: "screen-document-upload"
 - takeScreenshot: "17-customer-document-upload"

@@ -50,9 +50,10 @@ export default function QuotesScreen() {
       {items.length === 0 ? (
         <EmptyState title={t('empty')} description={t('emptyHint')} />
       ) : (
-        items.map((quote) => (
+        items.map((quote, index) => (
           <ListRow
             key={quote.id}
+            testID={index === 0 ? 'quote-row-0' : `quote-row-${quote.id}`}
             title={quote.title}
             subtitle={quote.number}
             meta={formatCurrency(quote.totalCents)}

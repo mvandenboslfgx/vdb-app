@@ -50,7 +50,7 @@ export default function DocumentsScreen() {
     <Screen scroll testID="screen-documents">
       <Text variant="title">{t('title')}</Text>
       <Button
-        testID="btn-document-upload-cta"
+        testID="customer-document-upload"
         title={t('upload')}
         variant="gold"
         style={styles.cta}
@@ -59,9 +59,10 @@ export default function DocumentsScreen() {
       {items.length === 0 ? (
         <EmptyState title={t('empty')} description={t('emptyHint')} />
       ) : (
-        items.map((doc) => (
+        items.map((doc, index) => (
           <ListRow
             key={doc.id}
+            testID={index === 0 ? 'document-row-0' : `document-row-${doc.id}`}
             title={doc.title}
             subtitle={t('version', { version: doc.currentVersion })}
             right={<StatusPill label={t(`status.${doc.status}`)} tone="gold" />}

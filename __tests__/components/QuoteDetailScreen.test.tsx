@@ -56,7 +56,7 @@ describe('QuoteDetailScreen', () => {
     await waitFor(() => expect(screen.getByTestId('screen-quote-detail')).toBeTruthy());
     expect(screen.getByText(/121[.,]000|1\.210,00|â‚¬\s?1\.210,00/)).toBeTruthy();
     expect(screen.getByTestId('quote-terms-version')).toBeTruthy();
-    expect(screen.getByTestId('btn-quote-accept')).toBeTruthy();
+    expect(screen.getByTestId('customer-quote-accept')).toBeTruthy();
   });
 
   it('requires the terms checkbox before accepting', async () => {
@@ -64,7 +64,7 @@ describe('QuoteDetailScreen', () => {
     await renderWithProviders(<QuoteDetailScreen />);
     await waitFor(() => expect(screen.getByTestId('screen-quote-detail')).toBeTruthy());
 
-    await fireEvent.press(screen.getByTestId('btn-quote-accept'));
+    await fireEvent.press(screen.getByTestId('customer-quote-accept'));
 
     expect(screen.getByTestId('quote-error')).toBeTruthy();
     expect(Alert.alert).not.toHaveBeenCalled();
@@ -78,7 +78,7 @@ describe('QuoteDetailScreen', () => {
     await waitFor(() => expect(screen.getByTestId('screen-quote-detail')).toBeTruthy());
 
     await fireEvent.press(screen.getByTestId('checkbox-quote-terms'));
-    await fireEvent.press(screen.getByTestId('btn-quote-accept'));
+    await fireEvent.press(screen.getByTestId('customer-quote-accept'));
 
     expect(Alert.alert).toHaveBeenCalled();
     await confirmAlert();
@@ -102,13 +102,13 @@ describe('QuoteDetailScreen', () => {
     await waitFor(() => expect(screen.getByTestId('screen-quote-detail')).toBeTruthy());
 
     await fireEvent.press(screen.getByTestId('checkbox-quote-terms'));
-    await fireEvent.press(screen.getByTestId('btn-quote-accept'));
+    await fireEvent.press(screen.getByTestId('customer-quote-accept'));
     await confirmAlert();
 
     await waitFor(() => expect(mockAcceptQuote).toHaveBeenCalledTimes(1));
 
     // Second tap while busy should be a no-op â€” button press handler bails out early.
-    await fireEvent.press(screen.getByTestId('btn-quote-accept'));
+    await fireEvent.press(screen.getByTestId('customer-quote-accept'));
     expect(mockAcceptQuote).toHaveBeenCalledTimes(1);
 
     resolveAccept(makeQuote({ status: 'accepted' }));
@@ -122,7 +122,7 @@ describe('QuoteDetailScreen', () => {
     await waitFor(() => expect(screen.getByTestId('screen-quote-detail')).toBeTruthy());
 
     await fireEvent.press(screen.getByTestId('checkbox-quote-terms'));
-    await fireEvent.press(screen.getByTestId('btn-quote-accept'));
+    await fireEvent.press(screen.getByTestId('customer-quote-accept'));
     await confirmAlert();
 
     await waitFor(() => expect(screen.getByTestId('quote-error')).toBeTruthy());
@@ -147,7 +147,7 @@ describe('QuoteDetailScreen', () => {
     await renderWithProviders(<QuoteDetailScreen />);
 
     await waitFor(() => expect(screen.getByTestId('quote-readonly-notice')).toBeTruthy());
-    expect(screen.queryByTestId('btn-quote-accept')).toBeNull();
+    expect(screen.queryByTestId('customer-quote-accept')).toBeNull();
     expect(screen.queryByTestId('btn-quote-reject')).toBeNull();
   });
 });

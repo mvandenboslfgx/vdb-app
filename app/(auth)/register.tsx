@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Screen, Text, TextInput } from '@/design-system';
 import { useAuth } from '@/providers/AuthProvider';
-import { resolveHomeRoute } from '@/security/roles';
 import { colors, radii, spacing } from '@/theme';
 import { registerSchema } from '@/validation/auth';
 
@@ -49,7 +48,7 @@ export default function RegisterScreen() {
       if (result.needsEmailConfirmation) {
         router.replace({ pathname: '/(auth)/verify-email', params: { email: parsed.data.email } });
       } else {
-        router.replace(resolveHomeRoute(['customer']));
+        router.replace('/');
       }
     } catch {
       setError(te('auth.userExists'));
@@ -59,7 +58,7 @@ export default function RegisterScreen() {
   }
 
   return (
-    <Screen scroll testID="screen-auth-register">
+    <Screen scroll testID="auth-register-screen">
       <Text variant="title">{t('register.title')}</Text>
       <Text variant="body" color="textSecondary" style={styles.subtitle}>
         {t('register.subtitle')}
@@ -120,7 +119,7 @@ export default function RegisterScreen() {
           </Text>
         ) : null}
         <Button
-          testID="btn-register-submit"
+          testID="auth-register-submit"
           title={t('register.submit')}
           onPress={() => void onSubmit()}
           loading={loading}

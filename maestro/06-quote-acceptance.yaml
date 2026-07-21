@@ -1,21 +1,27 @@
 appId: nl.vdbdigital.app
 ---
-# 06 — Quote acceptance (terms + confirm)
-# Device execution: BLOCKED until adb available.
+# 06 — Quote acceptance path (terms + accept visible)
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: customer.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "customer-dashboard-screen"
+    timeout: 30000
+- tapOn:
+    id: "tab-customer-more"
 - tapOn:
     id: "nav-quotes"
-    optional: true
 - tapOn:
     id: "quote-row-0"
-    optional: true
 - assertVisible:
     id: "screen-quote-detail"
-    optional: true
 - tapOn:
     id: "checkbox-quote-terms"
     optional: true
-- tapOn:
-    id: "btn-quote-accept"
-    optional: true
+- assertVisible:
+    id: "customer-quote-accept"
 - takeScreenshot: "06-quote-acceptance"

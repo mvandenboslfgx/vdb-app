@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Screen, Text, TextInput } from '@/design-system';
 import { useAuth } from '@/providers/AuthProvider';
-import { resolveHomeRoute } from '@/security/roles';
 import { spacing } from '@/theme';
 import { loginSchema } from '@/validation/auth';
 
@@ -29,7 +28,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signIn(parsed.data.email, parsed.data.password);
-      router.replace(resolveHomeRoute(['customer']));
+      router.replace('/');
     } catch {
       setError(te('auth.invalidCredentials'));
     } finally {
@@ -38,7 +37,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <Screen scroll testID="screen-auth-login">
+    <Screen scroll testID="auth-login-screen">
       <Text variant="title">{t('login.title')}</Text>
       <Text variant="body" color="textSecondary" style={styles.subtitle}>
         {t('login.subtitle')}
@@ -46,7 +45,7 @@ export default function LoginScreen() {
 
       <View style={styles.form}>
         <TextInput
-          testID="input-login-email"
+          testID="auth-email-input"
           label={t('login.email')}
           placeholder={t('login.emailPlaceholder')}
           autoCapitalize="none"
@@ -56,7 +55,7 @@ export default function LoginScreen() {
           onChangeText={setEmail}
         />
         <TextInput
-          testID="input-login-password"
+          testID="auth-password-input"
           label={t('login.password')}
           placeholder={t('login.passwordPlaceholder')}
           secureTextEntry
@@ -65,7 +64,7 @@ export default function LoginScreen() {
           onChangeText={setPassword}
         />
         {error ? (
-          <Text variant="caption" color="error" testID="login-error">
+          <Text variant="caption" color="error" testID="auth-error-message">
             {error}
           </Text>
         ) : null}
@@ -75,7 +74,7 @@ export default function LoginScreen() {
           </Text>
         ) : null}
         <Button
-          testID="btn-login-submit"
+          testID="auth-login-submit"
           title={t('login.submit')}
           onPress={() => void onSubmit()}
           loading={loading}

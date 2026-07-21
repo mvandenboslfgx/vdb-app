@@ -130,7 +130,7 @@ export default function InvoiceDetailScreen() {
 
       {canPay ? (
         <Button
-          testID="btn-invoice-checkout"
+          testID="customer-checkout-start"
           title={t('payNow')}
           variant="gold"
           loading={busy}

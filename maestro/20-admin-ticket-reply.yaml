@@ -1,30 +1,35 @@
 appId: nl.vdbdigital.app
 ---
-# 20 — Admin support ticket reply (admin_reply_support_ticket RPC, see
-# 20260720101700_payouts_support_finance.sql). Covers a public reply
-# (flips ticket to waiting_on_customer) and a staff-only internal note.
-# Device execution: BLOCKED until adb available.
+# 20 — Admin ticket reply
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: admin@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "admin-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    text: "Tickets"
+    id: "tab-admin-tickets"
+- assertVisible:
+    id: "screen-admin-tickets"
+- tapOn:
+    id: "row-ticket-0"
     optional: true
 - tapOn:
-    text: "Seed support ticket"
+    text: ".*Seed support.*"
     optional: true
-- inputText:
+- extendedWaitUntil:
+    visible:
+      id: "screen-admin-ticket-detail"
+    timeout: 20000
+    optional: true
+- tapOn:
     id: "input-ticket-reply"
-    text: "Maestro reply from staff"
     optional: true
-- tapOn:
-    id: "btn-ticket-send-reply"
-    optional: true
-- tapOn:
-    id: "toggle-ticket-reply-internal"
-    optional: true
-- inputText:
-    id: "input-ticket-reply"
-    text: "Maestro internal note"
-    optional: true
+- inputText: "Maestro admin reply"
 - tapOn:
     id: "btn-ticket-send-reply"
     optional: true

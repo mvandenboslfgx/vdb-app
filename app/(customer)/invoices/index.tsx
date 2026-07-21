@@ -50,9 +50,10 @@ export default function InvoicesScreen() {
       {items.length === 0 ? (
         <EmptyState title={t('empty')} description={t('emptyHint')} />
       ) : (
-        items.map((invoice) => (
+        items.map((invoice, index) => (
           <ListRow
             key={invoice.id}
+            testID={index === 0 ? 'invoice-row-0' : `invoice-row-${invoice.id}`}
             title={invoice.number}
             meta={formatCurrency(invoice.totalCents)}
             right={<StatusPill label={t(`status.${invoice.status}`)} tone="gold" />}

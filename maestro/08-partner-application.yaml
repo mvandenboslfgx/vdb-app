@@ -1,13 +1,28 @@
 appId: nl.vdbdigital.app
 ---
-# 08 — Partner application
-# Device execution: BLOCKED until adb available.
+# 08 — Partner application form
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: customer.b@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "customer-dashboard-screen"
+    timeout: 30000
+- tapOn:
+    id: "tab-customer-more"
 - tapOn:
     id: "nav-partner-apply"
-    optional: true
 - assertVisible:
     id: "screen-partner-apply"
+- tapOn:
+    id: "input-partner-apply-company"
+    optional: true
+- inputText: "Maestro Partner BV"
+- tapOn:
+    id: "btn-partner-apply-accept-terms"
     optional: true
 - tapOn:
     id: "btn-partner-apply-submit"

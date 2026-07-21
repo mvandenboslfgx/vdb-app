@@ -41,7 +41,7 @@ export default function PartnerHomeScreen() {
   if (loading) return <LoadingState />;
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="partner-dashboard-screen">
       <Text variant="title">{t('dashboard')}</Text>
       <View style={styles.stats}>
         <View style={styles.stat}>
@@ -59,14 +59,16 @@ export default function PartnerHomeScreen() {
           <Text variant="title">{formatCurrency(commissionTotal)}</Text>
         </View>
       </View>
-      <ListRow title={t('link')} subtitle={link} />
+      <ListRow testID="partner-code-link" title={t('link')} subtitle={link} />
       <Button
+        testID="partner-lead-create"
         title={t('leads')}
         variant="secondary"
         style={styles.cta}
         onPress={() => router.push('/(partner)/leads')}
       />
       <Button
+        testID="partner-payout-request"
         title={tc('requestPayout')}
         variant="gold"
         onPress={() => router.push('/(partner)/payouts')}

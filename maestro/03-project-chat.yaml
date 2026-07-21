@@ -1,22 +1,26 @@
 appId: nl.vdbdigital.app
 ---
-# 03 — Project chat
-# Device execution: BLOCKED until adb available.
+# 03 — Project chat send
+# Start: logged out → customer.a | Needs seeded conversation
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: customer.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "customer-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    id: "nav-messages"
-    optional: true
+    id: "tab-customer-messages"
 - tapOn:
     id: "conversation-row-0"
-    optional: true
 - assertVisible:
-    id: "screen-chat-thread"
-    optional: true
+    id: "screen-message-thread"
 - tapOn:
-    id: "input-chat-message"
-    optional: true
+    id: "customer-chat-input"
 - inputText: "Maestro chat ping"
 - tapOn:
-    id: "btn-chat-send"
-    optional: true
+    id: "customer-chat-send"
 - takeScreenshot: "03-project-chat"

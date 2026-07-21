@@ -47,9 +47,10 @@ export default function SupportScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-support">
       <Text variant="title">{t('title')}</Text>
       <Button
+        testID="btn-support-new"
         title={t('newTicket')}
         variant="gold"
         style={styles.cta}

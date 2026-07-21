@@ -1,3 +1,5 @@
+import type { Href } from 'expo-router';
+
 import type { AppRole } from '@/types/roles';
 
 export type { AppRole } from '@/types/roles';
@@ -63,7 +65,7 @@ export function resolvePrimaryArea(
 }
 
 /** Home href for an authenticated user based on roles. */
-export function resolveHomeRoute(roles: readonly AppRole[]): string {
+export function resolveHomeRoute(roles: readonly AppRole[]): Href {
   switch (resolvePrimaryArea(roles)) {
     case 'admin':
       return '/(admin)';

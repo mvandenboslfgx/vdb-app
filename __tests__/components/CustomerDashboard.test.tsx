@@ -49,7 +49,7 @@ describe('CustomerDashboard', () => {
     mockGetDashboard.mockResolvedValueOnce(makeDashboard());
     await renderWithProviders(<CustomerHomeScreen />);
 
-    await waitFor(() => expect(screen.getByTestId('screen-customer-dashboard')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('customer-dashboard-screen')).toBeTruthy());
     expect(screen.getByText('You have no active projects yet.')).toBeTruthy();
     expect(screen.getByText('No open quotes.')).toBeTruthy();
     expect(screen.getByText('No open invoices.')).toBeTruthy();
@@ -78,7 +78,7 @@ describe('CustomerDashboard', () => {
     mockGetDashboard.mockResolvedValueOnce(makeDashboard({ activeProjects: [makeProject()] }));
     await fireEvent.press(screen.getByText('Try again'));
 
-    await waitFor(() => expect(screen.getByTestId('screen-customer-dashboard')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('customer-dashboard-screen')).toBeTruthy());
     expect(screen.getByText('Klantportaal app')).toBeTruthy();
   });
 });

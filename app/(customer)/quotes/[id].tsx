@@ -166,7 +166,7 @@ export default function QuoteDetailScreen() {
             </Text>
           </Pressable>
           <Button
-            testID="btn-quote-accept"
+            testID="customer-quote-accept"
             title={t('accept')}
             variant="gold"
             loading={busy}

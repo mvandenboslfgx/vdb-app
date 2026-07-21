@@ -87,7 +87,7 @@ export default function AccountDeletionScreen() {
           </Text>
         ) : null}
         <Button
-          testID="btn-account-deletion-submit"
+          testID="customer-account-delete"
           title={loading ? t('accountDeletion.submitting') : t('accountDeletion.submit')}
           variant="danger"
           fullWidth

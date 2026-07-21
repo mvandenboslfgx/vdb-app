@@ -29,17 +29,20 @@ export default function PartnerLayout() {
         sceneStyle: { backgroundColor: '#050505' },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: t('tabs.home') }} />
-      <Tabs.Screen name="leads" options={{ title: t('tabs.leads'), headerShown: false }} />
+      <Tabs.Screen name="index" options={{ title: t('tabs.home'), tabBarButtonTestID: 'tab-partner-home' }} />
+      <Tabs.Screen
+        name="leads"
+        options={{ title: t('tabs.leads'), headerShown: false, tabBarButtonTestID: 'tab-partner-leads' }}
+      />
       <Tabs.Screen
         name="commissions"
-        options={{ title: t('tabs.commissions'), headerShown: false }}
+        options={{ title: t('tabs.commissions'), headerShown: false, tabBarButtonTestID: 'tab-partner-commissions' }}
       />
       <Tabs.Screen
         name="marketing"
-        options={{ title: t('tabs.marketing'), headerShown: false }}
+        options={{ title: t('tabs.marketing'), headerShown: false, tabBarButtonTestID: 'tab-partner-marketing' }}
       />
-      <Tabs.Screen name="more" options={{ title: t('tabs.more') }} />
+      <Tabs.Screen name="more" options={{ title: t('tabs.more'), tabBarButtonTestID: 'tab-partner-more' }} />
       <Tabs.Screen name="payouts" options={{ href: null }} />
     </Tabs>
   );

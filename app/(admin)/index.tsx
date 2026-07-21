@@ -42,7 +42,7 @@ export default function AdminHomeScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="admin-dashboard-screen">
       <Text variant="title">{t('dashboard')}</Text>
       <View style={styles.grid}>
         <Stat label={t('stats.partnerApplications')} value={stats.openPartnerApplications} />

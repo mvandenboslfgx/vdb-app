@@ -19,7 +19,7 @@ describe('AccountDeletionScreen', () => {
 
     expect(screen.getByTestId('screen-account-deletion')).toBeTruthy();
     expect(screen.getByText(/profile, messages and stored documents/i)).toBeTruthy();
-    expect(screen.getByTestId('btn-account-deletion-submit').props.accessibilityState?.disabled).toBe(true);
+    expect(screen.getByTestId('customer-account-delete').props.accessibilityState?.disabled).toBe(true);
   });
 
   it('stays disabled if the confirmation word is wrong', async () => {
@@ -27,8 +27,8 @@ describe('AccountDeletionScreen', () => {
 
     await fireEvent.changeText(screen.getByTestId('input-account-deletion-confirm'), 'delete me');
 
-    expect(screen.getByTestId('btn-account-deletion-submit').props.accessibilityState?.disabled).toBe(true);
-    await fireEvent.press(screen.getByTestId('btn-account-deletion-submit'));
+    expect(screen.getByTestId('customer-account-delete').props.accessibilityState?.disabled).toBe(true);
+    await fireEvent.press(screen.getByTestId('customer-account-delete'));
     expect(mockRequestDeletion).not.toHaveBeenCalled();
   });
 
@@ -37,9 +37,9 @@ describe('AccountDeletionScreen', () => {
     await renderWithProviders(<AccountDeletionScreen />);
 
     await fireEvent.changeText(screen.getByTestId('input-account-deletion-confirm'), 'DELETE');
-    expect(screen.getByTestId('btn-account-deletion-submit').props.accessibilityState?.disabled).toBe(false);
+    expect(screen.getByTestId('customer-account-delete').props.accessibilityState?.disabled).toBe(false);
 
-    await fireEvent.press(screen.getByTestId('btn-account-deletion-submit'));
+    await fireEvent.press(screen.getByTestId('customer-account-delete'));
 
     await waitFor(() => expect(mockRequestDeletion).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(screen.getByTestId('screen-account-deletion-status')).toBeTruthy());
@@ -51,7 +51,7 @@ describe('AccountDeletionScreen', () => {
     await renderWithProviders(<AccountDeletionScreen />);
 
     await fireEvent.changeText(screen.getByTestId('input-account-deletion-confirm'), 'DELETE');
-    await fireEvent.press(screen.getByTestId('btn-account-deletion-submit'));
+    await fireEvent.press(screen.getByTestId('customer-account-delete'));
 
     await waitFor(() => expect(screen.getByTestId('account-deletion-error')).toBeTruthy());
     expect(screen.queryByTestId('screen-account-deletion-status')).toBeNull();

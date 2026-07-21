@@ -27,10 +27,22 @@ export default function CustomerLayout() {
         sceneStyle: { backgroundColor: '#050505' },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: t('tabs.home'), headerTitle: t('appName') }} />
-      <Tabs.Screen name="projects" options={{ title: t('tabs.projects'), headerShown: false }} />
-      <Tabs.Screen name="messages" options={{ title: t('tabs.messages'), headerShown: false }} />
-      <Tabs.Screen name="more" options={{ title: t('tabs.more'), headerShown: false }} />
+      <Tabs.Screen
+        name="index"
+        options={{ title: t('tabs.home'), headerTitle: t('appName'), tabBarButtonTestID: 'tab-customer-home' }}
+      />
+      <Tabs.Screen
+        name="projects"
+        options={{ title: t('tabs.projects'), headerShown: false, tabBarButtonTestID: 'tab-customer-projects' }}
+      />
+      <Tabs.Screen
+        name="messages"
+        options={{ title: t('tabs.messages'), headerShown: false, tabBarButtonTestID: 'tab-customer-messages' }}
+      />
+      <Tabs.Screen
+        name="more"
+        options={{ title: t('tabs.more'), headerShown: false, tabBarButtonTestID: 'tab-customer-more' }}
+      />
       <Tabs.Screen name="documents" options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="quotes" options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="invoices" options={{ href: null, headerShown: false }} />

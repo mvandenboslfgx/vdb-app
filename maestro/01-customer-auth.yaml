@@ -1,20 +1,17 @@
 appId: nl.vdbdigital.app
 ---
-# 01 — Customer auth (local identities)
-# Device execution: BLOCKED until adb + installed APK available.
+# 01 — Customer auth (clear state, login customer.a)
+# Start: logged out | User: customer.a@local.vdb | Locale: NL (testIDs)
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: customer.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "customer-dashboard-screen"
+    timeout: 30000
 - assertVisible:
-    id: "screen-auth-login"
-    optional: true
-- tapOn:
-    id: "input-login-email"
-    optional: true
-- inputText: "customer.a@local.vdb"
-- tapOn:
-    id: "input-login-password"
-    optional: true
-- inputText: "LocalTest!Vdb2026"
-- tapOn:
-    id: "btn-login-submit"
-    optional: true
+    id: "customer-dashboard-screen"
 - takeScreenshot: "01-customer-auth"

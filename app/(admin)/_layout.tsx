@@ -29,11 +29,20 @@ export default function AdminLayout() {
         sceneStyle: { backgroundColor: '#050505' },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: t('tabs.home') }} />
-      <Tabs.Screen name="approvals" options={{ title: t('tabs.approvals') }} />
-      <Tabs.Screen name="tickets" options={{ title: t('tabs.tickets') }} />
-      <Tabs.Screen name="finance" options={{ title: t('tabs.finance') }} />
-      <Tabs.Screen name="more" options={{ title: t('tabs.more') }} />
+      <Tabs.Screen name="index" options={{ title: t('tabs.home'), tabBarButtonTestID: 'tab-admin-home' }} />
+      <Tabs.Screen
+        name="approvals"
+        options={{ title: t('tabs.approvals'), tabBarButtonTestID: 'tab-admin-approvals' }}
+      />
+      <Tabs.Screen
+        name="tickets"
+        options={{ title: t('tabs.tickets'), tabBarButtonTestID: 'tab-admin-tickets' }}
+      />
+      <Tabs.Screen
+        name="finance"
+        options={{ title: t('tabs.finance'), tabBarButtonTestID: 'tab-admin-finance' }}
+      />
+      <Tabs.Screen name="more" options={{ title: t('tabs.more'), tabBarButtonTestID: 'tab-admin-more' }} />
     </Tabs>
   );
 }

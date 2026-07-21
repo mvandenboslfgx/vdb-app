@@ -6,7 +6,7 @@
 ## Shared password
 
 ```
-LocalTest!Vdb2026
+LocalTestVdb2026
 ```
 
 Documented here intentionally for local Maestro / manual QA. Rotate nothing in production based on this file.

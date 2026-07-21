@@ -1,26 +1,30 @@
 appId: nl.vdbdigital.app
 ---
-# 10 — Partner lead registration (register_partner_lead RPC, see 20260720101600_business_flow_completion.sql)
-# Device execution: BLOCKED until adb available.
+# 10 — Partner lead create
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: partner.active.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "partner-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    text: "Leads"
-    optional: true
+    id: "tab-partner-leads"
 - tapOn:
     id: "btn-lead-new"
-    optional: true
-- inputText:
+- assertVisible:
+    id: "screen-lead-new"
+- tapOn:
     id: "input-lead-name"
-    text: "Maestro Lead"
-    optional: true
-- inputText:
+- inputText: "Maestro Lead"
+- tapOn:
     id: "input-lead-email"
-    text: "maestro.lead@example.com"
-    optional: true
+- inputText: "maestro.lead@local.vdb"
 - tapOn:
     id: "check-lead-consent"
-    optional: true
 - tapOn:
     id: "btn-lead-submit"
-    optional: true
 - takeScreenshot: "10-partner-lead"

@@ -1,18 +1,22 @@
 appId: nl.vdbdigital.app
 ---
-# 12 — Account deletion request
-# Device execution: BLOCKED until adb available.
+# 12 — Account deletion request screen
+- clearState
 - launchApp
+- runFlow:
+    file: shared/login.yaml
+    env:
+      EMAIL: customer.a@local.vdb
+- extendedWaitUntil:
+    visible:
+      id: "customer-dashboard-screen"
+    timeout: 30000
 - tapOn:
-    id: "nav-account"
-    optional: true
+    id: "tab-customer-more"
 - tapOn:
-    id: "btn-account-delete-request"
-    optional: true
+    id: "nav-account-delete"
 - assertVisible:
     id: "screen-account-deletion"
-    optional: true
-- tapOn:
-    id: "btn-account-delete-confirm"
-    optional: true
+- assertVisible:
+    id: "customer-account-delete"
 - takeScreenshot: "12-account-deletion"

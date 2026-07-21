@@ -25,7 +25,7 @@ describe('RegisterScreen', () => {
 
   it('renders the registration form', async () => {
     await renderWithProviders(<RegisterScreen />);
-    expect(screen.getByTestId('screen-auth-register')).toBeTruthy();
+    expect(screen.getByTestId('auth-register-screen')).toBeTruthy();
     expect(screen.getByTestId('input-register-email')).toBeTruthy();
   });
 
@@ -35,7 +35,7 @@ describe('RegisterScreen', () => {
     await fireEvent.changeText(screen.getByTestId('input-register-email'), 'jane@example.com');
     await fireEvent.changeText(screen.getByTestId('input-register-password'), 'supersecret');
     await fireEvent.changeText(screen.getByTestId('input-register-confirm-password'), 'supersecret');
-    await fireEvent.press(screen.getByTestId('btn-register-submit'));
+    await fireEvent.press(screen.getByTestId('auth-register-submit'));
 
     await waitFor(() => expect(screen.getByTestId('register-error')).toBeTruthy());
     expect(mockSignUp).not.toHaveBeenCalled();
@@ -48,7 +48,7 @@ describe('RegisterScreen', () => {
     await fireEvent.changeText(screen.getByTestId('input-register-password'), 'supersecret');
     await fireEvent.changeText(screen.getByTestId('input-register-confirm-password'), 'different');
     await fireEvent.press(screen.getByTestId('btn-register-accept-terms'));
-    await fireEvent.press(screen.getByTestId('btn-register-submit'));
+    await fireEvent.press(screen.getByTestId('auth-register-submit'));
 
     await waitFor(() => expect(screen.getByTestId('register-error')).toBeTruthy());
     expect(mockSignUp).not.toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe('RegisterScreen', () => {
     await renderWithProviders(<RegisterScreen />);
 
     await fillValidForm();
-    await fireEvent.press(screen.getByTestId('btn-register-submit'));
+    await fireEvent.press(screen.getByTestId('auth-register-submit'));
 
     await waitFor(() =>
       expect(mockSignUp).toHaveBeenCalledWith({
@@ -82,7 +82,7 @@ describe('RegisterScreen', () => {
     await renderWithProviders(<RegisterScreen />);
 
     await fillValidForm();
-    await fireEvent.press(screen.getByTestId('btn-register-submit'));
+    await fireEvent.press(screen.getByTestId('auth-register-submit'));
 
     await waitFor(() => expect(screen.getByTestId('register-error')).toBeTruthy());
     expect(routerMock.replace).not.toHaveBeenCalled();
