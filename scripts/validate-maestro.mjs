@@ -1,39 +1,21 @@
 /**
  * Validate Maestro YAML flow files (syntax / structure).
- * Does NOT execute on device — device execution remains BLOCKED without adb.
+ * Does NOT execute on device — device execution is separate.
+ * Denominator = auto-discovered executable flows (see maestro-suite-manifest.mjs).
  */
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = path.resolve('maestro');
-const REQUIRED = [
-  '01-customer-auth.yaml',
-  '02-project-request.yaml',
-  '03-project-chat.yaml',
-  '04-support-ticket.yaml',
-  '05-document-review.yaml',
-  '06-quote-acceptance.yaml',
-  '07-test-checkout.yaml',
-  '08-partner-application.yaml',
-  '09-admin-partner-approval.yaml',
-  '10-partner-lead.yaml',
-  '11-commission-payout.yaml',
-  '12-account-deletion.yaml',
-  '13-appointments.yaml',
-  '14-admin-project-creation.yaml',
-  '15-document-version-2.yaml',
-  '16-checkout-browser-return.yaml',
-  '17-customer-document-upload.yaml',
-  '19-partner-payout.yaml',
-  '20-admin-ticket-reply.yaml',
-  '21-admin-finance.yaml',
-];
+import { getSuiteManifest, writeSuiteManifestMarkdown } from './maestro-suite-manifest.mjs';
 
+const manifest = getSuiteManifest();
+writeSuiteManifestMarkdown(path.resolve('docs', 'maestro-suite-manifest.md'));
+
+const ROOT = manifest.root;
 let failed = 0;
 let passed = 0;
-let skipped = 0;
 
-for (const name of REQUIRED) {
+for (const name of manifest.flows) {
   const file = path.join(ROOT, name);
   if (!fs.existsSync(file)) {
     console.error(`FAIL missing ${name}`);
@@ -46,23 +28,21 @@ for (const name of REQUIRED) {
     failed += 1;
     continue;
   }
-  if (!text.trim().startsWith('appId:') && !/^---/m.test(text)) {
-    // allow frontmatter-less but require appId somewhere
-  }
   if (!/launchApp|assertVisible|tapOn|inputText/.test(text)) {
     console.error(`FAIL ${name}: no actionable steps`);
     failed += 1;
     continue;
   }
-  if (/BLOCKED|device execution/.test(text) && !/testID|id:/.test(text)) {
-    console.warn(`WARN ${name}: marked blocked without testIDs`);
+  if (/^\s*-\s*#/.test(text)) {
+    console.error(`FAIL ${name}: list-item comment (- #) is invalid YAML`);
+    failed += 1;
+    continue;
   }
   console.log(`PASS syntax ${name}`);
   passed += 1;
 }
 
 console.log(
-  `\nMAESTRO_SYNTAX_SUMMARY tests=${REQUIRED.length} passed=${passed} failed=${failed} skipped=${skipped}`,
+  `\nMAESTRO_SYNTAX_SUMMARY tests=${manifest.count} passed=${passed} failed=${failed} label=${manifest.expectedScoreLabel}`,
 );
-console.log('DEVICE_EXECUTION: BLOCKED (no claim — requires Android device + adb)');
 if (failed > 0) process.exitCode = 1;

@@ -1,4 +1,5 @@
-# Single Maestro session for all 20 required device flows.
+# Single Maestro session for all 20 discovered device flows.
+# Auto-synced by scripts/run-maestro-device.mjs — do not hand-edit the flow list.
 # One driver session avoids USB flakiness from per-flow install/uninstall.
 appId: nl.vdbdigital.app
 ---

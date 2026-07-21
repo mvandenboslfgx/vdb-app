@@ -1,16 +1,22 @@
 /**
- * Run the 20 required Maestro flows on a connected Android device.
- * Reports per-flow PASS/FAIL with duration (no syntax-only claims).
+ * Run executable Maestro flows on a connected Android device.
+ * Flow list is auto-discovered (see scripts/maestro-suite-manifest.mjs).
+ * Reports X/X with X from discovery — never a hard-coded denominator.
+ *
  * Local Supabase + adb reverse only — never production.
  *
  * Samsung/physical devices: Maestro uninstalls its driver APKs on session
  * close. Pre-install them via adb before each maestro invocation so driver
  * startup does not race USB install against MAESTRO_DRIVER_STARTUP_TIMEOUT.
+ *
+ * App package nl.vdbdigital.app is checked before every flow; missing package
+ * is INFRASTRUCTURE BLOCKED (not a UI fail).
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { listExecutableFlowNames, writeSuiteManifestMarkdown } from './maestro-suite-manifest.mjs';
 
 const MAESTRO =
   process.env.MAESTRO_BIN ||
@@ -24,31 +30,25 @@ const MAESTRO_CLIENT_JAR =
     ? String.raw`C:\Users\XXX\maestro\lib\maestro-client.jar`
     : path.join(process.env.HOME || '', '.maestro', 'lib', 'maestro-client.jar'));
 
-const FLOWS = [
-  '01-customer-auth.yaml',
-  '02-project-request.yaml',
-  '03-project-chat.yaml',
-  '04-support-ticket.yaml',
-  '05-document-review.yaml',
-  '06-quote-acceptance.yaml',
-  '07-test-checkout.yaml',
-  '08-partner-application.yaml',
-  '09-admin-partner-approval.yaml',
-  '10-partner-lead.yaml',
-  '11-commission-payout.yaml',
-  '12-account-deletion.yaml',
-  '13-appointments.yaml',
-  '14-admin-project-creation.yaml',
-  '15-document-version-2.yaml',
-  '16-checkout-browser-return.yaml',
-  '17-customer-document-upload.yaml',
-  '19-partner-payout.yaml',
-  '20-admin-ticket-reply.yaml',
-  '21-admin-finance.yaml',
-];
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log(`Usage:
+  node scripts/run-maestro-device.mjs [--suite] [--from=<flow.yaml>] [ANDROID_SERIAL]
+  npm run device:test:maestro
+  npm run device:test:maestro:from-16
+Denominator is auto-discovered from maestro/<NN>-*.yaml.`);
+  process.exit(0);
+}
 
-const device = process.env.ANDROID_SERIAL || process.argv[2] || '';
+const FLOWS = listExecutableFlowNames();
+const TOTAL = FLOWS.length;
+
+const device =
+  process.env.ANDROID_SERIAL ||
+  process.argv.find((a, i) => i >= 2 && !a.startsWith('-')) ||
+  '';
 const mode = process.env.MAESTRO_MODE || (process.argv.includes('--suite') ? 'suite' : 'per-flow');
+const fromArg = process.argv.find((a) => a.startsWith('--from='));
+const fromFlow = fromArg ? fromArg.slice('--from='.length) : process.env.MAESTRO_FROM || '';
 const apkDir = path.resolve('tmp-maestro-apks');
 
 function run(command, args, opts = {}) {
@@ -63,6 +63,20 @@ function run(command, args, opts = {}) {
     },
     ...opts,
   });
+}
+
+function syncDeviceSuiteYaml(flowNames) {
+  const target = path.resolve('maestro', 'device-suite.yaml');
+  const body = [
+    `# Single Maestro session for all ${flowNames.length} discovered device flows.`,
+    '# Auto-synced by scripts/run-maestro-device.mjs — do not hand-edit the flow list.',
+    '# One driver session avoids USB flakiness from per-flow install/uninstall.',
+    'appId: nl.vdbdigital.app',
+    '---',
+    ...flowNames.map((f) => `- runFlow: ${f}`),
+    '',
+  ].join('\n');
+  fs.writeFileSync(target, body, 'utf8');
 }
 
 function ensureDriverApks() {
@@ -99,19 +113,44 @@ function installDriverApks() {
   }
 }
 
-function prepare() {
+function healthGate() {
   const res = run('node', ['scripts/device-test-harness.mjs', 'prepare'], { stdio: 'inherit' });
-  if ((res.status ?? 1) !== 0) process.exit(res.status ?? 1);
+  if ((res.status ?? 1) !== 0) {
+    console.error('INFRASTRUCTURE BLOCKED: health gate failed — suite aborted');
+    process.exit(res.status === 2 ? 2 : res.status ?? 1);
+  }
 }
 
-prepare();
+if (TOTAL === 0) {
+  console.error('No executable Maestro flows discovered under maestro/');
+  process.exit(1);
+}
+
+writeSuiteManifestMarkdown(path.resolve('docs', 'maestro-suite-manifest.md'));
+syncDeviceSuiteYaml(FLOWS);
+console.log(`SUITE_DENOMINATOR=${TOTAL} (auto-discovered)`);
+console.log(FLOWS.map((f, i) => `  ${i + 1}. ${f}`).join('\n'));
+
+let selected = FLOWS;
+if (fromFlow) {
+  const idx = FLOWS.findIndex((f) => f === fromFlow || f.startsWith(fromFlow) || f.includes(fromFlow));
+  if (idx < 0) {
+    console.error(`--from=${fromFlow} did not match any discovered flow`);
+    process.exit(1);
+  }
+  selected = FLOWS.slice(idx);
+  console.log(`Running subset from ${selected[0]} (${selected.length}/${TOTAL})`);
+}
+
+healthGate();
 installDriverApks();
 
-/** @type {{ flow: string; result: 'PASS'|'FAIL'|'BLOCKED'; durationSec: number; note: string }[]} */
+/** @type {{ flow: string; result: 'PASS'|'FAIL'|'BLOCKED'|'INFRA'; durationSec: number; note: string }[]} */
 const results = [];
+const suiteStartedAt = new Date().toISOString();
 
-if (mode === 'suite') {
-  console.log('\n=== device-suite.yaml (single driver session) ===');
+if (mode === 'suite' && !fromFlow) {
+  console.log(`\n=== device-suite.yaml (single driver session, ${TOTAL} flows) ===`);
   const started = Date.now();
   const args = ['test', path.resolve('maestro', 'device-suite.yaml')];
   if (device) args.push('--device', device);
@@ -126,13 +165,12 @@ if (mode === 'suite') {
     out
       .split(/\r?\n/)
       .map((l) => l.trim())
-      .find((l) => /Element not|Assertion|FAILED|Error|Unable|Parse|not found|Timeout|driver/i.test(l)) ??
+      .find((l) => /Element not|Assertion|FAILED|Error|Unable|Parse|not found|Timeout|driver|INFRASTRUCTURE/i.test(l)) ??
     `exit ${res.status}`
   ).slice(0, 200);
 
   for (const flow of FLOWS) {
     const stem = flow.replace(/\.yaml$/, '');
-    // Screenshot names match flow stems in our YAMLs (e.g. 01-customer-auth)
     const shotDone = new RegExp(`Take screenshot ${stem}(?:\\.png)?\\.\\.\\. COMPLETED`, 'i').test(out);
     const startedFlow = out.includes(`> Flow ${stem}`) || out.includes(flow);
     let result = 'FAIL';
@@ -157,8 +195,8 @@ if (mode === 'suite') {
     });
   }
 } else {
-  for (const flow of FLOWS) {
-    prepare();
+  for (const flow of selected) {
+    healthGate();
     installDriverApks();
     const file = path.resolve('maestro', flow);
     if (!fs.existsSync(file)) {
@@ -194,17 +232,25 @@ if (mode === 'suite') {
   }
 }
 
+const suiteEndedAt = new Date().toISOString();
 const passed = results.filter((r) => r.result === 'PASS').length;
 const failed = results.filter((r) => r.result === 'FAIL').length;
-const blocked = results.filter((r) => r.result === 'BLOCKED').length;
+const blocked = results.filter((r) => r.result === 'BLOCKED' || r.result === 'INFRA').length;
+const runTotal = results.length;
+const label = `${passed}/${TOTAL}`;
 
 const summary = {
-  at: new Date().toISOString(),
-  mode,
+  at: suiteEndedAt,
+  startedAt: suiteStartedAt,
+  endedAt: suiteEndedAt,
+  mode: fromFlow ? `per-flow-from:${fromFlow}` : mode,
+  denominator: TOTAL,
+  scoreLabel: label,
   passed,
   failed,
   blocked,
-  total: results.length,
+  total: runTotal,
+  flowsDiscovered: FLOWS,
   results,
 };
 
@@ -213,5 +259,6 @@ fs.writeFileSync(
   JSON.stringify(summary, null, 2),
 );
 
-console.log(`\nMAESTRO_DEVICE_SUMMARY passed=${passed} failed=${failed} blocked=${blocked}`);
-if (failed > 0 || blocked > 0) process.exitCode = 1;
+console.log(`\nMAESTRO_DEVICE_SUMMARY ${label} passed=${passed} failed=${failed} blocked=${blocked} denominator=${TOTAL}`);
+if (failed > 0 || blocked > 0 || passed < TOTAL && !fromFlow) process.exitCode = 1;
+if (fromFlow && (failed > 0 || blocked > 0)) process.exitCode = 1;

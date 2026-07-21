@@ -28,12 +28,17 @@
     "device:test:seed": "node scripts/device-test-harness.mjs seed",
     "device:test:prepare": "node scripts/device-test-harness.mjs prepare",
     "device:test:reverse": "node scripts/device-test-harness.mjs reverse",
+    "device:test:health": "node scripts/device-test-harness.mjs health",
+    "device:test:ensure-apk": "node scripts/device-test-harness.mjs ensure-apk",
+    "device:test:stop-forbidden": "node scripts/device-test-harness.mjs stop-forbidden",
     "device:test:customer": "node scripts/device-test-harness.mjs customer",
     "device:test:partner": "node scripts/device-test-harness.mjs partner",
     "device:test:admin": "node scripts/device-test-harness.mjs admin",
     "device:test:maestro": "node scripts/run-maestro-device.mjs --suite",
     "device:test:maestro:per-flow": "node scripts/run-maestro-device.mjs",
-    "device:test:verify-passwords": "node scripts/verify-local-passwords.mjs"
+    "device:test:maestro:from-16": "node scripts/run-maestro-device.mjs --from=16-checkout-browser-return.yaml",
+    "device:test:verify-passwords": "node scripts/verify-local-passwords.mjs",
+    "maestro:manifest": "node scripts/maestro-suite-manifest.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
