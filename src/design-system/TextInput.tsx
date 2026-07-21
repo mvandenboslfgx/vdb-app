@@ -49,7 +49,7 @@ export function TextInput({
         }}
         onChangeText={onChangeText}
         onEndEditing={(e) => {
-          // Maestro / some IMEs update native text without reliable onChangeText on multiline.
+          // Maestro / some IMEs update native text without reliable onChangeText.
           onChangeText?.(e.nativeEvent.text);
           onEndEditing?.(e);
         }}

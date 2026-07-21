@@ -79,7 +79,7 @@ describe('AdminFinanceScreen', () => {
   it('approves a commission once a reason is provided', async () => {
     mockListCommissions.mockResolvedValueOnce([makeCommission()]);
     mockListPayoutRequests.mockResolvedValueOnce([]);
-    mockApproveCommission.mockResolvedValueOnce(makeCommission({ status: 'approved' }));
+    mockApproveCommission.mockResolvedValueOnce({ id: 'commission-1', status: 'approved' });
     mockListCommissions.mockResolvedValueOnce([]);
     mockListPayoutRequests.mockResolvedValueOnce([]);
 

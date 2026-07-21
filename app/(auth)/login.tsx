@@ -50,7 +50,10 @@ export default function LoginScreen() {
           placeholder={t('login.emailPlaceholder')}
           autoCapitalize="none"
           keyboardType="email-address"
-          autoComplete="email"
+          // Off for device tests: Samsung Pass / autofill corrupts Maestro-typed credentials.
+          autoComplete="off"
+          textContentType="none"
+          importantForAutofill="no"
           value={email}
           onChangeText={setEmail}
         />
@@ -59,7 +62,9 @@ export default function LoginScreen() {
           label={t('login.password')}
           placeholder={t('login.passwordPlaceholder')}
           secureTextEntry
-          autoComplete="password"
+          autoComplete="off"
+          textContentType="none"
+          importantForAutofill="no"
           value={password}
           onChangeText={setPassword}
         />

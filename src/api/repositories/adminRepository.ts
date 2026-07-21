@@ -104,12 +104,19 @@ export async function listAdminQueue(): Promise<AdminQueueItem[]> {
 
 export async function listApprovals(): Promise<AdminQueueItem[]> {
   const queue = await listAdminQueue();
-  return queue.filter(
-    (item) =>
-      item.type === 'partner_application' ||
-      item.type === 'document_review' ||
-      item.type === 'commission_review',
-  );
+  return queue
+    .filter(
+      (item) =>
+        item.type === 'partner_application' ||
+        item.type === 'document_review' ||
+        item.type === 'commission_review',
+    )
+    .sort((a, b) => {
+      // Deterministic Maestro/device start: partner applications first.
+      if (a.type === 'partner_application' && b.type !== 'partner_application') return -1;
+      if (b.type === 'partner_application' && a.type !== 'partner_application') return 1;
+      return 0;
+    });
 }
 
 /**

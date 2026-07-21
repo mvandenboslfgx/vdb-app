@@ -68,6 +68,8 @@ export default function ApprovalsScreen() {
     return <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />;
   }
 
+  const firstPartnerApplicationIndex = items.findIndex((item) => item.type === 'partner_application');
+
   return (
     <Screen scroll testID="screen-admin-approvals">
       <Text variant="title">{t('queue')}</Text>
@@ -75,12 +77,20 @@ export default function ApprovalsScreen() {
         <EmptyState title={tc('empty')} />
       ) : (
         items.map((item, index) => (
-          <View key={item.id} style={styles.card} testID={index === 0 ? 'approval-row-0' : `approval-row-${item.id}`}>
+          <View
+            key={item.id}
+            style={styles.card}
+            testID={index === 0 ? 'approval-row-0' : `approval-row-${item.id}`}
+          >
             <ListRow title={item.title} subtitle={item.subtitle} />
             {item.type === 'partner_application' ? (
               <View style={styles.actions}>
                 <Button
-                  testID={index === 0 ? 'admin-partner-approve' : `btn-approve-${item.id}`}
+                  testID={
+                    index === firstPartnerApplicationIndex
+                      ? 'admin-partner-approve'
+                      : `btn-approve-${item.id}`
+                  }
                   title={t('actions.approvePartner')}
                   variant="gold"
                   size="sm"
@@ -88,7 +98,11 @@ export default function ApprovalsScreen() {
                   onPress={() => void onApprove(item.id)}
                 />
                 <Button
-                  testID={index === 0 ? 'admin-partner-reject' : `btn-reject-${item.id}`}
+                  testID={
+                    index === firstPartnerApplicationIndex
+                      ? 'admin-partner-reject'
+                      : `btn-reject-${item.id}`
+                  }
                   title={t('actions.rejectPartner')}
                   variant="danger"
                   size="sm"

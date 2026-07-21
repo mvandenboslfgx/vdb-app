@@ -42,7 +42,19 @@ export default function PayoutsIndexScreen() {
   }, [enabled, request]);
 
   if (balance.isLoading || commissions.isLoading) {
-    return <LoadingState label={t('loading')} />;
+    return (
+      <Screen testID="screen-partner-payouts">
+        <LoadingState label={t('loading')} />
+      </Screen>
+    );
+  }
+
+  if (balance.isError || commissions.isError) {
+    return (
+      <Screen testID="screen-partner-payouts">
+        <EmptyState title={t('payouts.noPayable')} />
+      </Screen>
+    );
   }
 
   const amountCents = balance.data?.amountCents ?? 0;

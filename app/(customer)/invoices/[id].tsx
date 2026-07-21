@@ -89,9 +89,19 @@ export default function InvoiceDetailScreen() {
     }
   }
 
-  if (loading) return <LoadingState />;
+  if (loading) {
+    return (
+      <Screen testID="screen-invoice-detail">
+        <LoadingState />
+      </Screen>
+    );
+  }
   if (error || !invoice) {
-    return <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />;
+    return (
+      <Screen testID="screen-invoice-detail">
+        <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />
+      </Screen>
+    );
   }
 
   const canPay = ['sent', 'viewed', 'partially_paid', 'overdue'].includes(invoice.status);
