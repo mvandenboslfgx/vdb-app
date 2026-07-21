@@ -7,7 +7,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { execSync } from 'node:child_process';
 
-const PASSWORD = 'LocalTest!Vdb2026';
+const PASSWORD = 'LocalTestVdb2026';
 const DEMO_ANON =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 

@@ -17,18 +17,22 @@ appId: nl.vdbdigital.app
     id: "nav-support"
 - tapOn:
     id: "btn-support-new"
-    optional: true
 - extendedWaitUntil:
     visible:
       id: "screen-support-new"
     timeout: 15000
 - tapOn:
     id: "input-support-subject"
+- eraseText
 - inputText: "Maestro support subject"
 - tapOn:
     id: "input-support-description"
-    optional: true
+- eraseText
 - inputText: "Maestro support body"
 - tapOn:
     id: "btn-support-submit"
+- extendedWaitUntil:
+    visible:
+      id: "screen-support-new-success"
+    timeout: 20000
 - takeScreenshot: "04-support-ticket"

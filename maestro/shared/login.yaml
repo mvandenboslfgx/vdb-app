@@ -1,5 +1,6 @@
 # Shared: open login from cold start (app data cleared by parent).
 # Env: EMAIL
+# Password is shell-safe LocalTestVdb2026 (no !).
 appId: nl.vdbdigital.app
 ---
 - tapOn:
@@ -11,9 +12,11 @@ appId: nl.vdbdigital.app
     timeout: 30000
 - tapOn:
     id: "auth-email-input"
+- eraseText
 - inputText: ${EMAIL}
 - tapOn:
     id: "auth-password-input"
+- eraseText
 - inputText: "LocalTestVdb2026"
 - tapOn:
     id: "auth-login-submit"

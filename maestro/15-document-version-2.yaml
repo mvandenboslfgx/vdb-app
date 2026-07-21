@@ -15,14 +15,18 @@ appId: nl.vdbdigital.app
     id: "tab-customer-more"
 - tapOn:
     id: "nav-documents"
+- extendedWaitUntil:
+    visible:
+      id: "document-row-0"
+    timeout: 20000
 - tapOn:
     id: "document-row-0"
 - assertVisible:
     id: "screen-document-detail"
-- tapOn:
-    id: "input-document-comment"
-    optional: true
-- inputText: "Maestro change request"
 - assertVisible:
     id: "btn-document-request-changes"
+- tapOn:
+    id: "input-document-comment"
+- eraseText
+- inputText: "Maestro change request"
 - takeScreenshot: "15-document-version-2"

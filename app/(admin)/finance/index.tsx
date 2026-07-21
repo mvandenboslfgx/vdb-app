@@ -87,10 +87,10 @@ export default function AdminFinanceScreen() {
       {commissionsUnderReview.length === 0 ? (
         <EmptyState title={t('empty')} />
       ) : (
-        commissionsUnderReview.map((c) => (
+        commissionsUnderReview.map((c, index) => (
           <View key={c.id}>
             <ListRow
-              testID={`row-finance-commission-${c.id}`}
+              testID={index === 0 ? 'row-finance-commission-0' : `row-finance-commission-${c.id}`}
               title={c.saleLabel}
               meta={formatCurrency(c.amountCents)}
               onPress={() => select('commission', c.id)}

@@ -1,6 +1,6 @@
 appId: nl.vdbdigital.app
 ---
-# 21 — Admin finance
+# 21 — Admin finance (select under-review commission)
 - clearState
 - launchApp
 - runFlow:
@@ -15,4 +15,18 @@ appId: nl.vdbdigital.app
     id: "tab-admin-finance"
 - assertVisible:
     id: "screen-admin-finance"
+- extendedWaitUntil:
+    visible:
+      id: "row-finance-commission-0"
+    timeout: 20000
+- tapOn:
+    id: "row-finance-commission-0"
+- assertVisible:
+    id: "input-finance-reason"
+- tapOn:
+    id: "input-finance-reason"
+- eraseText
+- inputText: "Maestro commission approve"
+- assertVisible:
+    id: "btn-finance-approve-commission"
 - takeScreenshot: "21-admin-finance"
