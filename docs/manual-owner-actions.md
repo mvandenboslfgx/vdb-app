@@ -1,22 +1,23 @@
 # Manual owner actions — Matthijs
 
-## Immediate blockers (2026-07-21)
-
-1. [ ] Connect S25 USB → `adb devices` shows `R3GYC00EBYY device` (not empty / unauthorized)
-2. [ ] Start **Docker Desktop** (engine running) so `npx supabase start` works
-3. [ ] `adb reverse tcp:54321 tcp:54321` and `adb reverse tcp:8081 tcp:8081`
-4. [ ] Reply in Cursor when both device + Docker are up so install/cold start can resume
-
-## Already done
+## Done (2026-07-21)
 
 - [x] Java / `JAVA_HOME` / `ANDROID_HOME` / `adb`
-- [x] Node `v24.15.0` / npm `11.12.1`
-- [x] Debug APK built + inspected (`docs/android-apk-evidence.md`)
-- [x] Prebuild previously run (`android/` gitignored)
+- [x] Node / npm
+- [x] S25 `adb devices` → `device` (`SM_S931B`)
+- [x] Docker Desktop + `npx supabase start`
+- [x] `adb reverse` 54321 + 8081
+- [x] Debug APK install `nl.vdbdigital.app`
+- [x] Cold start without fatal crash (login UI visible)
 
-## Later (after device install)
+## Remaining for android-device-pass tag
 
-5. [ ] Cold start + logcat; fill `docs/samsung-s25-device-results.md`
-6. [ ] Maestro device flows → `docs/maestro-device-results.md`
-7. [ ] Optional: `eas login` + `eas init` — preview AAB **BLOCKED BY EAS CONFIGURATION** until linked
-8. [ ] Production actions only with explicit approval (migrations, Mollie, Play, push)
+1. [ ] Manual auth + customer/partner/admin flows on S25
+2. [ ] Development diagnostics probes (auth/db/realtime/storage)
+3. [ ] Maestro device execution (20 flows)
+4. [ ] Re-run quality gates; update evidence docs
+5. [ ] Optional EAS link for preview AAB (**BLOCKED BY EAS** until then)
+
+## Forbidden without explicit approval
+
+Remote migrations · live Mollie · production push · Git push · Play Store upload

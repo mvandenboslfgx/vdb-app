@@ -1,40 +1,45 @@
 # Samsung Galaxy S25 device results (Phase 6)
 
-**Date:** 2026-07-20  
-**Device previously seen:** serial `R3GYC00EBYY`, model `SM_S931B` (Galaxy S25), status `device`
+**Date:** 2026-07-21  
+**Device:** serial `R3GYC00EBYY`, model `SM_S931B`, ABI `arm64-v8a`
 
-## Current status
+## Install + cold start
 
 | Check | Result | Notes |
 |---|---|---|
-| Toolchain (JDK/SDK/adb) | PASS | See `android-environment-verification.md` |
-| Device visible during env check | PASS | `SM_S931B` / `device` |
-| Debug APK built + inspected | PASS | See `android-apk-evidence.md` |
-| `adb install` after build | **BLOCKED** | `adb devices` empty after Gradle (~15 min); USB disconnect |
-| Cold start / crash check | **BLOCKED** | no install |
-| Auth / customer / partner / admin flows | **BLOCKED** | no install |
-| Maestro device | **BLOCKED** | no install |
+| `adb install -r` debug APK | **PASS** | Streamed Install Success |
+| Package present | **PASS** | `package:nl.vdbdigital.app` |
+| versionName / versionCode | **PASS** | `1.0.0` / `1` |
+| minSdk / targetSdk (device) | **PASS** | 24 / 36 |
+| `adb reverse` 54321 + 8081 | **PASS** | UsbFfs listed |
+| Local Supabase auth/REST | **PASS** | HTTP 200 (PC; reverse to device) |
+| Metro bundler | **PASS** | Bundled entry.js ~70.7s (3404 modules) |
+| Cold start (`am start` MainActivity) | **PASS** | PID alive; `topResumedActivity` = MainActivity |
+| Splash → first UI | **PASS** | UI dump shows `Inloggen` (login) |
+| Immediate native crash | **PASS** | no `FATAL EXCEPTION` / `AndroidRuntime` E for app |
+| React Native boot | **PASS** | `Running "main"` fabric=true; Sentry disabled (no DSN) |
+| Expo Go used | **No** | |
 
-## Connectivity plan (when device returns)
+## Cleaned log fragments (no tokens/PII)
 
-```powershell
-adb devices -l
-# expect: R3GYC00EBYY ... device model:SM_S931B
-
-adb reverse tcp:54321 tcp:54321
-adb reverse tcp:8081 tcp:8081
-
-adb install -r C:\Users\XXX\vdb-app\android\app\build\outputs\apk\debug\app-debug.apk
-adb shell pm list packages | findstr vdbdigital
-# expect: package:nl.vdbdigital.app
-
-# Debug APK loads JS from Metro — start bundler, then launch:
-# npx expo start
-adb shell am start -n nl.vdbdigital.app/.MainActivity
+```
+ReactNativeJS: Running "main" with {"rootTag":1,"initialProps":{},"fabric":true}
+ReactNativeJS: [observability] Sentry disabled (no DSN)
+ReactNative: [GESTURE HANDLER] Initialize gesture handler ...
+Metro: Android Bundled 70657ms node_modules\expo-router\entry.js (3404 modules)
 ```
 
-Route: **adb reverse** → phone `127.0.0.1:54321` → PC local Supabase (already verified HTTP 200 on PC). Demo mode off.
+Non-fatal noise ignored: Samsung `libpenguin.so` / MinkIPC (system), not app crash.
 
-## Not claimed
+## Not yet executed (remain PENDING / BLOCKED for pass-tag)
 
-No PASS for install, cold start, or primary device flows until the steps above succeed with log evidence.
+| Area | Status |
+|---|---|
+| Auth register/login/session restore | PENDING |
+| Customer / partner / admin primary flows | PENDING |
+| Diagnostics screen probes on device | PENDING |
+| Maestro device flows (20) | PENDING |
+| Performance / a11y scanner | PENDING |
+| Full quality-gate re-run after device work | PENDING |
+
+Do **not** create `vdb-mobile-v1-android-device-pass` until pending items above pass.
