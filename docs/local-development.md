@@ -34,12 +34,14 @@ Point `.env`:
 ```env
 EXPO_PUBLIC_APP_ENV=development
 EXPO_PUBLIC_ENABLE_DEMO_MODE=false
-EXPO_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+EXPO_PUBLIC_SUPABASE_URL=http://127.0.0.1:54521
 EXPO_PUBLIC_SUPABASE_ANON_KEY=<anon from supabase status>
 ```
 
-Studio: `http://127.0.0.1:54323`  
-API: `http://127.0.0.1:54321`
+Studio: `http://127.0.0.1:54523`
+API: `http://127.0.0.1:54521`
+
+> Mobile uses port block **5452x** so it does not collide with `vdbdigital2` (5432x) or `vdb-partners` (5442x). See `docs/environment-matrix.md`.
 
 Demo mode (`EXPO_PUBLIC_ENABLE_DEMO_MODE=true`) is explicit only — repositories never fall back to mocks on network/DB errors.
 

@@ -1,0 +1,69 @@
+{
+  "name": "vdb-backend-contract",
+  "version": "0.1.0",
+  "schemaVersion": "2026.07.22.freeze",
+  "repositoryRole": "MOBILE_CLIENT",
+  "canonicalBackendOwner": "VDB Digital 2.0",
+  "canonicalRepoHint": "vdbdigital2.0",
+  "status": "MOBILE_ISOLATION_FREEZE",
+  "notes": [
+    "Pinned as vdb-backend-contract@0.1.0 with schemaVersion 2026.07.22.freeze for the Mobile isolation freeze.",
+    "Canonical ownership of production schema remains with VDB Digital 2.0.",
+    "Sibling clients must pin the same name@version and schemaVersion once aligned.",
+    "Staging drift checks must fail client builds when this version mismatches the intended staging contract."
+  ],
+  "roles": [
+    "customer",
+    "partner_pending",
+    "partner",
+    "staff",
+    "admin",
+    "owner"
+  ],
+  "sharedDomains": {
+    "websiteAndMobile": [
+      "profiles",
+      "projects",
+      "project_members",
+      "project_milestones",
+      "conversations",
+      "messages",
+      "support_tickets",
+      "documents",
+      "quotes",
+      "invoices",
+      "payments",
+      "appointments",
+      "reviews"
+    ],
+    "partnerPortalAndMobile": [
+      "partner_applications",
+      "partner_profiles",
+      "partner_codes",
+      "leads",
+      "sales",
+      "commissions",
+      "payout_requests",
+      "marketing_assets"
+    ]
+  },
+  "rpcNames": {
+    "status": "tracked-in-owner-repo",
+    "localProposalsOnly": true
+  },
+  "featureFlags": {
+    "mollie_checkout": false,
+    "digital_product_checkout": false,
+    "partner_payouts": false,
+    "push_notifications": false
+  },
+  "errorCodes": [
+    "CONFIGURATION_ERROR",
+    "UNAUTHORIZED",
+    "FORBIDDEN",
+    "NOT_FOUND",
+    "VALIDATION_ERROR",
+    "PAYMENT_POLICY_BLOCKED",
+    "INFRASTRUCTURE_BLOCKED"
+  ]
+}

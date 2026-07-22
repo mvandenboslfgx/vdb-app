@@ -3,8 +3,9 @@
  * Never targets production.
  *
  * Hard requirements for device validation:
- * - only project_id vdb-digital-mobile-local on :54321/:54322
- * - competing stacks (esp. vdbdigital2) fail the gate
+ * - project_id vdb-digital-mobile-local on :54521/:54522
+ * - never stop/remove sibling repo containers (vdbdigital2, vdb-partners, …)
+ * - on port/stack conflict: report and exit — do not “fix” siblings
  * - health gate before suite / reset completion
  */
 import { createHash } from 'node:crypto';
@@ -16,12 +17,21 @@ import process from 'node:process';
 const cmd = process.argv[2] ?? 'help';
 
 const EXPECTED_PROJECT = 'vdb-digital-mobile-local';
-const FORBIDDEN_STACKS = ['vdbdigital2'];
+/** Sibling stacks — observed only; never stopped from this repo. */
+const SIBLING_STACKS = ['vdbdigital2', 'vdb-partners'];
+const API_PORT = 54521;
+const DB_PORT = 54522;
+const METRO_PORT = 8081;
 const APP_PACKAGE = 'nl.vdbdigital.app';
 const APP_APK =
   process.env.VDB_APP_APK ||
   path.resolve('android', 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk');
 const APP_APK_SHA_FILE = path.resolve('tmp-maestro-apks', 'app-debug.sha256');
+const AUTH_URL = `http://127.0.0.1:${API_PORT}/auth/v1/health`;
+const REST_URL = `http://127.0.0.1:${API_PORT}/rest/v1/`;
+const METRO_URL = `http://127.0.0.1:${METRO_PORT}/status`;
+const LOCAL_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 function run(command, args, opts = {}) {
   const useShell = opts.shell === true || (opts.shell !== false && /^(npx|npm)$/i.test(command));
@@ -46,32 +56,26 @@ function httpCode(url, extraArgs = []) {
   return (health.stdout ?? '').trim();
 }
 
-function dockerNames(filter) {
-  const res = runQuiet('docker', ['ps', '-a', '--filter', filter, '--format', '{{.Names}}']);
-  return (res.stdout ?? '')
-    .split(/\r?\n/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
 function sha256File(filePath) {
   const hash = createHash('sha256');
   hash.update(fs.readFileSync(filePath));
   return hash.digest('hex');
 }
 
-/** Fail hard when a forbidden stack (e.g. vdbdigital2) is present or owns API ports. */
-function assertNoForbiddenStacks() {
+function portPattern(port) {
+  return new RegExp(`(?:^|[\\s,])(?:0\\.0\\.0\\.0:|\\[::\\]:|:)?${port}->`);
+}
+
+/** Report sibling stacks without touching them (architecture freeze). */
+function reportSiblingStacks() {
   const all = runQuiet('docker', ['ps', '-a', '--format', '{{.Names}}']);
   const names = (all.stdout ?? '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
-  const offenders = names.filter((n) => FORBIDDEN_STACKS.some((s) => n.includes(s)));
-  if (offenders.length > 0) {
-    console.error('INFRASTRUCTURE BLOCKED: forbidden Supabase stack containers present:');
-    for (const n of offenders) console.error(`  - ${n}`);
-    console.error(
-      `Stop with: npx supabase stop --project-id vdbdigital2  (from that project), then remove leftover containers.`,
+  const siblings = names.filter((n) => SIBLING_STACKS.some((s) => n.includes(s)));
+  if (siblings.length > 0) {
+    console.log(
+      `NOTE: sibling containers present (left untouched — stop them only from their own repo if needed):`,
     );
-    process.exit(2);
+    for (const n of siblings) console.log(`  - ${n}`);
   }
 }
 
@@ -87,22 +91,27 @@ function assertCorrectKong() {
     .split(/\r?\n/)
     .map((s) => s.trim())
     .filter(Boolean);
-  // Match host publish of 54321 (IPv4 or IPv6 forms).
-  const on54321 = lines.filter((l) => /(?:^|[\s,])(?:0\.0\.0\.0:|\[::\]:|:)?54321->/.test(l) || /:54321->/.test(l));
-  if (on54321.length === 0) {
-    console.error('INFRASTRUCTURE BLOCKED: no Kong listening on host :54321');
+  const onApi = lines.filter((l) => portPattern(API_PORT).test(l));
+  if (onApi.length === 0) {
+    console.error(`INFRASTRUCTURE BLOCKED: no Kong listening on host :${API_PORT}`);
     console.error(kongRunning.stdout || '(no kong containers)');
+    console.error(
+      `Start only this stack: npx supabase start  (project_id=${EXPECTED_PROJECT}). Do not stop sibling containers from here.`,
+    );
     process.exit(2);
   }
-  if (on54321.length > 1) {
-    console.error('INFRASTRUCTURE BLOCKED: multiple Kong containers bound to :54321');
-    console.error(on54321.join('\n'));
+  if (onApi.length > 1) {
+    console.error(`INFRASTRUCTURE BLOCKED: multiple Kong containers bound to :${API_PORT}`);
+    console.error(onApi.join('\n'));
     process.exit(2);
   }
-  const kongName = on54321[0].split('\t')[0];
+  const kongName = onApi[0].split('\t')[0];
   if (!kongName.includes(EXPECTED_PROJECT)) {
     console.error(
-      `INFRASTRUCTURE BLOCKED: wrong stack on :54321 (${kongName}). Expected *${EXPECTED_PROJECT}*`,
+      `INFRASTRUCTURE BLOCKED: wrong stack on :${API_PORT} (${kongName}). Expected *${EXPECTED_PROJECT}*`,
+    );
+    console.error(
+      'Report the conflict. Close only this repo’s processes. Do not remove sibling containers from Mobile.',
     );
     process.exit(2);
   }
@@ -178,7 +187,6 @@ function ensureAppApkInstalled() {
     console.error(combined.slice(-1500));
     process.exit(2);
   }
-  // Wait for package manager
   for (let i = 0; i < 20; i += 1) {
     if (assertAppPackageInstalled()) break;
     spawnSync(process.platform === 'win32' ? 'timeout' : 'sleep', process.platform === 'win32' ? ['/t', '1', '/nobreak'] : ['1'], {
@@ -212,30 +220,27 @@ function clearAppData() {
 function setTestLocale() {
   const serial = process.env.ANDROID_SERIAL;
   const serialArgs = serial ? ['-s', serial] : [];
-  // Best-effort; do not fail the gate if OEM blocks locale change
   runQuiet('adb', [...serialArgs, 'shell', 'settings', 'put', 'system', 'system_locales', 'nl-NL']);
 }
 
 /** Full pre-flow / pre-suite health gate. */
 export function assertDeviceHealthGate({ requireMetro = true, requireApp = true } = {}) {
-  stopForbiddenStacks();
-  assertNoForbiddenStacks();
+  reportSiblingStacks();
   const kong = assertCorrectKong();
   const db = assertDbHealthy();
 
-  const auth = httpCode('http://127.0.0.1:54321/auth/v1/health');
+  const auth = httpCode(AUTH_URL);
   if (auth !== '200') {
     console.error(`INFRASTRUCTURE BLOCKED: auth health HTTP ${auth || 'none'}`);
     process.exit(2);
   }
 
-  const rest = httpCode('http://127.0.0.1:54321/rest/v1/', [
+  const rest = httpCode(REST_URL, [
     '-H',
-    'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+    `apikey: ${LOCAL_ANON}`,
     '-H',
-    'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+    `Authorization: Bearer ${LOCAL_ANON}`,
   ]);
-  // REST may return 200 (empty) or 400/406 without Accept — any connection proving reachability OK if not 000
   if (!rest || rest === '000') {
     console.error(`INFRASTRUCTURE BLOCKED: REST unreachable (HTTP ${rest || 'none'})`);
     process.exit(2);
@@ -243,16 +248,16 @@ export function assertDeviceHealthGate({ requireMetro = true, requireApp = true 
 
   const reverse = runQuiet('adb', ['reverse', '--list']);
   const revOut = reverse.stdout ?? '';
-  if (!revOut.includes('tcp:54321') || !revOut.includes('tcp:8081')) {
-    console.error('INFRASTRUCTURE BLOCKED: adb reverse missing for 54321 and/or 8081');
+  if (!revOut.includes(`tcp:${API_PORT}`) || !revOut.includes(`tcp:${METRO_PORT}`)) {
+    console.error(`INFRASTRUCTURE BLOCKED: adb reverse missing for ${API_PORT} and/or ${METRO_PORT}`);
     console.error(revOut || '(empty)');
     process.exit(2);
   }
 
   if (requireMetro) {
-    const metro = httpCode('http://127.0.0.1:8081/status');
+    const metro = httpCode(METRO_URL);
     if (metro !== '200') {
-      console.error(`INFRASTRUCTURE BLOCKED: Metro not reachable on :8081 (HTTP ${metro || 'none'})`);
+      console.error(`INFRASTRUCTURE BLOCKED: Metro not reachable on :${METRO_PORT} (HTTP ${metro || 'none'})`);
       process.exit(2);
     }
   }
@@ -269,7 +274,7 @@ export function assertDeviceHealthGate({ requireMetro = true, requireApp = true 
 }
 
 function ensureExpectedStackRunning() {
-  stopForbiddenStacks();
+  reportSiblingStacks();
   const kongCheck = runQuiet('docker', [
     'ps',
     '--filter',
@@ -280,10 +285,10 @@ function ensureExpectedStackRunning() {
   const lines = (kongCheck.stdout ?? '')
     .split(/\r?\n/)
     .map((s) => s.trim())
-    .filter((l) => /:54321->/.test(l));
+    .filter((l) => portPattern(API_PORT).test(l));
   const ok = lines.length === 1 && lines[0].includes(EXPECTED_PROJECT);
   if (ok) return;
-  console.log(`Starting ${EXPECTED_PROJECT} (current kong: ${kongCheck.stdout?.trim() || 'none'})…`);
+  console.log(`Starting ${EXPECTED_PROJECT} (current kong on :${API_PORT}: ${lines.join(' | ') || 'none'})…`);
   run('npx', ['supabase', 'start']);
   waitForAuthHealthy(180_000);
   const again = runQuiet('docker', [
@@ -296,10 +301,10 @@ function ensureExpectedStackRunning() {
   const lines2 = (again.stdout ?? '')
     .split(/\r?\n/)
     .map((s) => s.trim())
-    .filter((l) => /:54321->/.test(l));
+    .filter((l) => portPattern(API_PORT).test(l));
   if (lines2.length !== 1 || !lines2[0].includes(EXPECTED_PROJECT)) {
     console.error(
-      `INFRASTRUCTURE BLOCKED: expected ${EXPECTED_PROJECT} on :54321 after start. Kong:\n${again.stdout}`,
+      `INFRASTRUCTURE BLOCKED: expected ${EXPECTED_PROJECT} on :${API_PORT} after start. Kong:\n${again.stdout}`,
     );
     process.exit(2);
   }
@@ -335,7 +340,6 @@ function waitForDbHealthy(timeoutMs = 120_000) {
 function resetDatabaseWithRetry(attempts = 3) {
   let lastStatus = 1;
   for (let i = 1; i <= attempts; i += 1) {
-    stopForbiddenStacks();
     waitForDbHealthy();
     waitForAuthHealthy();
     console.log(`supabase db reset attempt ${i}/${attempts}…`);
@@ -360,7 +364,7 @@ function resetDatabaseWithRetry(attempts = 3) {
 function waitForAuthHealthy(timeoutMs = 120_000) {
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
-    const code = httpCode('http://127.0.0.1:54321/auth/v1/health');
+    const code = httpCode(AUTH_URL);
     if (code === '200') {
       console.log('Auth healthy after reset.');
       return;
@@ -394,8 +398,8 @@ function prepareDevice() {
 }
 
 function reversePorts() {
-  run('adb', ['reverse', 'tcp:54321', 'tcp:54321']);
-  run('adb', ['reverse', 'tcp:8081', 'tcp:8081']);
+  run('adb', ['reverse', `tcp:${API_PORT}`, `tcp:${API_PORT}`]);
+  run('adb', ['reverse', `tcp:${METRO_PORT}`, `tcp:${METRO_PORT}`]);
   run('adb', ['reverse', '--list']);
 }
 
@@ -403,21 +407,20 @@ function assertLocalStackHealthy() {
   assertDeviceHealthGate({ requireMetro: true, requireApp: true });
 }
 
-function stopForbiddenStacks() {
-  // Only remove containers that belong to forbidden project ids — never docker stop $(docker ps -q)
-  // and never `supabase stop` from this repo (CLI may ignore --project-id and stop mobile-local).
-  for (const stack of FORBIDDEN_STACKS) {
-    const names = dockerNames(`name=${stack}`);
-    for (const name of names) {
-      // Guard: never touch the expected project even if a name substring overlaps.
-      if (name.includes(EXPECTED_PROJECT)) continue;
-      console.log(`Stopping forbidden container ${name}…`);
-      runQuiet('docker', ['update', '--restart=no', name]);
-      runQuiet('docker', ['stop', name]);
-      runQuiet('docker', ['rm', '-f', name]);
-    }
-  }
-  assertNoForbiddenStacks();
+/** Report-only isolation check — never stops siblings. */
+function reportIsolation() {
+  reportSiblingStacks();
+  console.log(
+    `Isolation policy: Mobile owns :${API_PORT}/:${DB_PORT} only. Sibling containers are never stopped from this repo.`,
+  );
+  const kong = runQuiet('docker', [
+    'ps',
+    '--filter',
+    'name=supabase_kong',
+    '--format',
+    '{{.Names}}\t{{.Ports}}',
+  ]);
+  console.log('Kong containers:\n' + (kong.stdout || '(none)'));
 }
 
 switch (cmd) {
@@ -455,8 +458,10 @@ switch (cmd) {
   case 'ensure-apk':
     ensureAppApkInstalled();
     break;
+  case 'report-isolation':
   case 'stop-forbidden':
-    stopForbiddenStacks();
+    // Legacy alias `stop-forbidden` intentionally does NOT stop anything anymore.
+    reportIsolation();
     break;
   case 'customer':
   case 'partner':
@@ -469,7 +474,7 @@ switch (cmd) {
     break;
   default:
     console.log(
-      `Usage: node scripts/device-test-harness.mjs <prepare|reset|seed|reverse|health|ensure-apk|stop-forbidden|customer|partner|admin>`,
+      `Usage: node scripts/device-test-harness.mjs <prepare|reset|seed|reverse|health|ensure-apk|report-isolation|customer|partner|admin>`,
     );
     process.exit(cmd === 'help' ? 0 : 1);
 }

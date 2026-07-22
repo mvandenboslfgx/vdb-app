@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { execSync } from 'node:child_process';
 
 const out = execSync('npx supabase status -o env', { encoding: 'utf8' });
-let apiUrl = 'http://127.0.0.1:54321';
+let apiUrl = 'http://127.0.0.1:54521';
 let serviceKey = '';
 let anonKey = '';
 for (const line of out.split(/\r?\n/)) {

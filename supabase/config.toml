@@ -1,19 +1,23 @@
-# VDB Digital — local Supabase configuration
+# VDB Digital Mobile — local Supabase configuration
 # STATUS: local development only. Remote migrations are NOT APPLIED.
 # Project ref (remote, read-only reference): nhsrdnjfsxfikfbdmdfj ("vdb nieuw")
+#
+# Port block 5452x is reserved for this Mobile stack so it does not collide with:
+# - vdbdigital2 defaults (54321/54322)
+# - vdb-partners (54421/54422)
 
 project_id = "vdb-digital-mobile-local"
 
 [api]
 enabled = true
-port = 54321
+port = 54521
 schemas = ["public", "graphql_public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
-port = 54322
-shadow_port = 54320
+port = 54522
+shadow_port = 54520
 major_version = 15
 
 [db.pooler]
@@ -24,12 +28,12 @@ enabled = true
 
 [studio]
 enabled = true
-port = 54323
+port = 54523
 api_url = "http://127.0.0.1"
 
 [inbucket]
 enabled = true
-port = 54324
+port = 54524
 
 [storage]
 enabled = true

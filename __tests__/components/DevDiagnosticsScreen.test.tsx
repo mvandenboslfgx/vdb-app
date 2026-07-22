@@ -10,7 +10,7 @@ jest.mock('@/config/env', () => {
     clientEnv: {
       ...actual.clientEnv,
       appEnv: 'development',
-      supabaseUrl: 'http://127.0.0.1:54321',
+      supabaseUrl: 'http://127.0.0.1:54521',
       hasSupabaseConfig: true,
       useMockData: false,
     },

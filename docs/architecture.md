@@ -2,6 +2,8 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
+> **Shared platform:** Mobile is a `MOBILE_CLIENT` against a canonical backend owned by VDB Digital 2.0. See `docs/shared-backend-architecture.md` and `AGENTS.md`.
+
 
 ## Overview
 
