@@ -327,7 +327,7 @@ async function main() {
     fail('partner_lead_register', e);
   }
 
-  // --- partner payout requests (requires feature_flags partner.payouts=true, see seed-local-identities.mjs) ---
+  // --- partner payout requests (requires feature_flags partner_payouts=true, see seed-local-identities.mjs) ---
   try {
     const { sb } = await asUser(apiUrl, anonKey, 'partner.active.a@local.vdb');
     const before = await sb.from('commissions').select('id').eq('status', 'payable');

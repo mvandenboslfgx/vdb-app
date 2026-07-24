@@ -241,7 +241,7 @@ export async function rejectCommission(
 /**
  * Marks a payout request paid via the `process_payout_request` RPC.
  * Staff-only; requires a reason; the RPC itself fails closed when the
- * `partner.payouts` feature flag is disabled.
+ * `partner.payouts` / `partner_payouts` feature flag is disabled.
  */
 export async function processPayoutRequest(
   payoutId: string,

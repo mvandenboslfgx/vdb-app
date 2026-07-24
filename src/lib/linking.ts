@@ -138,11 +138,11 @@ export function deepLinkToHref(target: DeepLinkTarget): string | null {
     case 'document':
       return `/(customer)/documents/${target.id}`;
     case 'partner':
-      return '/(partner)/dashboard';
+      return '/(partner)';
     case 'admin':
-      return '/(admin)/dashboard';
+      return '/(admin)';
     case 'home':
-      return '/(customer)/home';
+      return '/(customer)';
     case 'paymentReturn':
       return target.invoiceId
         ? `/(customer)/invoices/${target.invoiceId}`

@@ -16,7 +16,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS support_ticket_messages_client_message_id_uq
 
 -- ---------------------------------------------------------------------
 -- request_commission_payout: active, non-suspended partners only. Fails
--- closed when the `partner.payouts` feature flag is disabled. Only ever
+-- closed when the `partner_payouts` feature flag is disabled. Only ever
 -- touches commissions that are currently `payable` and belong to the
 -- calling partner -- rows are locked with FOR UPDATE before being
 -- re-checked, so a concurrent request can never grab the same commission
@@ -62,7 +62,10 @@ BEGIN
 
   v_flag_enabled := NULL;
   IF to_regclass('public.feature_flags') IS NOT NULL THEN
-    SELECT enabled INTO v_flag_enabled FROM public.feature_flags WHERE key = 'partner.payouts';
+    SELECT COALESCE(bool_or(enabled), false)
+      INTO v_flag_enabled
+    FROM public.feature_flags
+    WHERE key IN ('partner_payouts', 'partner.payouts');
   END IF;
   IF NOT coalesce(v_flag_enabled, false) THEN
     RAISE EXCEPTION 'FEATURE_NOT_CONFIGURED: partner payouts are currently disabled';

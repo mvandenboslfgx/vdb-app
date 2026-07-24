@@ -119,12 +119,32 @@ function validateEnv(): ClientEnv & {
     hasSupabaseConfig: hasSupabase,
   });
 
+  const supabaseUrl = env.EXPO_PUBLIC_SUPABASE_URL || '';
+  if (
+    (env.EXPO_PUBLIC_APP_ENV === 'preview' || env.EXPO_PUBLIC_APP_ENV === 'production') &&
+    hasSupabase &&
+    isLocalhostUrl(supabaseUrl)
+  ) {
+    throw new ConfigurationError(
+      `EXPO_PUBLIC_SUPABASE_URL must not use localhost/127.0.0.1 when APP_ENV=${env.EXPO_PUBLIC_APP_ENV}. Use the shared staging/production HTTPS URL.`,
+    );
+  }
+
   return {
     ...env,
     hasSupabaseConfig: hasSupabase,
     demoAllowed,
     useMockData,
   };
+}
+
+function isLocalhostUrl(url: string): boolean {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    return host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '0.0.0.0';
+  } catch {
+    return /localhost|127\.0\.0\.1/i.test(url);
+  }
 }
 
 const env = validateEnv();
@@ -155,4 +175,5 @@ export type ResolvedClientEnv = typeof clientEnv;
 export const __testables = {
   resolveDemoMode,
   PLACEHOLDER_URL,
+  isLocalhostUrl,
 };

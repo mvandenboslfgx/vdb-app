@@ -7,5 +7,6 @@ INSERT INTO public.feature_flags (key, enabled, description) VALUES
   ('mollie_checkout', false, 'FAIL-CLOSED'),
   ('digital_product_checkout', false, 'FAIL-CLOSED'),
   ('partner_payouts', false, 'FAIL-CLOSED'),
-  ('push_notifications', false, 'needs credentials')
+  ('push_notifications', false, 'needs credentials'),
+  ('documents_virus_scan', false, 'needs provider')
 ON CONFLICT (key) DO UPDATE SET enabled = EXCLUDED.enabled;

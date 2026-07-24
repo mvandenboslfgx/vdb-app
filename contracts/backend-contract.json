@@ -1,16 +1,18 @@
 {
   "name": "vdb-backend-contract",
-  "version": "0.1.0",
-  "schemaVersion": "2026.07.22.freeze",
+  "version": "0.1.1",
+  "schemaVersion": "2026.07.24.remediation",
   "repositoryRole": "MOBILE_CLIENT",
   "canonicalBackendOwner": "VDB Digital 2.0",
   "canonicalRepoHint": "vdbdigital2.0",
-  "status": "MOBILE_ISOLATION_FREEZE",
+  "status": "LOCAL_PRE_STAGING_REMEDIATION",
   "notes": [
-    "Pinned as vdb-backend-contract@0.1.0 with schemaVersion 2026.07.22.freeze for the Mobile isolation freeze.",
-    "Canonical ownership of production schema remains with VDB Digital 2.0.",
-    "Sibling clients must pin the same name@version and schemaVersion once aligned.",
-    "Staging drift checks must fail client builds when this version mismatches the intended staging contract."
+    "Local remediation bump after pre-staging audit (2026-07-24).",
+    "Still a Mobile proposal pin — VDB Digital 2.0 remains CANONICAL_BACKEND_OWNER.",
+    "Canonical feature-flag keys are snake_case without domain prefixes (mollie_checkout, partner_payouts, …).",
+    "Table naming: Mobile local uses partner_leads (+ partner_lead_staff_notes); contract lists both partner_leads and legacy alias leads.",
+    "profiles (canonical) maps locally to app_profiles additive profile store; user_roles is the Mobile role model proposal.",
+    "Staging must publish a matching contract before Mobile preview builds are authorized."
   ],
   "roles": [
     "customer",
@@ -23,39 +25,127 @@
   "sharedDomains": {
     "websiteAndMobile": [
       "profiles",
+      "app_profiles",
+      "user_roles",
       "projects",
       "project_members",
       "project_milestones",
+      "project_updates",
+      "project_activity",
       "conversations",
+      "conversation_participants",
       "messages",
+      "message_receipts",
       "support_tickets",
+      "support_ticket_messages",
       "documents",
+      "document_versions",
+      "document_reviews",
       "quotes",
+      "quote_items",
+      "quote_acceptances",
+      "terms_versions",
+      "terms_acceptances",
       "invoices",
-      "payments",
+      "invoice_items",
+      "payment_events",
+      "payment_webhook_events",
       "appointments",
-      "reviews"
+      "availability_slots",
+      "reviews",
+      "feature_flags",
+      "account_deletion_requests",
+      "push_tokens",
+      "notifications",
+      "notification_deliveries"
     ],
     "partnerPortalAndMobile": [
       "partner_applications",
       "partner_profiles",
       "partner_codes",
+      "partner_links",
+      "partner_leads",
+      "partner_lead_staff_notes",
       "leads",
       "sales",
+      "sale_attributions",
       "commissions",
+      "commission_events",
+      "payout_accounts",
       "payout_requests",
-      "marketing_assets"
+      "marketing_assets",
+      "products"
     ]
   },
+  "namingAliases": {
+    "leads": "partner_leads",
+    "profiles": "app_profiles",
+    "payments": "payment_events"
+  },
   "rpcNames": {
-    "status": "tracked-in-owner-repo",
-    "localProposalsOnly": true
+    "status": "local-proposal-catalog",
+    "localProposalsOnly": true,
+    "required": [
+      "has_app_role",
+      "is_staff_or_above",
+      "is_partner",
+      "is_project_member",
+      "is_conversation_participant",
+      "current_partner_id",
+      "accept_quote",
+      "reject_quote",
+      "register_document_upload",
+      "can_upload_to_documents_path",
+      "mark_document_scan_clean",
+      "book_appointment_slot",
+      "cancel_appointment",
+      "create_project_from_request",
+      "register_partner_lead",
+      "update_partner_lead_contact",
+      "approve_partner_application",
+      "reject_partner_application",
+      "suspend_partner",
+      "admin_qualify_lead",
+      "admin_convert_lead",
+      "admin_dashboard_stats",
+      "admin_work_queue",
+      "admin_reply_support_ticket",
+      "admin_assign_ticket",
+      "admin_update_ticket_status",
+      "approve_commission",
+      "reject_commission",
+      "request_commission_payout",
+      "process_payout_request",
+      "reject_payout_request",
+      "write_audit_log"
+    ]
+  },
+  "storageBuckets": [
+    {
+      "id": "documents",
+      "public": false,
+      "requiredFor": ["customer", "admin"]
+    }
+  ],
+  "edgeFunctions": {
+    "status": "local-stubs-only",
+    "names": [
+      "create-checkout",
+      "payment-policy-gate",
+      "approve-commission"
+    ]
   },
   "featureFlags": {
     "mollie_checkout": false,
     "digital_product_checkout": false,
     "partner_payouts": false,
-    "push_notifications": false
+    "push_notifications": false,
+    "documents_virus_scan": false
+  },
+  "featureFlagKeyAliases": {
+    "payments.mollie_checkout": "mollie_checkout",
+    "payments.digital_goods_checkout": "digital_product_checkout",
+    "partner.payouts": "partner_payouts"
   },
   "errorCodes": [
     "CONFIGURATION_ERROR",

@@ -100,4 +100,10 @@ describe('env testables', () => {
   it('exports placeholder constants for docs/tests', () => {
     expect(__testables.PLACEHOLDER_URL).toContain('placeholder');
   });
+
+  it('detects localhost Supabase URLs for preview/production guard', () => {
+    expect(__testables.isLocalhostUrl('http://127.0.0.1:54521')).toBe(true);
+    expect(__testables.isLocalhostUrl('http://localhost:54521')).toBe(true);
+    expect(__testables.isLocalhostUrl('https://xyz.supabase.co')).toBe(false);
+  });
 });

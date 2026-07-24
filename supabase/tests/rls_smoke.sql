@@ -14,7 +14,7 @@ WHERE schemaname = 'public'
   AND tablename IN ('user_roles','projects','messages','commissions','documents')
   AND rowsecurity = true;
 
--- Fail-closed flags
+-- Fail-closed flags (canonical contract keys)
 SELECT bool_and(NOT enabled) AS financial_flags_off
 FROM public.feature_flags
 WHERE key IN ('mollie_checkout','digital_product_checkout','partner_payouts');

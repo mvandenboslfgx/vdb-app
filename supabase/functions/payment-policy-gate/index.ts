@@ -38,9 +38,13 @@ Deno.serve(async (req) => {
 
   const allowed =
     !blockedByDefault.includes(policy) &&
-    flags["payments.mollie_checkout"] === true &&
-    (policy !== "digital_good" || flags["payments.digital_goods_checkout"] === true) &&
-    (policy !== "external_subscription" || flags["payments.external_subscription_checkout"] === true);
+    (flags["mollie_checkout"] === true || flags["payments.mollie_checkout"] === true) &&
+    (policy !== "digital_good" ||
+      flags["digital_product_checkout"] === true ||
+      flags["payments.digital_goods_checkout"] === true) &&
+    (policy !== "external_subscription" ||
+      flags["digital_product_checkout"] === true ||
+      flags["payments.external_subscription_checkout"] === true);
 
   return new Response(
     JSON.stringify({

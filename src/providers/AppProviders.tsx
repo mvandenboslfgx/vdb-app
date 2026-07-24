@@ -9,6 +9,7 @@ import { StyleSheet } from 'react-native';
 import { initI18n, i18n } from '@/i18n';
 import { createQueryClient } from '@/lib/queryClient';
 import { initObservability } from '@/lib/observability';
+import { DeepLinkHandler } from '@/navigation/DeepLinkHandler';
 import { AuthProvider } from '@/providers/AuthProvider';
 import { FeatureFlagsProvider } from '@/providers/FeatureFlagsProvider';
 import { NetworkProvider } from '@/providers/NetworkProvider';
@@ -28,6 +29,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
             <NetworkProvider>
               <AuthProvider>
                 <FeatureFlagsProvider>
+                  <DeepLinkHandler />
                   <StatusBar style="light" />
                   {children}
                 </FeatureFlagsProvider>

@@ -35,7 +35,7 @@ Blocked by default for in-app Mollie checkout:
 - `restricted`
 - `manual_review_required`
 
-Require explicit feature flags (`payments.digital_goods_checkout`, etc.) plus legal review before enabling.
+Require explicit feature flags (`digital_product_checkout`, etc.) plus legal review before enabling.
 
 ## Idempotency
 

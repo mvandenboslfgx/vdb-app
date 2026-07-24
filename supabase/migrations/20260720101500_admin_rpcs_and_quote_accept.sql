@@ -485,7 +485,10 @@ BEGIN
   END IF;
 
   IF to_regclass('public.feature_flags') IS NOT NULL THEN
-    SELECT enabled INTO v_flag_enabled FROM public.feature_flags WHERE key = 'partner.payouts';
+    SELECT COALESCE(bool_or(enabled), false)
+      INTO v_flag_enabled
+    FROM public.feature_flags
+    WHERE key IN ('partner_payouts', 'partner.payouts');
     IF v_flag_enabled IS NOT NULL AND NOT v_flag_enabled THEN
       RAISE EXCEPTION 'Partner payouts are currently disabled';
     END IF;

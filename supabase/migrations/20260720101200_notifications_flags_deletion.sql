@@ -72,12 +72,13 @@ CREATE TABLE IF NOT EXISTS public.feature_flags (
 
 INSERT INTO public.feature_flags (key, description, enabled)
 VALUES
-  ('payments.mollie_checkout', 'Enable Mollie hosted checkout in app', false),
-  ('payments.digital_goods_checkout', 'Allow digital_good checkout (Play policy gate)', false),
-  ('payments.external_subscription_checkout', 'Allow external_subscription checkout', false),
-  ('partner.payouts', 'Allow partners to request payouts', false),
+  -- Canonical contract keys (see contracts/backend-contract.json)
+  ('mollie_checkout', 'FAIL-CLOSED — Mollie hosted checkout', false),
+  ('digital_product_checkout', 'FAIL-CLOSED — digital goods / Play gate', false),
+  ('partner_payouts', 'FAIL-CLOSED — partner payout requests', false),
+  ('push_notifications', 'Remote push delivery (needs provider)', false),
+  ('documents_virus_scan', 'Virus scan provider configured', false),
   ('partner.applications', 'Allow new partner applications', true),
-  ('documents.virus_scan', 'Virus scan provider configured', false),
   ('chat.attachments', 'Allow chat attachments', true),
   ('appointments.booking', 'Allow appointment booking', true)
 ON CONFLICT (key) DO NOTHING;

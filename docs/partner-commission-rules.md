@@ -41,5 +41,5 @@ Partners may **not**:
 
 ## Payouts
 
-Controlled by feature flag `partner.payouts` (default **off**).
+Controlled by feature flag `partner_payouts` (default **off**; legacy alias `partner.payouts` accepted in RPCs).
 Partners manage `payout_accounts` (IBAN stored encrypted server-side) and submit `payout_requests`.

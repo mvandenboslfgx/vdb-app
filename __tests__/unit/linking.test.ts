@@ -23,4 +23,10 @@ describe('linking', () => {
     });
     expect(deepLinkToHref(target)).toBe('/(customer)/invoices/inv-1');
   });
+
+  it('routes partner/admin/home to role group indexes', () => {
+    expect(deepLinkToHref({ type: 'partner' })).toBe('/(partner)');
+    expect(deepLinkToHref({ type: 'admin' })).toBe('/(admin)');
+    expect(deepLinkToHref({ type: 'home' })).toBe('/(customer)');
+  });
 });

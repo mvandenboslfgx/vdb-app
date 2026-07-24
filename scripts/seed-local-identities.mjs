@@ -167,12 +167,13 @@ async function main() {
 
   // LOCAL ONLY: enable partner payouts so payout RPC + UI can be exercised
   // in local testing. Never enable this in a remote/production seed.
+  // Canonical key: partner_payouts (legacy alias partner.payouts kept in RPC checks).
   {
     const { error } = await db
       .from('feature_flags')
       .update({ enabled: true })
-      .eq('key', 'partner.payouts');
-    if (error) console.warn('enable partner.payouts flag:', error.message);
+      .eq('key', 'partner_payouts');
+    if (error) console.warn('enable partner_payouts flag:', error.message);
   }
 
   const customerA = ids['customer.a@local.vdb'];

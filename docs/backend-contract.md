@@ -1,9 +1,9 @@
 # Backend contract
 
-**Package:** `vdb-backend-contract@0.1.0`
+**Package:** `vdb-backend-contract@0.1.1`
 **File:** `contracts/backend-contract.json`
-**`schemaVersion`:** `2026.07.22.freeze`
-**Status:** Mobile isolation freeze pin — awaiting sibling alignment to the same canonical version
+**`schemaVersion`:** `2026.07.24.remediation`
+**Status:** Local pre-staging remediation pin — still awaiting canonical owner publish for shared staging
 
 ## Purpose
 
