@@ -85,9 +85,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   extra: {
     eas: {
-      projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? '',
+      projectId: 'b1be524b-fed0-4cb3-9eca-65795c82d768',
     },
     appEnv: process.env.EXPO_PUBLIC_APP_ENV ?? 'development',
   },
-  owner: process.env.EAS_OWNER,
+  // EAS organization owner (not personal Expo account)
+  owner: 'vdbdigitalsoftware',
 });
