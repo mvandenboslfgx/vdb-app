@@ -25,7 +25,7 @@
   "readOnlyNotice": "This quote is no longer actionable.",
   "status": {
     "draft": "Draft",
-    "sent": "Sent",
+    "sent": "Ready for review",
     "viewed": "Viewed",
     "accepted": "Accepted",
     "rejected": "Rejected",

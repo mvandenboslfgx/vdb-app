@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing['4xl'],
   },
   padded: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
     paddingTop: spacing.lg,
   },
 });

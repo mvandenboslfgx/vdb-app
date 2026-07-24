@@ -36,8 +36,8 @@ function loadLocalEnv() {
 }
 
 const IDENTITIES = [
-  { email: 'customer.a@local.vdb', role: 'customer', full_name: 'Customer A' },
-  { email: 'customer.b@local.vdb', role: 'customer', full_name: 'Customer B' },
+  { email: 'customer.a@local.vdb', role: 'customer', full_name: 'Matthijs Jansen' },
+  { email: 'customer.b@local.vdb', role: 'customer', full_name: 'Sophie de Vries' },
   {
     email: 'partner.pending@local.vdb',
     role: 'partner_pending',
@@ -280,11 +280,15 @@ async function main() {
   const { data: project, error: projErr } = await db
     .from('projects')
     .insert({
-      title: 'Local Seed Project A',
-      description: 'Seeded project for customer A',
+      title: 'Nieuwe VDB-bedrijfswebsite',
+      description: 'Ontwerp en ontwikkeling van de nieuwe website',
       status: 'intake',
       customer_user_id: customerA,
       owner_staff_id: staff,
+      metadata: {
+        progressPercent: 18,
+        nextMilestone: 'Intake gesprek afronden',
+      },
     })
     .select('id')
     .single();
@@ -298,8 +302,8 @@ async function main() {
   await db.from('project_updates').insert({
     project_id: project.id,
     author_id: staff,
-    title: 'Welcome',
-    body: 'Project kicked off (seed)',
+    title: 'Kick-off gepland',
+    body: 'We starten met het ontwerp van je nieuwe website.',
     is_customer_visible: true,
   });
 
@@ -309,7 +313,7 @@ async function main() {
     .insert({
       conversation_type: 'customer_support',
       project_id: project.id,
-      subject: 'Seed chat A+staff',
+      subject: 'Websiteproject — vragen',
       created_by: customerA,
     })
     .select('id')
@@ -325,7 +329,7 @@ async function main() {
     .insert({
       conversation_id: convo.id,
       sender_id: customerA,
-      body: 'Hello from customer A (seed)',
+      body: 'Kunnen we de kick-off volgende week inplannen?',
     })
     .select('id')
     .single();
@@ -343,7 +347,7 @@ async function main() {
       requester_id: customerA,
       project_id: project.id,
       conversation_id: convo.id,
-      subject: 'Seed support ticket',
+      subject: 'Vraag over planning',
       category: 'general',
       status: 'open',
       priority: 'normal',
@@ -356,13 +360,13 @@ async function main() {
     {
       ticket_id: ticket.id,
       author_id: customerA,
-      body: 'Customer question (seed)',
+      body: 'Wanneer kunnen we de eerste ontwerpschetsen verwachten?',
       is_internal: false,
     },
     {
       ticket_id: ticket.id,
       author_id: staff,
-      body: 'Internal note (seed)',
+      body: 'Internal note — follow up after kick-off',
       is_internal: true,
     },
   ]);
@@ -371,7 +375,7 @@ async function main() {
   const { data: quote } = await db
     .from('quotes')
     .insert({
-      quote_number: 'Q-LOCAL-SEED-A',
+      quote_number: 'OFF-2026-014',
       customer_user_id: customerA,
       project_id: project.id,
       status: 'sent',
@@ -379,6 +383,7 @@ async function main() {
       subtotal_cents: 10000,
       tax_cents: 2100,
       total_cents: 12100,
+      notes: 'Offerte websiteontwikkeling',
       created_by: staff,
       sent_at: new Date().toISOString(),
       valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
@@ -388,7 +393,7 @@ async function main() {
 
   await db.from('quote_items').insert({
     quote_id: quote.id,
-    description: 'Seed line item',
+    description: 'Websiteontwikkeling — fase 1',
     quantity: 1,
     unit_amount_cents: 10000,
     tax_rate_bps: 2100,
@@ -397,7 +402,7 @@ async function main() {
   // Invoice for A + B (isolation tests)
   await db.from('invoices').insert([
     {
-      invoice_number: 'INV-LOCAL-SEED-A',
+      invoice_number: '2026-1001',
       customer_user_id: customerA,
       project_id: project.id,
       quote_id: quote.id,
@@ -410,7 +415,7 @@ async function main() {
       due_on: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     },
     {
-      invoice_number: 'INV-LOCAL-SEED-B',
+      invoice_number: '2026-1002',
       customer_user_id: customerB,
       status: 'issued',
       currency: 'EUR',
@@ -428,7 +433,7 @@ async function main() {
     .insert({
       project_id: project.id,
       owner_user_id: customerA,
-      title: 'Seed document',
+      title: 'Projectovereenkomst',
       category: 'contract',
       status: 'available',
     })

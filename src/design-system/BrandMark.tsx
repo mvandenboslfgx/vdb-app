@@ -30,7 +30,7 @@ export function BrandMark({
       />
       {markOnly ? null : (
         <View style={styles.textCol}>
-          <Text variant={compact ? 'body' : 'title'} weight="semibold">
+          <Text variant={compact ? 'label' : 'title'} weight="semibold" style={compact ? styles.compactTitle : undefined}>
             VDB Digital
           </Text>
           {subtitle ? (
@@ -56,5 +56,9 @@ const styles = StyleSheet.create({
   textCol: {
     gap: 2,
     flexShrink: 1,
+  },
+  compactTitle: {
+    fontSize: 17,
+    lineHeight: 22,
   },
 });

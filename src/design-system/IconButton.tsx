@@ -1,16 +1,19 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
 import { Pressable, StyleSheet, type PressableProps } from 'react-native';
 
-import { Text } from '@/design-system/Text';
 import { colors, hitSlop, radii } from '@/theme';
 
 export interface IconButtonProps extends Omit<PressableProps, 'children'> {
   label: string;
-  icon: string;
+  icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
   tone?: 'default' | 'gold' | 'danger';
 }
 
 export function IconButton({ label, icon, tone = 'default', style, ...rest }: IconButtonProps) {
+  const color =
+    tone === 'gold' ? colors.champagneGold : tone === 'danger' ? colors.error : colors.textPrimary;
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -24,9 +27,7 @@ export function IconButton({ label, icon, tone = 'default', style, ...rest }: Ic
       ]}
       {...rest}
     >
-      <Text variant="subtitle" color={tone === 'gold' ? 'champagneGold' : tone === 'danger' ? 'error' : 'textPrimary'}>
-        {icon}
-      </Text>
+      <MaterialCommunityIcons name={icon} size={22} color={color} />
     </Pressable>
   );
 }

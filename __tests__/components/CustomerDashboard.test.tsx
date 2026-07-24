@@ -64,9 +64,31 @@ describe('CustomerDashboard', () => {
     await waitFor(() => expect(screen.getByTestId('dashboard-project-proj-1')).toBeTruthy());
     expect(screen.getByText('Klantportaal app')).toBeTruthy();
     expect(screen.getByText('3')).toBeTruthy();
+    expect(screen.queryByText(/Local Seed Project/i)).toBeNull();
+    expect(screen.queryByText(/Customer A/i)).toBeNull();
 
-    await fireEvent.press(screen.getByText('Klantportaal app'));
+    await fireEvent.press(screen.getByTestId('dashboard-project-proj-1'));
     expect(routerMock.push).toHaveBeenCalledWith('/(customer)/projects/proj-1');
+  });
+
+  it('shows time-based greeting from profile name', async () => {
+    mockGetDashboard.mockResolvedValueOnce(makeDashboard({ welcomeName: 'Jane Doe' }));
+    await renderWithProviders(<CustomerHomeScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('dashboard-greeting')).toBeTruthy());
+    expect(screen.getByText(/Jane/)).toBeTruthy();
+    expect(
+      screen.getByText("Here’s what’s happening across your projects."),
+    ).toBeTruthy();
+  });
+
+  it('exposes quick actions that navigate to real screens', async () => {
+    mockGetDashboard.mockResolvedValueOnce(makeDashboard());
+    await renderWithProviders(<CustomerHomeScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('quick-support')).toBeTruthy());
+    await fireEvent.press(screen.getByTestId('quick-support'));
+    expect(routerMock.push).toHaveBeenCalledWith('/(customer)/support');
   });
 
   it('shows an error state with retry when the dashboard fails to load', async () => {

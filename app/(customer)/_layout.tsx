@@ -1,47 +1,73 @@
 import { Redirect, Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { LoadingState } from '@/design-system';
+import { LoadingState, PremiumTabIcon } from '@/design-system';
+import { premiumTabBarOptions } from '@/navigation/premiumTabBar';
 import { useAuth } from '@/providers/AuthProvider';
-import { colors } from '@/theme';
 
 export default function CustomerLayout() {
   const { t } = useTranslation('common');
   const { loading, session, profile } = useAuth();
+  const insets = useSafeAreaInsets();
 
   if (loading) return <LoadingState />;
   if (!session && !profile) return <Redirect href="/(public)" />;
 
   return (
-    <Tabs
-      screenOptions={{
-        headerStyle: { backgroundColor: '#050505' },
-        headerTintColor: colors.textPrimary,
-        headerShadowVisible: false,
-        tabBarStyle: {
-          backgroundColor: '#050505',
-          borderTopColor: colors.borderSubtle,
-        },
-        tabBarActiveTintColor: '#C7A66A',
-        tabBarInactiveTintColor: colors.textMuted,
-        sceneStyle: { backgroundColor: '#050505' },
-      }}
-    >
+    <Tabs screenOptions={premiumTabBarOptions(insets)}>
       <Tabs.Screen
         name="index"
-        options={{ title: t('tabs.home'), headerTitle: t('appName'), tabBarButtonTestID: 'tab-customer-home' }}
+        options={{
+          title: t('tabs.home'),
+          headerShown: false,
+          tabBarButtonTestID: 'tab-customer-home',
+          tabBarIcon: ({ focused }) => (
+            <PremiumTabIcon
+              name={focused ? 'home-variant' : 'home-variant-outline'}
+              focused={focused}
+            />
+          ),
+        }}
       />
       <Tabs.Screen
         name="projects"
-        options={{ title: t('tabs.projects'), headerShown: false, tabBarButtonTestID: 'tab-customer-projects' }}
+        options={{
+          title: t('tabs.projects'),
+          headerShown: false,
+          tabBarButtonTestID: 'tab-customer-projects',
+          tabBarIcon: ({ focused }) => (
+            <PremiumTabIcon name={focused ? 'folder' : 'folder-outline'} focused={focused} />
+          ),
+        }}
       />
       <Tabs.Screen
         name="messages"
-        options={{ title: t('tabs.messages'), headerShown: false, tabBarButtonTestID: 'tab-customer-messages' }}
+        options={{
+          title: t('tabs.messages'),
+          headerShown: false,
+          tabBarButtonTestID: 'tab-customer-messages',
+          tabBarIcon: ({ focused }) => (
+            <PremiumTabIcon
+              name={focused ? 'message-text' : 'message-text-outline'}
+              focused={focused}
+            />
+          ),
+        }}
       />
       <Tabs.Screen
         name="more"
-        options={{ title: t('tabs.more'), headerShown: false, tabBarButtonTestID: 'tab-customer-more' }}
+        options={{
+          title: t('tabs.more'),
+          headerShown: false,
+          tabBarButtonTestID: 'tab-customer-more',
+          tabBarIcon: ({ focused }) => (
+            <PremiumTabIcon
+              name={focused ? 'dots-horizontal-circle' : 'dots-horizontal-circle-outline'}
+              focused={focused}
+            />
+          ),
+        }}
       />
       <Tabs.Screen name="documents" options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="quotes" options={{ href: null, headerShown: false }} />

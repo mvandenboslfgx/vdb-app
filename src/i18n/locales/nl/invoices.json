@@ -4,6 +4,7 @@
   "emptyHint": "Facturen verschijnen hier zodra ze zijn verstuurd.",
   "loading": "Facturen laden…",
   "error": "Facturen konden niet worden geladen.",
+  "cardTitle": "Factuur websiteproject",
   "number": "Factuurnummer",
   "issueDate": "Factuurdatum",
   "dueDate": "Vervaldatum",
@@ -14,11 +15,11 @@
   "reference": "Kenmerk",
   "status": {
     "draft": "Concept",
-    "sent": "Verstuurd",
+    "sent": "Openstaand",
     "viewed": "Bekeken",
     "partially_paid": "Gedeeltelijk betaald",
     "paid": "Betaald",
-    "overdue": "Achterstallig",
+    "overdue": "Verlopen",
     "cancelled": "Geannuleerd",
     "credited": "Gecrediteerd"
   }

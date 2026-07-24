@@ -4,6 +4,7 @@
   "emptyHint": "Invoices appear here once they have been sent.",
   "loading": "Loading invoices…",
   "error": "Invoices could not be loaded.",
+  "cardTitle": "Website project invoice",
   "number": "Invoice number",
   "issueDate": "Issue date",
   "dueDate": "Due date",
@@ -14,7 +15,7 @@
   "reference": "Reference",
   "status": {
     "draft": "Draft",
-    "sent": "Sent",
+    "sent": "Outstanding",
     "viewed": "Viewed",
     "partially_paid": "Partially paid",
     "paid": "Paid",
