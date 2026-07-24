@@ -1,41 +1,26 @@
-# Backend contract
+# Backend contract (Mobile consumer)
 
-**Package:** `vdb-backend-contract@0.1.1`
-**File:** `contracts/backend-contract.json`
-**`schemaVersion`:** `2026.07.24.remediation`
-**Status:** Local pre-staging remediation pin — still awaiting canonical owner publish for shared staging
+**Repository role:** `MOBILE_CLIENT`
+**Pinned package:** `vdb-backend-contract@0.2.0-rc.2`
+**Pinned schemaVersion:** `2026.07.24.mobile-compat-rc2`
+**Status:** `CONSUMER_PIN_OWNER_RC2`
+**Canonical publisher:** VDB Digital 2.0 only
 
-## Purpose
+## Explicit non-claims
 
-One versioned contract shared conceptually across Website, Mobile, and Partner Portal:
+- Mobile **`0.1.1` / `2026.07.24.remediation`** was a **local remediation proposal** only — **not** canonical, **not** for staging publish.
+- Owner historical **`0.1.0` / `2026.07.22.freeze`** is freeze history only — **not** the shared staging target.
 
-- generated Database types (canonical from owner repo)
-- roles / enums / statuses
-- RPC names
-- Zod schemas (client-side mirrors)
-- feature flags
-- error codes
-- `schemaVersion`
+## Consumer rules
 
-Every client records which contract version it builds against.
+1. Pin exact owner `schemaVersion` before shared staging/preview builds.
+2. Use `src/api/contract/ownerMapping.ts` for table/RPC name mapping to `portal_*` / `partner_*`.
+3. Local `supabase/migrations/*` in this repo remain **NON-CANONICAL** isolated proof SQL.
+4. Do not invent parallel base tables on shared staging.
+5. Financial flags stay fail-closed until owner enables them.
 
-## Mobile rules
+## Related
 
-1. Do not invent a second production schema.
-2. Local SQL under `supabase/migrations/` is a **proposal** until landed in VDB Digital 2.0.
-3. After the owner publishes a further contract bump, update `version` + `schemaVersion` here and regenerate/consume types.
-4. Staging/preview builds should fail when contract version ≠ intended staging version (drift check — to be wired in CI).
-
-## Drift check (planned)
-
-| Check | Expected |
-|---|---|
-| Client `vdb-backend-contract@version` + `schemaVersion` | Equals staging/production published contract |
-| Mismatch | Fail build / fail device health gate for non-local envs |
-
-## Related docs
-
-- `docs/mobile-web-identity-contract.md` — Auth/session identity
-- `docs/migration-ownership.md` — who may apply what
-- `docs/backend-integration-map.md` — table mapping notes
-- `docs/mobile-shared-backend-isolation-pass.md` — isolation gate evidence
+- Owner bundle: `vdbdigital2.0/contracts/releases/vdb-backend-contract-0.2.0-rc.2/`
+- Owner convergence: `vdbdigital2.0/docs/contract-convergence-rc2.md`
+- Mobile pin module: `src/config/backendContract.ts`

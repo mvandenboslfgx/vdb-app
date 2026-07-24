@@ -1,18 +1,21 @@
 {
   "name": "vdb-backend-contract",
-  "version": "0.1.1",
-  "schemaVersion": "2026.07.24.remediation",
+  "version": "0.2.0-rc.2",
+  "schemaVersion": "2026.07.24.mobile-compat-rc2",
+  "packageId": "vdb-backend-contract@0.2.0-rc.2",
   "repositoryRole": "MOBILE_CLIENT",
   "canonicalBackendOwner": "VDB Digital 2.0",
   "canonicalRepoHint": "vdbdigital2.0",
-  "status": "LOCAL_PRE_STAGING_REMEDIATION",
+  "status": "CONSUMER_PIN_OWNER_RC2",
+  "minimumCompatibleClientVersion": ">=0.2.0-rc.2",
+  "partnerSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.1",
   "notes": [
-    "Local remediation bump after pre-staging audit (2026-07-24).",
-    "Still a Mobile proposal pin — VDB Digital 2.0 remains CANONICAL_BACKEND_OWNER.",
-    "Canonical feature-flag keys are snake_case without domain prefixes (mollie_checkout, partner_payouts, …).",
-    "Table naming: Mobile local uses partner_leads (+ partner_lead_staff_notes); contract lists both partner_leads and legacy alias leads.",
-    "profiles (canonical) maps locally to app_profiles additive profile store; user_roles is the Mobile role model proposal.",
-    "Staging must publish a matching contract before Mobile preview builds are authorized."
+    "Exact pin of owner-published local bundle 0.2.0-rc.2 — VDB Digital 2.0 remains CANONICAL_BACKEND_OWNER.",
+    "Mobile 0.1.1 / 2026.07.24.remediation was a local remediation proposal only and is NOT canonical.",
+    "Owner 0.1.0 freeze is historical only and is NOT the staging target.",
+    "Canonical tables are portal_* + partner_*; Mobile must use client mapping (see namingAliases / rpcNames.mobileClientRpcMapping).",
+    "Financial flags remain fail-closed (mollie_checkout, digital_product_checkout, partner_payouts).",
+    "Local supabase/migrations in this repo remain NON-CANONICAL proposal SQL for isolated Mobile proof only."
   ],
   "roles": [
     "customer",
@@ -25,127 +28,97 @@
   "sharedDomains": {
     "websiteAndMobile": [
       "profiles",
-      "app_profiles",
-      "user_roles",
-      "projects",
-      "project_members",
-      "project_milestones",
-      "project_updates",
-      "project_activity",
-      "conversations",
-      "conversation_participants",
-      "messages",
-      "message_receipts",
-      "support_tickets",
-      "support_ticket_messages",
-      "documents",
-      "document_versions",
-      "document_reviews",
-      "quotes",
-      "quote_items",
-      "quote_acceptances",
-      "terms_versions",
-      "terms_acceptances",
-      "invoices",
-      "invoice_items",
-      "payment_events",
-      "payment_webhook_events",
-      "appointments",
-      "availability_slots",
-      "reviews",
-      "feature_flags",
-      "account_deletion_requests",
-      "push_tokens",
-      "notifications",
-      "notification_deliveries"
+      "organizations",
+      "organization_members",
+      "portal_projects",
+      "portal_quotes",
+      "portal_quote_items",
+      "portal_quote_versions",
+      "portal_quote_acceptances",
+      "portal_invoices",
+      "portal_invoice_items",
+      "portal_files",
+      "feature_flags"
     ],
     "partnerPortalAndMobile": [
       "partner_applications",
       "partner_profiles",
       "partner_codes",
-      "partner_links",
       "partner_leads",
-      "partner_lead_staff_notes",
-      "leads",
-      "sales",
-      "sale_attributions",
-      "commissions",
-      "commission_events",
-      "payout_accounts",
-      "payout_requests",
-      "marketing_assets",
-      "products"
+      "partner_sales",
+      "partner_commissions",
+      "partner_payout_requests",
+      "partner_payouts",
+      "partner_ledger_transactions",
+      "partner_ledger_entries",
+      "partner_cash_receipts",
+      "partner_adjustments"
     ]
   },
   "namingAliases": {
-    "leads": "partner_leads",
-    "profiles": "app_profiles",
-    "payments": "payment_events"
+    "projects": "portal_projects",
+    "quotes": "portal_quotes",
+    "quote_items": "portal_quote_items",
+    "invoices": "portal_invoices",
+    "invoice_items": "portal_invoice_items",
+    "documents": "portal_files",
+    "commissions": "partner_commissions",
+    "payout_requests": "partner_payout_requests",
+    "sales": "partner_sales",
+    "app_profiles": "profiles"
   },
   "rpcNames": {
-    "status": "local-proposal-catalog",
-    "localProposalsOnly": true,
+    "status": "owner-canonical",
+    "localProposalsOnly": false,
     "required": [
-      "has_app_role",
-      "is_staff_or_above",
-      "is_partner",
-      "is_project_member",
-      "is_conversation_participant",
-      "current_partner_id",
-      "accept_quote",
-      "reject_quote",
-      "register_document_upload",
-      "can_upload_to_documents_path",
-      "mark_document_scan_clean",
-      "book_appointment_slot",
-      "cancel_appointment",
-      "create_project_from_request",
-      "register_partner_lead",
-      "update_partner_lead_contact",
-      "approve_partner_application",
-      "reject_partner_application",
-      "suspend_partner",
-      "admin_qualify_lead",
-      "admin_convert_lead",
-      "admin_dashboard_stats",
-      "admin_work_queue",
-      "admin_reply_support_ticket",
-      "admin_assign_ticket",
-      "admin_update_ticket_status",
-      "approve_commission",
-      "reject_commission",
-      "request_commission_payout",
-      "process_payout_request",
-      "reject_payout_request",
-      "write_audit_log"
-    ]
-  },
-  "storageBuckets": [
-    {
-      "id": "documents",
-      "public": false,
-      "requiredFor": ["customer", "admin"]
+      "accept_portal_quote",
+      "decline_portal_quote",
+      "submit_partner_application",
+      "review_partner_application",
+      "create_partner_lead",
+      "review_partner_lead",
+      "confirm_partner_sale",
+      "request_partner_payout",
+      "approve_partner_payout_request",
+      "record_partner_payout_paid",
+      "feature_flag_enabled",
+      "verify_mobile_compat_contracts",
+      "verify_partner_admin_contracts"
+    ],
+    "mobileClientRpcMapping": {
+      "accept_quote": "accept_portal_quote",
+      "reject_quote": "decline_portal_quote",
+      "register_partner_lead": "create_partner_lead",
+      "approve_partner_application": "review_partner_application",
+      "reject_partner_application": "review_partner_application",
+      "request_commission_payout": "request_partner_payout",
+      "admin_qualify_lead": "review_partner_lead",
+      "admin_convert_lead": "confirm_partner_sale"
     }
-  ],
-  "edgeFunctions": {
-    "status": "local-stubs-only",
-    "names": [
-      "create-checkout",
-      "payment-policy-gate",
-      "approve-commission"
-    ]
   },
   "featureFlags": {
     "mollie_checkout": false,
     "digital_product_checkout": false,
     "partner_payouts": false,
     "push_notifications": false,
-    "documents_virus_scan": false
+    "documents_virus_scan": false,
+    "CHECKOUT_ENABLED": false
   },
   "featureFlagKeyAliases": {
     "payments.mollie_checkout": "mollie_checkout",
     "payments.digital_goods_checkout": "digital_product_checkout",
-    "partner.payouts": "partner_payouts"
+    "partner.payouts": "partner_payouts",
+    "CHECKOUT_ENABLED": "mollie_checkout"
+  },
+  "storage": {
+    "buckets": [
+      "customer-documents",
+      "invoice-documents",
+      "product-media",
+      "project-files",
+      "quote-documents",
+      "support-attachments"
+    ]
   },
   "errorCodes": [
     "CONFIGURATION_ERROR",
@@ -154,6 +127,8 @@
     "NOT_FOUND",
     "VALIDATION_ERROR",
     "PAYMENT_POLICY_BLOCKED",
-    "INFRASTRUCTURE_BLOCKED"
+    "INFRASTRUCTURE_BLOCKED",
+    "FEATURE_NOT_CONFIGURED",
+    "CONTRACT_DRIFT"
   ]
 }
