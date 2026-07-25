@@ -1,8 +1,9 @@
 import { mockStore } from '@/api/mockData';
+import { fromOwnerTable } from '@/api/contract/ownerClient';
+import { mapPortalInvoice } from '@/api/contract/portalMappers';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { createCheckout } from '@/api/repositories/paymentsRepository';
 import { fromSupabaseError } from '@/lib/errors';
-import { mapInvoice } from '@/lib/mappers';
 import type { Invoice, ProductCategory } from '@/types/domain';
 
 export async function listInvoices(): Promise<Invoice[]> {
@@ -11,11 +12,13 @@ export async function listInvoices(): Promise<Invoice[]> {
     return [...mockStore.invoices];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('invoices').select('*').order('issued_on', {
-    ascending: false,
-  });
+  const { data, error } = await fromOwnerTable(supabase, 'invoices')
+    .select('*')
+    .order('issue_date', {
+      ascending: false,
+    });
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).map(mapInvoice);
+  return (data ?? []).map(mapPortalInvoice);
 }
 
 export async function getInvoice(id: string): Promise<Invoice | null> {
@@ -24,9 +27,12 @@ export async function getInvoice(id: string): Promise<Invoice | null> {
     return mockStore.invoices.find((i) => i.id === id) ?? null;
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('invoices').select('*').eq('id', id).maybeSingle();
+  const { data, error } = await fromOwnerTable(supabase, 'invoices')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
   if (error) throw fromSupabaseError(error);
-  return data ? mapInvoice(data) : null;
+  return data ? mapPortalInvoice(data) : null;
 }
 
 export async function startCheckout(input: {

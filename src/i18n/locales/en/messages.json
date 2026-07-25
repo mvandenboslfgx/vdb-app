@@ -2,6 +2,8 @@
   "title": "Messages",
   "empty": "No conversations yet.",
   "emptyHint": "Start a conversation via support or your project team.",
+  "unavailableTitle": "Not available in this preview yet",
+  "unavailableHint": "Messaging is awaiting the owner contract.",
   "loading": "Loading messages…",
   "error": "Messages could not be loaded.",
   "composerPlaceholder": "Type a message…",

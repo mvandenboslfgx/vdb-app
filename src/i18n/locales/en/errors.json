@@ -51,6 +51,7 @@
   },
   "auth": {
     "invalidCredentials": "Email or password is incorrect",
+    "network": "No connection. Check your internet.",
     "emailNotConfirmed": "Please confirm your email first",
     "userExists": "An account with this email already exists",
     "weakPassword": "Choose a stronger password",

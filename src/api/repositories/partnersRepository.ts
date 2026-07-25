@@ -5,9 +5,10 @@ import {
   requestPayout,
 } from '@/api/repositories/commissionsRepository';
 import { mockStore } from '@/api/mockData';
+import { fromOwnerTable, rpcOwner } from '@/api/contract/ownerClient';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
-import { mapLead, mapPartnerProfile } from '@/lib/mappers';
+import { mapLead } from '@/lib/mappers';
 import type { Lead, PartnerProfile } from '@/types/domain';
 import type { PartnerApplicationInput } from '@/validation/partner';
 
@@ -16,8 +17,7 @@ async function requireCurrentPartnerProfile(supabase: ReturnType<typeof requireL
   if (userError || !userData.user) {
     throw DomainError.unauthorized('You must be signed in as a partner.');
   }
-  const { data, error } = await supabase
-    .from('partner_profiles')
+  const { data, error } = await fromOwnerTable(supabase, 'partner_profiles')
     .select('*')
     .eq('user_id', userData.user.id)
     .maybeSingle();
@@ -34,23 +34,18 @@ export async function getPartnerProfile(): Promise<PartnerProfile | null> {
   const profile = await requireCurrentPartnerProfile(supabase);
   if (!profile) return null;
 
-  const { data: codeRow } = await supabase
-    .from('partner_codes')
-    .select('code')
-    .eq('partner_id', profile.id)
-    .eq('is_active', true)
-    .maybeSingle();
-  const { data: linkRow } = await supabase
-    .from('partner_links')
-    .select('slug')
-    .eq('partner_id', profile.id)
-    .eq('is_active', true)
-    .maybeSingle();
-
-  return mapPartnerProfile(profile, {
-    code: codeRow?.code ?? '',
-    linkUrl: linkRow?.slug ? `https://vdbdigital.nl/r/${linkRow.slug}` : '',
-  });
+  const row = profile as Record<string, unknown>;
+  const statusRaw = String(row.status ?? (row.is_active ? 'ACTIVE' : 'SUSPENDED')).toUpperCase();
+  return {
+    id: String(row.id ?? ''),
+    userId: String(row.user_id ?? ''),
+    companyName: typeof row.company_name === 'string' ? row.company_name : null,
+    code: typeof row.code === 'string' ? row.code : '',
+    linkUrl: '',
+    status: statusRaw === 'ACTIVE' || statusRaw === 'APPROVED' ? 'active' : 'suspended',
+    createdAt: String(row.created_at ?? ''),
+    updatedAt: String(row.updated_at ?? row.created_at ?? ''),
+  };
 }
 
 /**
@@ -65,12 +60,11 @@ export async function listLeads(): Promise<Lead[]> {
     return [...mockStore.leads];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('partner_leads')
+  const { data, error } = await fromOwnerTable(supabase, 'partner_leads')
     .select('*')
     .order('created_at', { ascending: false });
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).map(mapLead);
+  return (data ?? []).map((row) => mapLead(row as unknown as Parameters<typeof mapLead>[0]));
 }
 
 export interface CreateLeadInput {
@@ -118,7 +112,7 @@ export async function createLead(input: CreateLeadInput): Promise<Lead> {
   }
 
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('register_partner_lead', {
+  const { data, error } = await rpcOwner(supabase, 'register_partner_lead', {
     p_name: input.name,
     p_email: input.email,
     p_consent_given: input.consentConfirmed,
@@ -128,7 +122,7 @@ export async function createLead(input: CreateLeadInput): Promise<Lead> {
     p_notes: input.notes || undefined,
   });
   if (error) throw fromSupabaseError(error);
-  return mapLead(data);
+  return mapLead(data as unknown as Parameters<typeof mapLead>[0]);
 }
 
 export interface UpdateLeadContactInput {
@@ -144,7 +138,10 @@ export interface UpdateLeadContactInput {
  * The RPC itself blocks this once a lead has progressed past
  * `new`/`contacted` -- partners can never edit a qualified/converted lead.
  */
-export async function updateLeadContact(leadId: string, input: UpdateLeadContactInput): Promise<Lead> {
+export async function updateLeadContact(
+  leadId: string,
+  input: UpdateLeadContactInput,
+): Promise<Lead> {
   if (shouldUseMockApi()) {
     await delay();
     const lead = mockStore.leads.find((l) => l.id === leadId);
@@ -161,17 +158,7 @@ export async function updateLeadContact(leadId: string, input: UpdateLeadContact
     return { ...lead };
   }
 
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('update_partner_lead_contact', {
-    p_lead_id: leadId,
-    p_name: input.name || undefined,
-    p_phone: input.phone || undefined,
-    p_interest: input.interest || undefined,
-    p_notes: input.notes || undefined,
-    p_mark_contacted: input.markContacted ?? false,
-  });
-  if (error) throw fromSupabaseError(error);
-  return mapLead(data);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE_RPC:update_partner_lead_contact');
 }
 
 export async function getPartnerLink(): Promise<string> {
@@ -204,9 +191,8 @@ export async function submitPartnerApplication(
     throw DomainError.unauthorized('You must be signed in to apply as a partner.');
   }
 
-  const fullName = 'contactName' in input ? input.contactName : userData.user.email ?? '';
-  const { data, error } = await supabase
-    .from('partner_applications')
+  const fullName = 'contactName' in input ? input.contactName : (userData.user.email ?? '');
+  const { data, error } = await fromOwnerTable(supabase, 'partner_applications')
     .insert({
       user_id: userData.user.id,
       full_name: fullName,
@@ -221,7 +207,9 @@ export async function submitPartnerApplication(
     .select('id')
     .single();
   if (error) throw fromSupabaseError(error);
-  return { id: data.id, status: 'submitted' };
+  const id =
+    data && typeof data === 'object' && 'id' in data ? String((data as { id: unknown }).id) : '';
+  return { id, status: 'submitted' };
 }
 
 export const partnersRepository = {

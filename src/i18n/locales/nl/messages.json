@@ -2,6 +2,8 @@
   "title": "Berichten",
   "empty": "Nog geen gesprekken.",
   "emptyHint": "Start een gesprek via support of je projectteam.",
+  "unavailableTitle": "Nog niet beschikbaar in deze preview",
+  "unavailableHint": "Berichten wachten op het contract van de eigenaar.",
   "loading": "Berichten laden…",
   "error": "Berichten konden niet worden geladen.",
   "composerPlaceholder": "Typ een bericht…",

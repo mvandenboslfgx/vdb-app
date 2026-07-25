@@ -1,4 +1,5 @@
 import { mockStore } from '@/api/mockData';
+import { fromOwnerTable, rpcOwner } from '@/api/contract/ownerClient';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { fromSupabaseError } from '@/lib/errors';
 import { mapCommission, mapPayoutRequest } from '@/lib/mappers';
@@ -11,11 +12,15 @@ export async function listCommissions(): Promise<Commission[]> {
     return [...mockStore.commissions];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('commissions').select('*').order('created_at', {
-    ascending: false,
-  });
+  const { data, error } = await fromOwnerTable(supabase, 'commissions')
+    .select('*')
+    .order('created_at', {
+      ascending: false,
+    });
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).map((row) => mapCommission(row));
+  return (data ?? []).map((row) =>
+    mapCommission(row as unknown as Parameters<typeof mapCommission>[0]),
+  );
 }
 
 export async function getCommission(id: string): Promise<Commission | null> {
@@ -24,13 +29,12 @@ export async function getCommission(id: string): Promise<Commission | null> {
     return mockStore.commissions.find((c) => c.id === id) ?? null;
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('commissions')
+  const { data, error } = await fromOwnerTable(supabase, 'commissions')
     .select('*')
     .eq('id', id)
     .maybeSingle();
   if (error) throw fromSupabaseError(error);
-  return data ? mapCommission(data) : null;
+  return data ? mapCommission(data as unknown as Parameters<typeof mapCommission>[0]) : null;
 }
 
 /**
@@ -54,16 +58,21 @@ export async function getPayableBalance(): Promise<{
     };
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('commissions')
+  const { data, error } = await fromOwnerTable(supabase, 'commissions')
     .select('id, commission_amount_cents')
     .eq('status', 'payable');
   if (error) throw fromSupabaseError(error);
   const rows = data ?? [];
   return {
-    amountCents: rows.reduce((sum, row) => sum + row.commission_amount_cents, 0),
+    amountCents: rows.reduce(
+      (sum, row) =>
+        sum + (typeof row.commission_amount_cents === 'number' ? row.commission_amount_cents : 0),
+      0,
+    ),
     currency: 'EUR',
-    commissionIds: rows.map((row) => row.id),
+    commissionIds: rows
+      .map((row) => (typeof row.id === 'string' ? row.id : ''))
+      .filter((id) => id.length > 0),
   };
 }
 
@@ -74,12 +83,13 @@ export async function listPayoutRequests(): Promise<PayoutRequest[]> {
     return [...mockStore.payoutRequests];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('payout_requests')
+  const { data, error } = await fromOwnerTable(supabase, 'payout_requests')
     .select('*')
     .order('created_at', { ascending: false });
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).map(mapPayoutRequest);
+  return (data ?? []).map((row) =>
+    mapPayoutRequest(row as unknown as Parameters<typeof mapPayoutRequest>[0]),
+  );
 }
 
 export type RequestPayoutFailureReason =
@@ -154,7 +164,7 @@ export async function requestPayout(
   }
 
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('request_commission_payout', {
+  const { data, error } = await rpcOwner(supabase, 'request_commission_payout', {
     p_commission_ids: commissionIds.length > 0 ? commissionIds : undefined,
     p_amount_cents: amountCents ?? undefined,
     p_payout_account_id: payoutAccountId ?? undefined,
@@ -175,7 +185,7 @@ export async function requestPayout(
     }
     throw fromSupabaseError(error);
   }
-  const payoutRequest = mapPayoutRequest(data);
+  const payoutRequest = mapPayoutRequest(data as unknown as Parameters<typeof mapPayoutRequest>[0]);
   return { allowed: true, requested: commissionIds, payoutRequest };
 }
 

@@ -18,6 +18,8 @@
     "sectionOpenInvoices": "Open invoices",
     "messagesNone": "No new messages",
     "messagesNew": "{{count}} new",
+    "messagesUnavailable": "Not available in this preview yet",
+    "appointmentsUnavailable": "Not available in this preview yet",
     "documentsNone": "Nothing needs review",
     "documentsNeedReview": "{{count}} awaiting review",
     "quotesOpen": "{{count}} open",
@@ -51,6 +53,7 @@
   "appointments": {
     "title": "Appointments",
     "empty": "No upcoming appointments.",
+    "unavailable": "Not available in this preview yet",
     "request": "Request appointment",
     "bookCta": "Book appointment",
     "cancel": "Cancel appointment",

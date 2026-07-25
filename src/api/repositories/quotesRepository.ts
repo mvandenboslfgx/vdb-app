@@ -1,28 +1,34 @@
 import { mockStore } from '@/api/mockData';
+import { fromOwnerTable, rpcOwner } from '@/api/contract/ownerClient';
+import { mapPortalQuote } from '@/api/contract/portalMappers';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
-import { mapQuote } from '@/lib/mappers';
-import type { Tables } from '@/types/database.generated';
 import type { Quote } from '@/types/domain';
 
-type QuoteItemRow = Tables<'quote_items'>;
+type OwnerRow = Record<string, unknown>;
+
+function isOwnerRow(value: unknown): value is OwnerRow {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
 
 async function fetchItems(
   supabase: ReturnType<typeof requireLiveSupabase>,
   quoteIds: string[],
-): Promise<Map<string, QuoteItemRow[]>> {
-  const map = new Map<string, QuoteItemRow[]>();
+): Promise<Map<string, OwnerRow[]>> {
+  const map = new Map<string, OwnerRow[]>();
   if (quoteIds.length === 0) return map;
-  const { data, error } = await supabase
-    .from('quote_items')
+  const { data, error } = await fromOwnerTable(supabase, 'quote_items')
     .select('*')
     .in('quote_id', quoteIds)
     .order('sort_order');
   if (error) throw fromSupabaseError(error);
   for (const row of data ?? []) {
-    const existing = map.get(row.quote_id) ?? [];
+    if (!isOwnerRow(row)) continue;
+    const quoteId = typeof row.quote_id === 'string' ? row.quote_id : '';
+    if (!quoteId) continue;
+    const existing = map.get(quoteId) ?? [];
     existing.push(row);
-    map.set(row.quote_id, existing);
+    map.set(quoteId, existing);
   }
   return map;
 }
@@ -33,13 +39,19 @@ export async function listQuotes(): Promise<Quote[]> {
     return [...mockStore.quotes];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('quotes').select('*').order('created_at', {
+  const { data, error } = await fromOwnerTable(supabase, 'quotes').select('*').order('created_at', {
     ascending: false,
   });
   if (error) throw fromSupabaseError(error);
-  const rows = data ?? [];
-  const itemsByQuote = await fetchItems(supabase, rows.map((r) => r.id));
-  return rows.map((row) => mapQuote(row, itemsByQuote.get(row.id) ?? []));
+  const rows = (data ?? []).filter(isOwnerRow);
+  const quoteIds = rows
+    .map((row) => (typeof row.id === 'string' ? row.id : ''))
+    .filter((id) => id.length > 0);
+  const itemsByQuote = await fetchItems(supabase, quoteIds);
+  return rows.map((row) => {
+    const quoteId = typeof row.id === 'string' ? row.id : '';
+    return mapPortalQuote(row, itemsByQuote.get(quoteId) ?? []);
+  });
 }
 
 export async function getQuote(id: string): Promise<Quote | null> {
@@ -48,11 +60,18 @@ export async function getQuote(id: string): Promise<Quote | null> {
     return mockStore.quotes.find((q) => q.id === id) ?? null;
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('quotes').select('*').eq('id', id).maybeSingle();
+  const { data, error } = await fromOwnerTable(supabase, 'quotes')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
   if (error) throw fromSupabaseError(error);
   if (!data) return null;
-  const itemsByQuote = await fetchItems(supabase, [data.id]);
-  return mapQuote(data, itemsByQuote.get(data.id) ?? []);
+  if (!isOwnerRow(data)) {
+    throw DomainError.configuration('Owner quote response has an unexpected shape.');
+  }
+  const quoteId = typeof data.id === 'string' ? data.id : id;
+  const itemsByQuote = await fetchItems(supabase, [quoteId]);
+  return mapPortalQuote(data, itemsByQuote.get(quoteId) ?? []);
 }
 
 export interface AcceptQuoteInput {
@@ -88,16 +107,20 @@ export async function acceptQuote(idOrInput: string | AcceptQuoteInput): Promise
   }
 
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .rpc('accept_quote', {
-      p_quote_id: input.quoteId,
-      p_terms_version_id: input.termsVersionId ?? undefined,
-      p_confirmation: input.confirmation ?? true,
-    });
+  const { data, error } = await rpcOwner(supabase, 'accept_quote', {
+    p_quote_id: input.quoteId,
+    p_terms_version_id: input.termsVersionId ?? undefined,
+    p_confirmation: input.confirmation ?? true,
+  });
   if (error) throw fromSupabaseError(error);
 
+  if (!isOwnerRow(data) || typeof data.id !== 'string') {
+    const quote = await getQuote(input.quoteId);
+    if (!quote) throw DomainError.notFound('Quote not found');
+    return quote;
+  }
   const itemsByQuote = await fetchItems(supabase, [data.id]);
-  return mapQuote(data, itemsByQuote.get(data.id) ?? []);
+  return mapPortalQuote(data, itemsByQuote.get(data.id) ?? []);
 }
 
 export interface RejectQuoteInput {
@@ -122,15 +145,19 @@ export async function rejectQuote(
   }
 
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .rpc('reject_quote', {
-      p_quote_id: input.quoteId,
-      p_reason: input.reason || undefined,
-    });
+  const { data, error } = await rpcOwner(supabase, 'reject_quote', {
+    p_quote_id: input.quoteId,
+    p_reason: input.reason || undefined,
+  });
   if (error) throw fromSupabaseError(error);
 
+  if (!isOwnerRow(data) || typeof data.id !== 'string') {
+    const quote = await getQuote(input.quoteId);
+    if (!quote) throw DomainError.notFound('Quote not found');
+    return quote;
+  }
   const itemsByQuote = await fetchItems(supabase, [data.id]);
-  return mapQuote(data, itemsByQuote.get(data.id) ?? []);
+  return mapPortalQuote(data, itemsByQuote.get(data.id) ?? []);
 }
 
 export const quotesRepository = {

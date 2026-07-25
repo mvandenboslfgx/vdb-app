@@ -66,8 +66,11 @@ export default function CustomerHomeScreen() {
     );
   }
 
-  const messagesDetail =
-    data.unreadMessages === 0
+  const conversationsUnavailable = data.unavailableSurfaces?.includes('conversations') ?? false;
+  const appointmentsUnavailable = data.unavailableSurfaces?.includes('appointments') ?? false;
+  const messagesDetail = conversationsUnavailable
+    ? t('dashboard.messagesUnavailable')
+    : data.unreadMessages === 0
       ? t('dashboard.messagesNone')
       : t('dashboard.messagesNew', { count: data.unreadMessages });
   const documentsDetail =
@@ -125,9 +128,7 @@ export default function CustomerHomeScreen() {
           value={
             data.openInvoices.length === 0
               ? t('dashboard.metricOk')
-              : formatCurrency(
-                  data.openInvoices.reduce((sum, inv) => sum + inv.totalCents, 0),
-                )
+              : formatCurrency(data.openInvoices.reduce((sum, inv) => sum + inv.totalCents, 0))
           }
           detail={
             data.openInvoices.length === 0
@@ -161,7 +162,11 @@ export default function CustomerHomeScreen() {
         />
         <QuickAction
           testID="quick-appointment"
-          label={t('dashboard.actionAppointment')}
+          label={
+            appointmentsUnavailable
+              ? t('dashboard.appointmentsUnavailable')
+              : t('dashboard.actionAppointment')
+          }
           icon="calendar-month-outline"
           onPress={() => router.push('/(customer)/appointments')}
         />
@@ -225,11 +230,7 @@ export default function CustomerHomeScreen() {
             reference={invoice.number}
             amount={formatCurrency(invoice.totalCents)}
             statusLabel={ti(`status.${invoice.status}`, { defaultValue: invoice.status })}
-            meta={
-              invoice.dueDate
-                ? `${ti('dueDate')}: ${formatDate(invoice.dueDate)}`
-                : undefined
-            }
+            meta={invoice.dueDate ? `${ti('dueDate')}: ${formatDate(invoice.dueDate)}` : undefined}
             actionLabel={t('dashboard.actionPay')}
             onPress={() => router.push(`/(customer)/invoices/${invoice.id}`)}
           />

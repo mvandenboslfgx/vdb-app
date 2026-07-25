@@ -18,6 +18,8 @@
     "sectionOpenInvoices": "Openstaande facturen",
     "messagesNone": "Geen nieuwe berichten",
     "messagesNew": "{{count}} nieuw",
+    "messagesUnavailable": "Nog niet beschikbaar in deze preview",
+    "appointmentsUnavailable": "Nog niet beschikbaar in deze preview",
     "documentsNone": "Geen beoordeling nodig",
     "documentsNeedReview": "{{count}} ter beoordeling",
     "quotesOpen": "{{count}} openstaand",
@@ -51,6 +53,7 @@
   "appointments": {
     "title": "Afspraken",
     "empty": "Geen aankomende afspraken.",
+    "unavailable": "Nog niet beschikbaar in deze preview",
     "request": "Afspraak aanvragen",
     "bookCta": "Afspraak boeken",
     "cancel": "Afspraak annuleren",

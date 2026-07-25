@@ -52,7 +52,11 @@ describe('no silent demo fallback — repository adapter', () => {
     jest.doMock('@/lib/supabase', () => ({ getSupabase: () => null }));
 
     const { DomainError } = require('@/lib/errors');
-    const { getRepositoryAdapter, shouldUseMockApi, requireLiveSupabase } = require('@/api/repositories/_utils');
+    const {
+      getRepositoryAdapter,
+      shouldUseMockApi,
+      requireLiveSupabase,
+    } = require('@/api/repositories/_utils');
 
     expect(getRepositoryAdapter()).toBe('demo');
     expect(shouldUseMockApi()).toBe(true);
@@ -96,7 +100,7 @@ describe('no silent demo fallback — query errors never return mock data', () =
 
     await expect(listCommissions()).rejects.toBeInstanceOf(DomainError);
     await expect(listCommissions()).rejects.toMatchObject({ code: 'FORBIDDEN' });
-    expect(fromMock).toHaveBeenCalledWith('commissions');
+    expect(fromMock).toHaveBeenCalledWith('partner_commissions');
   });
 
   it('never returns mockStore data for a repository when the supabase adapter is active', async () => {
@@ -116,6 +120,6 @@ describe('no silent demo fallback — query errors never return mock data', () =
     const result = await getCommission('com-001');
     // A real "not found" is `null`, never a fabricated mockStore commission.
     expect(result).toBeNull();
-    expect(fromMock).toHaveBeenCalledWith('commissions');
+    expect(fromMock).toHaveBeenCalledWith('partner_commissions');
   });
 });

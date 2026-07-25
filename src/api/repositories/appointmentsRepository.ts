@@ -1,7 +1,6 @@
 import { mockStore } from '@/api/mockData';
-import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
-import { DomainError, fromSupabaseError } from '@/lib/errors';
-import { mapAppointment, mapAvailabilitySlot } from '@/lib/mappers';
+import { delay, shouldUseMockApi } from '@/api/repositories/_utils';
+import { DomainError } from '@/lib/errors';
 import type { Appointment, AppointmentSlot } from '@/types/domain';
 
 export async function listAppointments(): Promise<Appointment[]> {
@@ -9,12 +8,7 @@ export async function listAppointments(): Promise<Appointment[]> {
     await delay();
     return [...mockStore.appointments];
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('appointments').select('*').order('starts_at', {
-    ascending: true,
-  });
-  if (error) throw fromSupabaseError(error);
-  return (data ?? []).map(mapAppointment);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:appointments');
 }
 
 export async function getAppointment(id: string): Promise<Appointment | null> {
@@ -22,14 +16,7 @@ export async function getAppointment(id: string): Promise<Appointment | null> {
     await delay();
     return mockStore.appointments.find((a) => a.id === id) ?? null;
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('appointments')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
-  if (error) throw fromSupabaseError(error);
-  return data ? mapAppointment(data) : null;
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:appointments');
 }
 
 /**
@@ -42,18 +29,7 @@ export async function listAvailableSlots(): Promise<AppointmentSlot[]> {
     await delay();
     return [];
   }
-  const supabase = requireLiveSupabase();
-  const nowIso = new Date().toISOString();
-  const { data, error } = await supabase
-    .from('availability_slots')
-    .select('*')
-    .eq('is_bookable', true)
-    .gte('starts_at', nowIso)
-    .order('starts_at', { ascending: true });
-  if (error) throw fromSupabaseError(error);
-  return (data ?? [])
-    .filter((row) => row.booked_count < row.capacity)
-    .map(mapAvailabilitySlot);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:appointments');
 }
 
 export interface BookSlotInput {
@@ -85,15 +61,7 @@ export async function bookSlot(input: BookSlotInput): Promise<Appointment> {
     return appointment;
   }
 
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .rpc('book_appointment_slot', {
-      p_slot_id: input.slotId,
-      p_title: input.title,
-      p_notes: input.notes ?? undefined,
-    });
-  if (error) throw fromSupabaseError(error);
-  return mapAppointment(data);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:appointments');
 }
 
 /**
@@ -111,14 +79,7 @@ export async function cancelAppointment(id: string, reason?: string): Promise<Ap
     return { ...appointment };
   }
 
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .rpc('cancel_appointment', {
-      p_appointment_id: id,
-      p_reason: reason ?? undefined,
-    });
-  if (error) throw fromSupabaseError(error);
-  return mapAppointment(data);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:appointments');
 }
 
 export async function requestAppointment(input: {
@@ -144,27 +105,7 @@ export async function requestAppointment(input: {
     return appointment;
   }
 
-  const supabase = requireLiveSupabase();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError || !userData.user) {
-    throw DomainError.unauthorized('You must be signed in to request an appointment.');
-  }
-
-  const { data, error } = await supabase
-    .from('appointments')
-    .insert({
-      customer_user_id: userData.user.id,
-      notes: input.title,
-      starts_at: input.startsAt,
-      ends_at: input.endsAt,
-      location: input.location ?? null,
-      status: 'requested',
-      timezone: 'Europe/Amsterdam',
-    })
-    .select('*')
-    .single();
-  if (error) throw fromSupabaseError(error);
-  return mapAppointment(data);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:appointments');
 }
 
 export const appointmentsRepository = {

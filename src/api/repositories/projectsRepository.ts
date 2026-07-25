@@ -4,15 +4,11 @@ import { listDocuments } from '@/api/repositories/documentsRepository';
 import { listInvoices } from '@/api/repositories/invoicesRepository';
 import { listConversations } from '@/api/repositories/messagesRepository';
 import { listQuotes } from '@/api/repositories/quotesRepository';
+import { fromOwnerTable, isContractSurfaceUnavailable } from '@/api/contract/ownerClient';
+import { mapPortalProject } from '@/api/contract/portalMappers';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
-import { mapProject, mapProjectMilestone, mapProjectUpdate } from '@/lib/mappers';
-import type {
-  CustomerDashboard,
-  Project,
-  ProjectMilestone,
-  ProjectUpdate,
-} from '@/types/domain';
+import type { CustomerDashboard, Project, ProjectMilestone, ProjectUpdate } from '@/types/domain';
 
 export async function listProjects(): Promise<Project[]> {
   if (shouldUseMockApi()) {
@@ -20,12 +16,11 @@ export async function listProjects(): Promise<Project[]> {
     return [...mockStore.projects];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('projects')
+  const { data, error } = await fromOwnerTable(supabase, 'projects')
     .select('*')
     .order('updated_at', { ascending: false });
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).map(mapProject);
+  return (data ?? []).map(mapPortalProject);
 }
 
 export async function getProject(id: string): Promise<Project | null> {
@@ -34,9 +29,12 @@ export async function getProject(id: string): Promise<Project | null> {
     return mockStore.projects.find((p) => p.id === id) ?? null;
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('projects').select('*').eq('id', id).maybeSingle();
+  const { data, error } = await fromOwnerTable(supabase, 'projects')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
   if (error) throw fromSupabaseError(error);
-  return data ? mapProject(data) : null;
+  return data ? mapPortalProject(data) : null;
 }
 
 export async function listMilestones(projectId: string): Promise<ProjectMilestone[]> {
@@ -44,14 +42,7 @@ export async function listMilestones(projectId: string): Promise<ProjectMileston
     await delay();
     return mockStore.milestones.filter((m) => m.projectId === projectId);
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('project_milestones')
-    .select('*')
-    .eq('project_id', projectId)
-    .order('sort_order');
-  if (error) throw fromSupabaseError(error);
-  return (data ?? []).map(mapProjectMilestone);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:project_milestones');
 }
 
 export async function listUpdates(projectId: string): Promise<ProjectUpdate[]> {
@@ -59,15 +50,21 @@ export async function listUpdates(projectId: string): Promise<ProjectUpdate[]> {
     await delay();
     return mockStore.updates.filter((u) => u.projectId === projectId);
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('project_updates')
-    .select('*')
-    .eq('project_id', projectId)
-    .eq('is_customer_visible', true)
-    .order('created_at', { ascending: false });
-  if (error) throw fromSupabaseError(error);
-  return (data ?? []).map((row) => mapProjectUpdate(row));
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:project_updates');
+}
+
+export async function loadOptionalDashboardSurface<T>(
+  load: () => Promise<T>,
+  fallback: T,
+): Promise<{ data: T; unavailable: boolean }> {
+  try {
+    return { data: await load(), unavailable: false };
+  } catch (error) {
+    if (isContractSurfaceUnavailable(error)) {
+      return { data: fallback, unavailable: true };
+    }
+    throw error;
+  }
 }
 
 export async function getCustomerDashboard(welcomeName?: string): Promise<CustomerDashboard> {
@@ -76,15 +73,13 @@ export async function getCustomerDashboard(welcomeName?: string): Promise<Custom
     return buildCustomerDashboard(welcomeName);
   }
 
-  // Live mode composes the dashboard from the real repositories instead of
-  // spreading demo data on top of real projects.
-  const [projects, quotes, invoices, conversations, appointments, documents] = await Promise.all([
+  const [projects, quotes, invoices, documents, conversations, appointments] = await Promise.all([
     listProjects(),
     listQuotes(),
     listInvoices(),
-    listConversations(),
-    listAppointments(),
     listDocuments(),
+    loadOptionalDashboardSurface(listConversations, []),
+    loadOptionalDashboardSurface(listAppointments, []),
   ]);
 
   return {
@@ -94,11 +89,15 @@ export async function getCustomerDashboard(welcomeName?: string): Promise<Custom
     openInvoices: invoices.filter((i) =>
       ['sent', 'viewed', 'partially_paid', 'overdue'].includes(i.status),
     ),
-    unreadMessages: conversations.reduce((sum, c) => sum + c.unreadCount, 0),
-    upcomingAppointments: appointments.filter((a) =>
+    unreadMessages: conversations.data.reduce((sum, c) => sum + c.unreadCount, 0),
+    upcomingAppointments: appointments.data.filter((a) =>
       ['requested', 'confirmed', 'rescheduled'].includes(a.status),
     ),
     documentsPendingReview: documents.filter((d) => d.status === 'under_review').length,
+    unavailableSurfaces: [
+      ...(conversations.unavailable ? ['conversations' as const] : []),
+      ...(appointments.unavailable ? ['appointments' as const] : []),
+    ],
   };
 }
 
@@ -123,23 +122,8 @@ export async function requestProject(input: {
     return project;
   }
 
-  const supabase = requireLiveSupabase();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError || !userData.user) {
-    throw DomainError.unauthorized('You must be signed in to request a project.');
-  }
-  const { data, error } = await supabase
-    .from('projects')
-    .insert({
-      title: input.title.trim(),
-      description: input.description.trim(),
-      status: 'request_received',
-      customer_user_id: userData.user.id,
-    })
-    .select('*')
-    .single();
-  if (error) throw fromSupabaseError(error);
-  return mapProject(data);
+  requireLiveSupabase();
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:create_project');
 }
 
 export const projectsRepository = {

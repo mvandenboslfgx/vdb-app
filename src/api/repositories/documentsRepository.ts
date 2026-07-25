@@ -1,45 +1,15 @@
 import { mockStore } from '@/api/mockData';
+import { fromOwnerTable } from '@/api/contract/ownerClient';
+import { mapPortalFile } from '@/api/contract/portalMappers';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { createIdempotencyKey } from '@/lib/idempotency';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
-import { mapDocument } from '@/lib/mappers';
-import type { Tables } from '@/types/database.generated';
 import type { Document, DocumentStatus } from '@/types/domain';
 import type { DocumentReviewDecisionInput } from '@/validation/documents';
 import { documentUploadSchema } from '@/validation/documents';
 
-type DocumentRow = Tables<'documents'>;
-type DocumentVersionRow = Tables<'document_versions'>;
-
-const DOCUMENTS_BUCKET = 'documents';
 /** Scans that must never be opened/downloaded, regardless of caller intent. */
-const BLOCKED_SCAN_STATUSES: readonly DocumentVersionRow['scan_status'][] = [
-  'flagged',
-  'failed',
-];
-
-async function fetchVersions(
-  supabase: ReturnType<typeof requireLiveSupabase>,
-  versionIds: string[],
-): Promise<Map<string, DocumentVersionRow>> {
-  const map = new Map<string, DocumentVersionRow>();
-  if (versionIds.length === 0) return map;
-  const { data, error } = await supabase
-    .from('document_versions')
-    .select('*')
-    .in('id', versionIds);
-  if (error) throw fromSupabaseError(error);
-  for (const row of data ?? []) {
-    map.set(row.id, row);
-  }
-  return map;
-}
-
-function toDocuments(rows: DocumentRow[], versions: Map<string, DocumentVersionRow>): Document[] {
-  return rows.map((row) =>
-    mapDocument(row, row.current_version_id ? versions.get(row.current_version_id) : null),
-  );
-}
+const BLOCKED_SCAN_STATUSES: readonly Document['scanStatus'][] = ['flagged', 'failed'];
 
 export async function listDocuments(): Promise<Document[]> {
   if (shouldUseMockApi()) {
@@ -47,16 +17,11 @@ export async function listDocuments(): Promise<Document[]> {
     return [...mockStore.documents];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('documents')
+  const { data, error } = await fromOwnerTable(supabase, 'documents')
     .select('*')
-    .is('deleted_at', null)
     .order('updated_at', { ascending: false });
   if (error) throw fromSupabaseError(error);
-  const rows = data ?? [];
-  const versionIds = rows.map((r) => r.current_version_id).filter((id): id is string => Boolean(id));
-  const versions = await fetchVersions(supabase, versionIds);
-  return toDocuments(rows, versions);
+  return (data ?? []).map(mapPortalFile);
 }
 
 export async function getDocument(id: string): Promise<Document | null> {
@@ -65,11 +30,12 @@ export async function getDocument(id: string): Promise<Document | null> {
     return mockStore.documents.find((d) => d.id === id) ?? null;
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('documents').select('*').eq('id', id).maybeSingle();
+  const { data, error } = await fromOwnerTable(supabase, 'documents')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
   if (error) throw fromSupabaseError(error);
-  if (!data) return null;
-  const versions = await fetchVersions(supabase, data.current_version_id ? [data.current_version_id] : []);
-  return toDocuments([data], versions)[0]!;
+  return data ? mapPortalFile(data) : null;
 }
 
 export async function submitReviewDecision(
@@ -95,47 +61,8 @@ export async function submitReviewDecision(
     return { ...doc };
   }
 
-  const supabase = requireLiveSupabase();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError || !userData.user) {
-    throw DomainError.unauthorized('You must be signed in to review a document.');
-  }
-
-  const { data: doc, error: docError } = await supabase
-    .from('documents')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
-  if (docError) throw fromSupabaseError(docError);
-  if (!doc) throw DomainError.notFound('Document not found');
-  if (!doc.current_version_id) {
-    throw DomainError.validation('Document has no version to review yet.');
-  }
-
-  const versions = await fetchVersions(supabase, [doc.current_version_id]);
-  const currentVersion = versions.get(doc.current_version_id);
-  if (currentVersion && BLOCKED_SCAN_STATUSES.includes(currentVersion.scan_status)) {
-    throw DomainError.forbidden('This file failed its security scan and cannot be reviewed.');
-  }
-
-  const { error: reviewError } = await supabase.from('document_reviews').insert({
-    document_id: id,
-    document_version_id: doc.current_version_id,
-    reviewer_id: userData.user.id,
-    decision: input.decision,
-    comment: input.comment || null,
-  });
-  if (reviewError) throw fromSupabaseError(reviewError);
-
-  const { data: updated, error: updateError } = await supabase
-    .from('documents')
-    .update({ status })
-    .eq('id', id)
-    .select('*')
-    .single();
-  if (updateError) throw fromSupabaseError(updateError);
-
-  return toDocuments([updated], versions)[0]!;
+  requireLiveSupabase();
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:document_reviews');
 }
 
 /** @deprecated Prefer submitReviewDecision */
@@ -189,40 +116,8 @@ export async function createSignedUrl(documentId: string): Promise<DocumentDownl
     };
   }
 
-  const supabase = requireLiveSupabase();
-  const { data: doc, error: docError } = await supabase
-    .from('documents')
-    .select('*')
-    .eq('id', documentId)
-    .maybeSingle();
-  if (docError) throw fromSupabaseError(docError);
-  if (!doc) throw DomainError.notFound('Document not found');
-  if (!doc.current_version_id) {
-    throw DomainError.validation('Document has no version to download yet.');
-  }
-
-  const versions = await fetchVersions(supabase, [doc.current_version_id]);
-  const currentVersion = versions.get(doc.current_version_id);
-  if (!currentVersion) {
-    throw DomainError.notFound('Document version not found');
-  }
-  if (BLOCKED_SCAN_STATUSES.includes(currentVersion.scan_status)) {
-    throw DomainError.forbidden('This file failed its security scan and cannot be opened.');
-  }
-
-  const expiresInSeconds = 300;
-  const { data: signed, error: signError } = await supabase.storage
-    .from(DOCUMENTS_BUCKET)
-    .createSignedUrl(currentVersion.storage_path, expiresInSeconds);
-  if (signError) throw fromSupabaseError(signError);
-  if (!signed?.signedUrl) {
-    throw DomainError.configuration('Could not create a signed download URL for this file.');
-  }
-
-  return {
-    url: signed.signedUrl,
-    expiresAt: new Date(Date.now() + expiresInSeconds * 1000).toISOString(),
-  };
+  requireLiveSupabase();
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:document_versions');
 }
 
 /** @deprecated Prefer createSignedUrl */
@@ -248,11 +143,6 @@ export interface UploadProjectDocumentInput {
    * (validated -> uploaded -> registered) rather than byte-level progress.
    */
   onProgress?: (percent: number) => void;
-}
-
-function sanitizeFileName(fileName: string): string {
-  const trimmed = fileName.trim().replace(/[\\/]/g, '_');
-  return trimmed.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-140) || 'file';
 }
 
 /**
@@ -323,58 +213,9 @@ export async function uploadProjectDocument(input: UploadProjectDocumentInput): 
     return doc;
   }
 
-  const supabase = requireLiveSupabase();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError || !userData.user) {
-    throw DomainError.unauthorized('You must be signed in to upload a document.');
-  }
-
-  const scope = input.projectId ?? userData.user.id;
-  const storagePath = `${scope}/${clientUploadId}/${sanitizeFileName(input.fileName)}`;
-
-  input.onProgress?.(10);
-  let blob: Blob;
-  try {
-    const response = await fetch(input.uri);
-    blob = await response.blob();
-  } catch (err) {
-    throw DomainError.configuration('Could not read the selected file.', { cause: err });
-  }
-  input.onProgress?.(40);
-
-  const { error: uploadError } = await supabase.storage.from(DOCUMENTS_BUCKET).upload(storagePath, blob, {
-    contentType: input.mimeType,
-    upsert: false,
-  });
-  if (uploadError) throw fromSupabaseError(uploadError);
-  input.onProgress?.(75);
-
-  const { data: registered, error: rpcError } = await supabase.rpc('register_document_upload', {
-    p_title: input.title,
-    p_storage_path: storagePath,
-    p_mime_type: input.mimeType,
-    p_byte_size: input.byteSize,
-    p_client_upload_id: clientUploadId,
-    p_project_id: input.projectId ?? undefined,
-    p_category: input.category || undefined,
-    p_checksum_sha256: undefined,
-    p_document_id: input.documentId ?? undefined,
-  });
-  if (rpcError) {
-    await supabase.storage
-      .from(DOCUMENTS_BUCKET)
-      .remove([storagePath])
-      .catch(() => undefined);
-    throw fromSupabaseError(rpcError);
-  }
-  input.onProgress?.(100);
-
-  const documentRow = registered as DocumentRow;
-  const versions = await fetchVersions(
-    supabase,
-    documentRow.current_version_id ? [documentRow.current_version_id] : [],
-  );
-  return toDocuments([documentRow], versions)[0]!;
+  void clientUploadId;
+  requireLiveSupabase();
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:register_document_upload');
 }
 
 export const documentsRepository = {

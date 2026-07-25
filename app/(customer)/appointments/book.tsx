@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { bookSlot, listAvailableSlots } from '@/api/repositories/appointmentsRepository';
+import { isContractSurfaceUnavailable } from '@/api/contract/ownerClient';
 import {
   Button,
   EmptyState,
@@ -25,6 +26,7 @@ export default function BookAppointmentScreen() {
   const [slots, setSlots] = useState<AppointmentSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [bookError, setBookError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -33,10 +35,15 @@ export default function BookAppointmentScreen() {
   const load = useCallback(async () => {
     setLoading(true);
     setError(false);
+    setUnavailable(false);
     try {
       setSlots(await listAvailableSlots());
-    } catch {
-      setError(true);
+    } catch (err) {
+      if (isContractSurfaceUnavailable(err)) {
+        setUnavailable(true);
+      } else {
+        setError(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -60,7 +67,9 @@ export default function BookAppointmentScreen() {
         // The slot is gone either way â€” refresh so the stale row disappears.
         void load();
       } else {
-        setBookError(err instanceof DomainError ? err.toUserMessage() : t('appointments.book.bookError'));
+        setBookError(
+          err instanceof DomainError ? err.toUserMessage() : t('appointments.book.bookError'),
+        );
       }
     } finally {
       setBookingId(null);
@@ -94,6 +103,13 @@ export default function BookAppointmentScreen() {
       />
     );
   }
+  if (unavailable) {
+    return (
+      <Screen testID="screen-appointments-book-unavailable">
+        <Text variant="title">{t('appointments.unavailable')}</Text>
+      </Screen>
+    );
+  }
 
   return (
     <Screen scroll testID="screen-appointments-book">
@@ -116,7 +132,10 @@ export default function BookAppointmentScreen() {
       ) : (
         slots.map((slot) => (
           <View key={slot.id} testID={`slot-row-${slot.id}`} style={styles.slotRow}>
-            <ListRow title={formatDateTime(slot.startsAt)} subtitle={t('appointments.timezoneLabel')} />
+            <ListRow
+              title={formatDateTime(slot.startsAt)}
+              subtitle={t('appointments.timezoneLabel')}
+            />
             <Button
               testID={`btn-book-slot-${slot.id}`}
               title={t('appointments.book.confirm')}

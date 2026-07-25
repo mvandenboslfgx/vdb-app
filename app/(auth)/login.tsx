@@ -29,8 +29,13 @@ export default function LoginScreen() {
     try {
       await signIn(parsed.data.email, parsed.data.password);
       router.replace('/');
-    } catch {
-      setError(te('auth.invalidCredentials'));
+    } catch (err) {
+      const key = err instanceof Error ? err.message : 'errors.auth.invalidCredentials';
+      setError(
+        key === 'errors.auth.network' || key === 'errors.network'
+          ? te('auth.network')
+          : te('auth.invalidCredentials'),
+      );
     } finally {
       setLoading(false);
     }
@@ -69,7 +74,13 @@ export default function LoginScreen() {
           onChangeText={setPassword}
         />
         {error ? (
-          <Text variant="caption" color="error" testID="auth-error-message">
+          <Text
+            variant="caption"
+            color="error"
+            testID="auth-error-message"
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+          >
             {error}
           </Text>
         ) : null}

@@ -1,8 +1,9 @@
 import { Platform } from 'react-native';
 
 import { mockStore } from '@/api/mockData';
+import { fromOwnerTable } from '@/api/contract/ownerClient';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
-import { fromSupabaseError } from '@/lib/errors';
+import { DomainError, fromSupabaseError } from '@/lib/errors';
 import { createIdempotencyKey } from '@/lib/idempotency';
 import { evaluatePaymentPolicy, isFeatureEnabled } from '@/security/featureFlags';
 import { evaluatePaymentPolicy as evaluateStorePolicy } from '@/security/paymentPolicy';
@@ -127,13 +128,17 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<Create
 
   let amountCents = input.amountCents;
   if (!amountCents) {
-    const { data: invoice, error: invoiceError } = await supabase
-      .from('invoices')
+    const { data: invoice, error: invoiceError } = await fromOwnerTable(supabase, 'invoices')
       .select('total_cents, amount_paid_cents')
       .eq('id', input.invoiceId)
       .maybeSingle();
     if (invoiceError) throw fromSupabaseError(invoiceError);
-    amountCents = invoice ? invoice.total_cents - invoice.amount_paid_cents : undefined;
+    amountCents =
+      invoice &&
+      typeof invoice.total_cents === 'number' &&
+      typeof invoice.amount_paid_cents === 'number'
+        ? invoice.total_cents - invoice.amount_paid_cents
+        : undefined;
   }
   if (!amountCents || amountCents <= 0) {
     return blocked('invalid_amount', 'payments.policy.checkoutDisabled');
@@ -182,22 +187,8 @@ export async function listPayments(): Promise<Payment[]> {
     await delay();
     return [...mockStore.payments];
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('payment_events').select('*').order('occurred_at', {
-    ascending: false,
-  });
-  if (error) throw fromSupabaseError(error);
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    invoiceId: row.invoice_id ?? '',
-    status: row.status,
-    amountCents: row.amount_cents,
-    currency: 'EUR' as const,
-    checkoutUrl: null,
-    productCategory: 'custom_project' as const,
-    createdAt: row.created_at,
-    updatedAt: row.created_at,
-  }));
+  requireLiveSupabase();
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:payment_events');
 }
 
 export const paymentsRepository = {

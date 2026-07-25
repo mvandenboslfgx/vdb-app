@@ -51,6 +51,7 @@
   },
   "auth": {
     "invalidCredentials": "E-mail of wachtwoord is onjuist",
+    "network": "Geen verbinding. Controleer je internet.",
     "emailNotConfirmed": "Bevestig eerst je e-mailadres",
     "userExists": "Er bestaat al een account met dit e-mailadres",
     "weakPassword": "Kies een sterker wachtwoord",

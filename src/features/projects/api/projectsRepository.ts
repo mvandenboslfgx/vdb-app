@@ -1,7 +1,8 @@
 import { delay, mockProjects } from '@/features/_shared/mockData';
 import { shouldUseMockRepositories } from '@/features/_shared/repository';
+import { fromOwnerTable } from '@/api/contract/ownerClient';
+import { mapPortalProject } from '@/api/contract/portalMappers';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
-import { mapProject } from '@/lib/mappers';
 import { requireSupabase } from '@/lib/supabase';
 import type { Project } from '@/types';
 import type { ProjectRequestInput } from '@/validation';
@@ -44,39 +45,26 @@ class MockProjectsRepository implements ProjectsRepository {
 class SupabaseProjectsRepository implements ProjectsRepository {
   async list(): Promise<Project[]> {
     const supabase = requireSupabase();
-    const { data, error } = await supabase
-      .from('projects')
+    const { data, error } = await fromOwnerTable(supabase, 'projects')
       .select('*')
       .order('updated_at', { ascending: false });
     if (error) throw fromSupabaseError(error);
-    return (data ?? []).map(mapProject);
+    return (data ?? []).map(mapPortalProject);
   }
 
   async getById(id: string): Promise<Project | null> {
     const supabase = requireSupabase();
-    const { data, error } = await supabase.from('projects').select('*').eq('id', id).maybeSingle();
+    const { data, error } = await fromOwnerTable(supabase, 'projects')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
     if (error) throw fromSupabaseError(error);
-    return data ? mapProject(data) : null;
+    return data ? mapPortalProject(data) : null;
   }
 
   async createRequest(input: ProjectRequestInput): Promise<Project> {
-    const supabase = requireSupabase();
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData.user) {
-      throw DomainError.unauthorized('You must be signed in to request a project.');
-    }
-    const { data, error } = await supabase
-      .from('projects')
-      .insert({
-        title: input.title,
-        description: input.description,
-        status: 'request_received',
-        customer_user_id: userData.user.id,
-      })
-      .select('*')
-      .single();
-    if (error) throw fromSupabaseError(error);
-    return mapProject(data);
+    requireSupabase();
+    throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:create_project');
   }
 }
 

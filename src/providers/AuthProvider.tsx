@@ -19,6 +19,7 @@ import React, {
 } from 'react';
 
 import { clientEnv } from '@/config/env';
+import { fromOwnerTable } from '@/api/contract/ownerClient';
 import { getSupabase } from '@/lib/supabase';
 import { isPubliclyAssignableRole } from '@/security/roles';
 import type { AppRole, Profile } from '@/types/domain';
@@ -66,15 +67,12 @@ export interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function mapProfileFromUser(
-  user: User,
-  roles: AppRole[] = ['customer'],
-): Profile {
+function mapProfileFromUser(user: User, roles: AppRole[] = ['customer']): Profile {
   const meta = user.user_metadata ?? {};
   return {
     id: user.id,
     email: user.email ?? '',
-    fullName: typeof meta.full_name === 'string' ? meta.full_name : user.email ?? '',
+    fullName: typeof meta.full_name === 'string' ? meta.full_name : (user.email ?? ''),
     phone: typeof meta.phone === 'string' ? meta.phone : null,
     avatarUrl: typeof meta.avatar_url === 'string' ? meta.avatar_url : null,
     locale: meta.locale === 'en' ? 'en' : 'nl',
@@ -97,19 +95,51 @@ async function fetchRoles(userId: string): Promise<AppRole[]> {
   if (!supabase) {
     return ['customer'];
   }
-  const { data, error } = await supabase
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', userId);
 
-  if (error || !data) {
-    return ['customer'];
+  try {
+    const { data, error } = await fromOwnerTable(supabase, 'partner_profiles')
+      .select('status')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (error || !data) {
+      return ['customer'];
+    }
+
+    const status = typeof data.status === 'string' ? data.status.toLowerCase() : '';
+    if (['active', 'approved'].includes(status)) {
+      return ['customer', 'partner'];
+    }
+    if (['pending', 'submitted', 'under_review'].includes(status)) {
+      return ['customer', 'partner_pending'];
+    }
+  } catch {
+    // Partner profile is optional in the rc.2 contract; customer remains safe.
   }
 
-  const roles = data
-    .map((row) => row.role as AppRole)
-    .filter((role): role is AppRole => typeof role === 'string');
-  return roles.length > 0 ? roles : ['customer'];
+  return ['customer'];
+}
+
+function getSignInErrorKey(
+  error: unknown,
+): 'errors.auth.invalidCredentials' | 'errors.auth.network' {
+  const message = error instanceof Error ? error.message.toLowerCase() : '';
+  if (
+    message.includes('invalid credentials') ||
+    message.includes('invalid login') ||
+    message.includes('invalid email or password')
+  ) {
+    return 'errors.auth.invalidCredentials';
+  }
+  if (
+    error instanceof TypeError ||
+    message.includes('network') ||
+    message.includes('fetch') ||
+    message.includes('failed to connect') ||
+    message.includes('connection')
+  ) {
+    return 'errors.auth.network';
+  }
+  return 'errors.auth.invalidCredentials';
 }
 
 const DEMO_PROFILES: Record<
@@ -215,11 +245,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const supabase = getSupabase();
       if (!supabase) {
-        throw new Error('Supabase is not configured');
+        throw new Error('errors.auth.network');
       }
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        throw new Error(error.message);
+        throw new Error(getSignInErrorKey(error));
       }
       // Apply session + roles before callers navigate — otherwise resolveHomeRoute([])
       // treats an empty role list as customer and skips admin/partner areas.
@@ -229,12 +259,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signUp = useCallback(
-    async (input: {
-      email: string;
-      password: string;
-      fullName: string;
-      phone?: string;
-    }) => {
+    async (input: { email: string; password: string; fullName: string; phone?: string }) => {
       // Never allow client to set admin role on register.
       const publicRoles = sanitizePublicRoles(['customer']);
 

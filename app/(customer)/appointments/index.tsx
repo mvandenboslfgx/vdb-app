@@ -4,6 +4,7 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { cancelAppointment, listAppointments } from '@/api/repositories/appointmentsRepository';
+import { isContractSurfaceUnavailable } from '@/api/contract/ownerClient';
 import {
   Button,
   EmptyState,
@@ -20,7 +21,11 @@ import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import type { Appointment } from '@/types/domain';
 import { spacing } from '@/theme';
 
-const CANCELLABLE_STATUSES = new Set<Appointment['status']>(['requested', 'confirmed', 'rescheduled']);
+const CANCELLABLE_STATUSES = new Set<Appointment['status']>([
+  'requested',
+  'confirmed',
+  'rescheduled',
+]);
 
 export default function AppointmentsScreen() {
   const { t } = useTranslation('customer');
@@ -31,6 +36,7 @@ export default function AppointmentsScreen() {
   const [items, setItems] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -42,10 +48,15 @@ export default function AppointmentsScreen() {
     }
     setLoading(true);
     setError(false);
+    setUnavailable(false);
     try {
       setItems(await listAppointments());
-    } catch {
-      setError(true);
+    } catch (err) {
+      if (isContractSurfaceUnavailable(err)) {
+        setUnavailable(true);
+      } else {
+        setError(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -90,7 +101,7 @@ export default function AppointmentsScreen() {
     <Screen scroll testID="screen-appointments">
       <View style={styles.header}>
         <Text variant="title">{t('appointments.title')}</Text>
-        {enabled('appointments') ? (
+        {enabled('appointments') && !unavailable ? (
           <Button
             testID="btn-appointments-book"
             title={t('appointments.bookCta')}
@@ -110,7 +121,9 @@ export default function AppointmentsScreen() {
         </Text>
       ) : null}
 
-      {!enabled('appointments') || items.length === 0 ? (
+      {unavailable ? (
+        <EmptyState title={t('appointments.unavailable')} />
+      ) : !enabled('appointments') || items.length === 0 ? (
         <EmptyState title={t('appointments.empty')} />
       ) : (
         items.map((a) => (

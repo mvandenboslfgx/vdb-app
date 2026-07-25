@@ -1,15 +1,10 @@
 import type { AdminQueueItem } from '@/api/mockData';
 import { DEMO_STAFF_ID, mockStore } from '@/api/mockData';
+import { fromOwnerTable, rpcOwner } from '@/api/contract/ownerClient';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { listMessages } from '@/api/repositories/supportRepository';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
-import {
-  mapCommission,
-  mapLead,
-  mapPayoutRequest,
-  mapSupportTicket,
-  mapSupportTicketMessage,
-} from '@/lib/mappers';
+import { mapCommission, mapLead, mapPayoutRequest } from '@/lib/mappers';
 import type {
   AdminDashboardStats,
   Commission,
@@ -19,7 +14,6 @@ import type {
   SupportTicketMessage,
   SupportTicketStatus,
 } from '@/types/domain';
-import { createIdempotencyKey } from '@/lib/idempotency';
 
 export async function getAdminDashboard(): Promise<{
   stats: AdminDashboardStats;
@@ -39,21 +33,7 @@ export async function getAdminStats(): Promise<AdminDashboardStats> {
     await delay();
     return { ...mockStore.adminStats };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('admin_dashboard_stats');
-  if (error) throw fromSupabaseError(error);
-
-  const stats = data as Record<string, number>;
-  return {
-    openPartnerApplications: stats.open_partner_applications ?? 0,
-    openTickets: stats.open_tickets ?? 0,
-    unreadMessages: stats.unread_messages ?? 0,
-    documentsPendingReview: stats.documents_pending_review ?? 0,
-    openPayments: stats.open_payments ?? 0,
-    commissionsUnderReview: stats.commissions_under_review ?? 0,
-    payoutRequests: stats.payout_requests ?? 0,
-    upcomingAppointments: stats.upcoming_appointments ?? 0,
-  };
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:admin_dashboard_stats');
 }
 
 export async function getAdminDashboardBundle(): Promise<{
@@ -62,17 +42,6 @@ export async function getAdminDashboardBundle(): Promise<{
 }> {
   const [stats, queue] = await Promise.all([getAdminStats(), listAdminQueue()]);
   return { stats, queue };
-}
-
-interface AdminWorkQueueRow {
-  id: string;
-  type: AdminQueueItem['type'];
-  title: string;
-  subtitle: string;
-  created_at: string;
-  priority: AdminQueueItem['priority'];
-  company_name?: string | null;
-  email?: string | null;
 }
 
 /**
@@ -85,21 +54,7 @@ export async function listAdminQueue(): Promise<AdminQueueItem[]> {
     await delay();
     return [...mockStore.adminQueue];
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('admin_work_queue');
-  if (error) throw fromSupabaseError(error);
-
-  const rows = (data as AdminWorkQueueRow[] | null) ?? [];
-  return rows.map((row) => ({
-    id: row.id,
-    type: row.type,
-    title: row.title,
-    subtitle: row.subtitle,
-    createdAt: row.created_at,
-    priority: row.priority,
-    companyName: row.company_name ?? undefined,
-    email: row.email ?? undefined,
-  }));
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:admin_work_queue');
 }
 
 export async function listApprovals(): Promise<AdminQueueItem[]> {
@@ -140,7 +95,7 @@ export async function approvePartnerApplication(
     return { id, status: 'approved' };
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('approve_partner_application', {
+  const { data, error } = await rpcOwner(supabase, 'approve_partner_application', {
     p_application_id: id,
     p_reason: reason ?? undefined,
   });
@@ -167,7 +122,7 @@ export async function rejectPartnerApplication(
     return { id, status: 'rejected' };
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('reject_partner_application', {
+  const { data, error } = await rpcOwner(supabase, 'reject_partner_application', {
     p_application_id: id,
     p_reason: reason,
   });
@@ -187,13 +142,7 @@ export async function suspendPartner(
     await delay();
     return { id: partnerId, isActive: false };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('suspend_partner', {
-    p_partner_id: partnerId,
-    p_reason: reason,
-  });
-  if (error) throw fromSupabaseError(error);
-  return data as { id: string; isActive: false };
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:suspend_partner');
 }
 
 /** Approves a commission via the `approve_commission` RPC. Staff-only; requires a reason; blocks partner self-approval. */
@@ -208,13 +157,7 @@ export async function approveCommission(
     await delay();
     return { id: commissionId, status: 'approved' };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('approve_commission', {
-    p_commission_id: commissionId,
-    p_reason: reason,
-  });
-  if (error) throw fromSupabaseError(error);
-  return data as { id: string; status: 'approved' };
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:approve_commission');
 }
 
 /** Rejects a commission via the `reject_commission` RPC. Staff-only; requires a reason; blocks partner self-review. */
@@ -229,13 +172,7 @@ export async function rejectCommission(
     await delay();
     return { id: commissionId, status: 'rejected' };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('reject_commission', {
-    p_commission_id: commissionId,
-    p_reason: reason,
-  });
-  if (error) throw fromSupabaseError(error);
-  return data as { id: string; status: 'rejected' };
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:reject_commission');
 }
 
 /**
@@ -254,13 +191,7 @@ export async function processPayoutRequest(
     await delay();
     return { id: payoutId, status: 'paid', commissionsMarkedPaid: 0 };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('process_payout_request', {
-    p_payout_id: payoutId,
-    p_reason: reason,
-  });
-  if (error) throw fromSupabaseError(error);
-  return data as { id: string; status: 'paid'; commissionsMarkedPaid: number };
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:process_payout_request');
 }
 
 /**
@@ -273,14 +204,7 @@ export async function createProjectFromRequest(projectId: string, status = 'inta
     await delay();
     return { id: projectId, status };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .rpc('create_project_from_request', {
-      p_project_id: projectId,
-      p_status: status,
-    });
-  if (error) throw fromSupabaseError(error);
-  return data;
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:create_project_from_request');
 }
 
 /**
@@ -296,12 +220,7 @@ export async function markDocumentScanClean(
     await delay();
     return { id: versionId, scanStatus: 'clean' };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('mark_document_scan_clean', {
-    p_version_id: versionId,
-  });
-  if (error) throw fromSupabaseError(error);
-  return data as { id: string; scanStatus: 'clean' };
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:mark_document_scan_clean');
 }
 
 export async function listAdminTickets(): Promise<SupportTicket[]> {
@@ -309,13 +228,7 @@ export async function listAdminTickets(): Promise<SupportTicket[]> {
     await delay();
     return [...mockStore.tickets];
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('support_tickets')
-    .select('*')
-    .order('created_at', { ascending: false });
-  if (error) throw fromSupabaseError(error);
-  return (data ?? []).map((row) => mapSupportTicket(row));
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:support_tickets');
 }
 
 export async function listFinanceItems(): Promise<Commission[]> {
@@ -324,12 +237,11 @@ export async function listFinanceItems(): Promise<Commission[]> {
     return [...mockStore.commissions];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('commissions')
+  const { data, error } = await fromOwnerTable(supabase, 'commissions')
     .select('*')
     .order('created_at', { ascending: false });
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).map((row) => mapCommission(row));
+  return (data ?? []).map((row) => mapCommission(row as Parameters<typeof mapCommission>[0]));
 }
 
 /** Lists every partner lead (staff see all rows via RLS on `partner_leads`). */
@@ -339,12 +251,11 @@ export async function listPartnerLeads(): Promise<Lead[]> {
     return [...mockStore.leads];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('partner_leads')
+  const { data, error } = await fromOwnerTable(supabase, 'partner_leads')
     .select('*')
     .order('created_at', { ascending: false });
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).map(mapLead);
+  return (data ?? []).map((row) => mapLead(row as Parameters<typeof mapLead>[0]));
 }
 
 export async function getPartnerLead(id: string): Promise<Lead | null> {
@@ -353,9 +264,12 @@ export async function getPartnerLead(id: string): Promise<Lead | null> {
     return mockStore.leads.find((l) => l.id === id) ?? null;
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.from('partner_leads').select('*').eq('id', id).maybeSingle();
+  const { data, error } = await fromOwnerTable(supabase, 'partner_leads')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
   if (error) throw fromSupabaseError(error);
-  return data ? mapLead(data) : null;
+  return data ? mapLead(data as Parameters<typeof mapLead>[0]) : null;
 }
 
 export type LeadQualifyStatus = 'contacted' | 'qualified' | 'rejected' | 'invalid';
@@ -382,18 +296,19 @@ export async function qualifyPartnerLead(
       throw DomainError.forbidden('A converted lead cannot be re-qualified.');
     }
     lead.status = status;
-    lead.rejectedReason = status === 'rejected' || status === 'invalid' ? reason ?? null : lead.rejectedReason;
+    lead.rejectedReason =
+      status === 'rejected' || status === 'invalid' ? (reason ?? null) : lead.rejectedReason;
     lead.updatedAt = new Date().toISOString();
     return { ...lead };
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('admin_qualify_lead', {
+  const { data, error } = await rpcOwner(supabase, 'admin_qualify_lead', {
     p_lead_id: leadId,
     p_status: status,
     p_reason: reason || undefined,
   });
   if (error) throw fromSupabaseError(error);
-  return mapLead(data);
+  return mapLead(data as Parameters<typeof mapLead>[0]);
 }
 
 /**
@@ -416,12 +331,12 @@ export async function convertPartnerLead(leadId: string, saleId?: string): Promi
     return { ...lead };
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('admin_convert_lead', {
+  const { data, error } = await rpcOwner(supabase, 'admin_convert_lead', {
     p_lead_id: leadId,
     p_sale_id: saleId || undefined,
   });
   if (error) throw fromSupabaseError(error);
-  return mapLead(data);
+  return mapLead(data as Parameters<typeof mapLead>[0]);
 }
 
 /** Lists submitted/under_review payout requests across all partners (staff-only via RLS). */
@@ -431,12 +346,11 @@ export async function listFinancePayoutRequests(): Promise<PayoutRequest[]> {
     return [...mockStore.payoutRequests];
   }
   const supabase = requireLiveSupabase();
-  const { data, error } = await supabase
-    .from('payout_requests')
+  const { data, error } = await fromOwnerTable(supabase, 'payout_requests')
     .select('*')
     .order('created_at', { ascending: false });
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).map(mapPayoutRequest);
+  return (data ?? []).map((row) => mapPayoutRequest(row as Parameters<typeof mapPayoutRequest>[0]));
 }
 
 /** Rejects a payout request via `reject_payout_request`. Staff-only; requires a reason; reverts commissions to payable. */
@@ -457,14 +371,7 @@ export async function rejectPayoutRequest(
     }
     return { id: payoutId, status: 'rejected' };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('reject_payout_request', {
-    p_payout_id: payoutId,
-    p_reason: reason,
-  });
-  if (error) throw fromSupabaseError(error);
-  const row = mapPayoutRequest(data);
-  return { id: row.id, status: 'rejected' };
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:reject_payout_request');
 }
 
 /** Lists a ticket's messages; delegates to supportRepository (RLS already exposes internal notes to staff). */
@@ -501,15 +408,7 @@ async function replyToTicket(
     }
     return message;
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('admin_reply_support_ticket', {
-    p_ticket_id: ticketId,
-    p_body: body.trim(),
-    p_is_internal: isInternal,
-    p_client_message_id: clientMessageId ?? createIdempotencyKey('ticket-reply'),
-  });
-  if (error) throw fromSupabaseError(error);
-  return mapSupportTicketMessage(data);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:admin_reply_support_ticket');
 }
 
 /** Sends a customer-visible reply via `admin_reply_support_ticket`. Staff-only; also flips the ticket to waiting_for_customer. */
@@ -530,7 +429,8 @@ export async function replyInternal(
   return replyToTicket(ticketId, body, true, clientMessageId);
 }
 
-export type AdminTicketStatus = 'open' | 'in_progress' | 'waiting_on_customer' | 'resolved' | 'closed';
+export type AdminTicketStatus =
+  'open' | 'in_progress' | 'waiting_on_customer' | 'resolved' | 'closed';
 
 /** Transitions ticket status via `admin_update_ticket_status`. Staff-only; a reason is required to resolve/close. */
 export async function updateTicketStatus(
@@ -546,24 +446,17 @@ export async function updateTicketStatus(
     await delay();
     const ticket = mockStore.tickets.find((t) => t.id === ticketId);
     if (!ticket) throw DomainError.notFound('Ticket not found');
-    const domainStatus: SupportTicketStatus = status === 'in_progress'
-      ? 'waiting_for_vdb'
-      : status === 'waiting_on_customer'
-        ? 'waiting_for_customer'
-        : status;
+    const domainStatus: SupportTicketStatus =
+      status === 'in_progress'
+        ? 'waiting_for_vdb'
+        : status === 'waiting_on_customer'
+          ? 'waiting_for_customer'
+          : status;
     ticket.status = domainStatus;
     ticket.updatedAt = new Date().toISOString();
     return { ...ticket };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('admin_update_ticket_status', {
-    p_ticket_id: ticketId,
-    p_status: status,
-    p_reason: reason || undefined,
-    p_assignee: assignee || undefined,
-  });
-  if (error) throw fromSupabaseError(error);
-  return mapSupportTicket(data);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:admin_update_ticket_status');
 }
 
 /** Assigns a ticket to a staff member via `admin_assign_ticket`. Staff-only; the assignee must also be staff. */
@@ -575,13 +468,7 @@ export async function assignTicket(ticketId: string, assignee: string): Promise<
     ticket.updatedAt = new Date().toISOString();
     return { ...ticket };
   }
-  const supabase = requireLiveSupabase();
-  const { data, error } = await supabase.rpc('admin_assign_ticket', {
-    p_ticket_id: ticketId,
-    p_assignee: assignee,
-  });
-  if (error) throw fromSupabaseError(error);
-  return mapSupportTicket(data);
+  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:admin_assign_ticket');
 }
 
 export const adminRepository = {

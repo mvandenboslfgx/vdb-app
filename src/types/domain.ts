@@ -1,10 +1,4 @@
-export type AppRole =
-  | 'customer'
-  | 'partner_pending'
-  | 'partner'
-  | 'staff'
-  | 'admin'
-  | 'owner';
+export type AppRole = 'customer' | 'partner_pending' | 'partner' | 'staff' | 'admin' | 'owner';
 
 export type ProjectStatus =
   | 'request_received'
@@ -33,12 +27,7 @@ export type CommissionStatus =
   | 'reversed';
 
 export type SupportTicketStatus =
-  | 'new'
-  | 'open'
-  | 'waiting_for_customer'
-  | 'waiting_for_vdb'
-  | 'resolved'
-  | 'closed';
+  'new' | 'open' | 'waiting_for_customer' | 'waiting_for_vdb' | 'resolved' | 'closed';
 
 export type DocumentStatus =
   | 'draft'
@@ -68,50 +57,21 @@ export type PaymentStatus =
   | 'charged_back';
 
 export type QuoteStatus =
-  | 'draft'
-  | 'sent'
-  | 'viewed'
-  | 'accepted'
-  | 'rejected'
-  | 'expired'
-  | 'withdrawn';
+  'draft' | 'sent' | 'viewed' | 'accepted' | 'rejected' | 'expired' | 'withdrawn';
 
 export type InvoiceStatus =
-  | 'draft'
-  | 'sent'
-  | 'viewed'
-  | 'partially_paid'
-  | 'paid'
-  | 'overdue'
-  | 'cancelled'
-  | 'credited';
+  'draft' | 'sent' | 'viewed' | 'partially_paid' | 'paid' | 'overdue' | 'cancelled' | 'credited';
 
 export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'rejected' | 'invalid';
 
 export type PayoutRequestStatus =
-  | 'draft'
-  | 'submitted'
-  | 'under_review'
-  | 'approved'
-  | 'paid'
-  | 'rejected'
-  | 'cancelled';
+  'draft' | 'submitted' | 'under_review' | 'approved' | 'paid' | 'rejected' | 'cancelled';
 
 export type PartnerApplicationStatus =
-  | 'draft'
-  | 'submitted'
-  | 'under_review'
-  | 'approved'
-  | 'rejected'
-  | 'suspended';
+  'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'suspended';
 
 export type AppointmentStatus =
-  | 'requested'
-  | 'confirmed'
-  | 'rescheduled'
-  | 'cancelled'
-  | 'completed'
-  | 'no_show';
+  'requested' | 'confirmed' | 'rescheduled' | 'cancelled' | 'completed' | 'no_show';
 
 export type MessageDeliveryStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
 
@@ -366,4 +326,5 @@ export interface CustomerDashboard {
   unreadMessages: number;
   upcomingAppointments: Appointment[];
   documentsPendingReview: number;
+  unavailableSurfaces?: ('conversations' | 'appointments')[];
 }

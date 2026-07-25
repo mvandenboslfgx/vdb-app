@@ -97,7 +97,12 @@ export function LoginForm({ onSuccess, onForgotPassword, onRegister }: LoginForm
       />
 
       {formError ? (
-        <Text variant="caption" color="error">
+        <Text
+          variant="caption"
+          color="error"
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+        >
           {formError}
         </Text>
       ) : null}
