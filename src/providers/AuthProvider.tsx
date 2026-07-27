@@ -96,27 +96,47 @@ async function fetchRoles(userId: string): Promise<AppRole[]> {
     return ['customer'];
   }
 
+  const roles = new Set<AppRole>(['customer']);
+
+  try {
+    const { data: adminRow, error: adminError } = await fromOwnerTable(supabase, 'admin_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (!adminError && adminRow && typeof adminRow.role === 'string') {
+      const adminRole = adminRow.role.toUpperCase();
+      // Any admin_roles row implies staff access (owner encoding: staff = admin_roles).
+      roles.add('staff');
+      if (adminRole === 'ADMIN') {
+        roles.add('admin');
+      }
+      if (adminRole === 'OWNER') {
+        roles.add('admin');
+        roles.add('owner');
+      }
+    }
+  } catch {
+    // admin_roles is optional for pure customers; fail closed to customer/partner path.
+  }
+
   try {
     const { data, error } = await fromOwnerTable(supabase, 'partner_profiles')
       .select('status')
       .eq('user_id', userId)
       .maybeSingle();
-    if (error || !data) {
-      return ['customer'];
-    }
-
-    const status = typeof data.status === 'string' ? data.status.toLowerCase() : '';
-    if (['active', 'approved'].includes(status)) {
-      return ['customer', 'partner'];
-    }
-    if (['pending', 'submitted', 'under_review'].includes(status)) {
-      return ['customer', 'partner_pending'];
+    if (!error && data) {
+      const status = typeof data.status === 'string' ? data.status.toLowerCase() : '';
+      if (['active', 'approved'].includes(status)) {
+        roles.add('partner');
+      } else if (['pending', 'submitted', 'under_review'].includes(status)) {
+        roles.add('partner_pending');
+      }
     }
   } catch {
-    // Partner profile is optional in the rc.2 contract; customer remains safe.
+    // Partner profile is optional; customer remains safe.
   }
 
-  return ['customer'];
+  return [...roles];
 }
 
 function getSignInErrorKey(

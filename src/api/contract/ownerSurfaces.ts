@@ -15,6 +15,7 @@ export const RC3_OWNER_TABLES = new Set<string>([
   'profiles',
   'organizations',
   'organization_members',
+  'admin_roles',
   'portal_projects',
   'portal_quotes',
   'portal_quote_items',

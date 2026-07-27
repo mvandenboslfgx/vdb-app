@@ -28,6 +28,7 @@
       "profiles",
       "organizations",
       "organization_members",
+      "admin_roles",
       "portal_projects",
       "portal_quotes",
       "portal_quote_items",
