@@ -29,6 +29,7 @@
   "status": {
     "new": "New",
     "open": "Open",
+    "in_progress": "In progress",
     "waiting_for_customer": "Waiting for customer",
     "waiting_for_vdb": "Waiting for VDB",
     "resolved": "Resolved",

@@ -1,30 +1,28 @@
 {
   "name": "vdb-backend-contract",
-  "version": "0.2.0-rc.2",
-  "schemaVersion": "2026.07.24.mobile-compat-rc2",
-  "packageId": "vdb-backend-contract@0.2.0-rc.2",
+  "version": "0.2.0-rc.3",
+  "schemaVersion": "2026.07.25.messaging-support-appointments-rc3",
+  "packageId": "vdb-backend-contract@0.2.0-rc.3",
   "repositoryRole": "MOBILE_CLIENT",
   "canonicalBackendOwner": "VDB Digital 2.0",
   "canonicalRepoHint": "vdbdigital2.0",
-  "status": "CONSUMER_PIN_OWNER_RC2",
-  "minimumCompatibleClientVersion": ">=0.2.0-rc.2",
+  "status": "CONSUMER_PIN_OWNER_RC3",
+  "minimumCompatibleClientVersion": ">=0.2.0-rc.3",
   "partnerSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.1",
   "notes": [
-    "Exact pin of owner-published local bundle 0.2.0-rc.2 — VDB Digital 2.0 remains CANONICAL_BACKEND_OWNER.",
+    "Exact pin of owner-published local bundle 0.2.0-rc.3 — VDB Digital 2.0 remains CANONICAL_BACKEND_OWNER.",
     "Mobile 0.1.1 / 2026.07.24.remediation was a local remediation proposal only and is NOT canonical.",
     "Owner 0.1.0 freeze is historical only and is NOT the staging target.",
     "Canonical tables are portal_* + partner_*; Mobile must use client mapping (see namingAliases / rpcNames.mobileClientRpcMapping).",
     "Financial flags remain fail-closed (mollie_checkout, digital_product_checkout, partner_payouts).",
+    "schemaVersion 2026.07.27.financial-concurrency-rc2 included partner sale UNIQUE(partner_lead_id) and payout liability serialization; clients must still handle PARTNER_LEAD_ALREADY_CONVERTED and PARTNER_INSUFFICIENT_LIABILITY.",
+    "schemaVersion 2026.07.25.messaging-support-appointments-rc3 activates portal_conversations/portal_messages/portal_support_tickets/portal_support_replies/portal_appointments live queries for Mobile; conversations/support/appointments are no longer CONTRACT_SURFACE_UNAVAILABLE.",
+    "Mobile must filter is_internal=false client-side (defense in depth) when reading portal_messages/portal_support_replies as a customer, and must never call internal-note RPCs from customer flows.",
+    "appointments_booking, messaging_realtime and support_internal_notes_rpc remain fail-closed (false) until the owner enables them; booking/cancel/reschedule surface FEATURE_DISABLED as a configuration error instead of failing hard, and listing appointments must keep working.",
+    "availability_slots does not exist in rc.3 — listAvailableSlots always returns an empty list rather than reporting the surface unavailable.",
     "Local supabase/migrations in this repo remain NON-CANONICAL proposal SQL for isolated Mobile proof only."
   ],
-  "roles": [
-    "customer",
-    "partner_pending",
-    "partner",
-    "staff",
-    "admin",
-    "owner"
-  ],
+  "roles": ["customer", "partner_pending", "partner", "staff", "admin", "owner"],
   "sharedDomains": {
     "websiteAndMobile": [
       "profiles",
@@ -38,6 +36,14 @@
       "portal_invoices",
       "portal_invoice_items",
       "portal_files",
+      "portal_conversations",
+      "portal_conversation_participants",
+      "portal_messages",
+      "portal_message_attachments",
+      "portal_support_tickets",
+      "portal_support_replies",
+      "portal_appointments",
+      "portal_appointment_participants",
       "feature_flags"
     ],
     "partnerPortalAndMobile": [
@@ -65,7 +71,17 @@
     "commissions": "partner_commissions",
     "payout_requests": "partner_payout_requests",
     "sales": "partner_sales",
-    "app_profiles": "profiles"
+    "app_profiles": "profiles",
+    "conversations": "portal_conversations",
+    "conversation_participants": "portal_conversation_participants",
+    "messages": "portal_messages",
+    "message_attachments": "portal_message_attachments",
+    "support_tickets": "portal_support_tickets",
+    "tickets": "portal_support_tickets",
+    "support_messages": "portal_support_replies",
+    "support_ticket_messages": "portal_support_replies",
+    "appointments": "portal_appointments",
+    "appointment_participants": "portal_appointment_participants"
   },
   "rpcNames": {
     "status": "owner-canonical",
@@ -83,7 +99,18 @@
       "record_partner_payout_paid",
       "feature_flag_enabled",
       "verify_mobile_compat_contracts",
-      "verify_partner_admin_contracts"
+      "verify_partner_admin_contracts",
+      "create_portal_conversation",
+      "send_portal_message",
+      "mark_portal_conversation_read",
+      "manage_portal_conversation_participant",
+      "reply_portal_support_ticket",
+      "assign_portal_support_ticket",
+      "transition_portal_support_ticket",
+      "book_portal_appointment",
+      "reschedule_portal_appointment",
+      "cancel_portal_appointment",
+      "verify_messaging_support_appointments_contracts"
     ],
     "mobileClientRpcMapping": {
       "accept_quote": "accept_portal_quote",
@@ -93,7 +120,17 @@
       "reject_partner_application": "review_partner_application",
       "request_commission_payout": "request_partner_payout",
       "admin_qualify_lead": "review_partner_lead",
-      "admin_convert_lead": "confirm_partner_sale"
+      "admin_convert_lead": "confirm_partner_sale",
+      "create_conversation": "create_portal_conversation",
+      "send_message": "send_portal_message",
+      "mark_conversation_read": "mark_portal_conversation_read",
+      "manage_conversation_participant": "manage_portal_conversation_participant",
+      "admin_reply_support_ticket": "reply_portal_support_ticket",
+      "admin_assign_ticket": "assign_portal_support_ticket",
+      "admin_update_ticket_status": "transition_portal_support_ticket",
+      "book_appointment_slot": "book_portal_appointment",
+      "reschedule_appointment": "reschedule_portal_appointment",
+      "cancel_appointment": "cancel_portal_appointment"
     }
   },
   "featureFlags": {
@@ -102,7 +139,10 @@
     "partner_payouts": false,
     "push_notifications": false,
     "documents_virus_scan": false,
-    "CHECKOUT_ENABLED": false
+    "CHECKOUT_ENABLED": false,
+    "messaging_realtime": false,
+    "support_internal_notes_rpc": false,
+    "appointments_booking": false
   },
   "featureFlagKeyAliases": {
     "payments.mollie_checkout": "mollie_checkout",
@@ -129,6 +169,16 @@
     "PAYMENT_POLICY_BLOCKED",
     "INFRASTRUCTURE_BLOCKED",
     "FEATURE_NOT_CONFIGURED",
-    "CONTRACT_DRIFT"
+    "CONTRACT_DRIFT",
+    "FEATURE_DISABLED",
+    "NOT_PARTICIPANT",
+    "INTERNAL_LEAK_DENIED",
+    "DOUBLE_BOOKING",
+    "INVALID_TRANSITION",
+    "IDEMPOTENCY_CONFLICT",
+    "AUTH_REQUIRED",
+    "AUTH_NO_ACCESS",
+    "CONFLICT",
+    "VALIDATION_FAILED"
   ]
 }

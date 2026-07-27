@@ -1,15 +1,39 @@
 import { mockStore } from '@/api/mockData';
-import { delay, shouldUseMockApi } from '@/api/repositories/_utils';
-import { DomainError } from '@/lib/errors';
+import { fromOwnerTable, rpcOwner } from '@/api/contract/ownerClient';
+import {
+  mapPortalSupportReply,
+  mapPortalSupportTicket,
+  toOwnerSupportPriority,
+} from '@/api/contract/portalMappers';
+import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
+import { resolveCallerOrganizationId } from '@/api/repositories/_org';
+import { DomainError, fromSupabaseError } from '@/lib/errors';
 import type { SupportTicket, SupportTicketMessage } from '@/types/domain';
 import type { SupportTicketInput } from '@/validation/support';
+
+type OwnerRow = Record<string, unknown>;
+
+function isOwnerRow(value: unknown): value is OwnerRow {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function newTicketNumber(): string {
+  const stamp = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `MOB-${stamp}-${rand}`;
+}
 
 export async function listTickets(): Promise<SupportTicket[]> {
   if (shouldUseMockApi()) {
     await delay();
     return [...mockStore.tickets];
   }
-  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:support_tickets');
+  const supabase = requireLiveSupabase();
+  const { data, error } = await fromOwnerTable(supabase, 'support_tickets')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw fromSupabaseError(error);
+  return (data ?? []).filter(isOwnerRow).map(mapPortalSupportTicket);
 }
 
 export async function getTicket(id: string): Promise<SupportTicket | null> {
@@ -17,7 +41,13 @@ export async function getTicket(id: string): Promise<SupportTicket | null> {
     await delay();
     return mockStore.tickets.find((t) => t.id === id) ?? null;
   }
-  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:support_tickets');
+  const supabase = requireLiveSupabase();
+  const { data, error } = await fromOwnerTable(supabase, 'support_tickets')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw fromSupabaseError(error);
+  return data && isOwnerRow(data) ? mapPortalSupportTicket(data) : null;
 }
 
 export async function createTicket(input: SupportTicketInput): Promise<SupportTicket> {
@@ -37,20 +67,110 @@ export async function createTicket(input: SupportTicketInput): Promise<SupportTi
     return ticket;
   }
 
-  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:support_tickets');
+  const supabase = requireLiveSupabase();
+  const organizationId = await resolveCallerOrganizationId(supabase);
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData?.user) {
+    throw DomainError.unauthorized('Sign in required to create a support ticket.');
+  }
+
+  const { data, error } = await fromOwnerTable(supabase, 'support_tickets')
+    .insert({
+      organization_id: organizationId,
+      ticket_number: newTicketNumber(),
+      subject: input.subject.trim(),
+      description: input.description.trim(),
+      category: input.category.toUpperCase(),
+      priority: toOwnerSupportPriority(input.priority),
+      status: 'NEW',
+      created_by: userData.user.id,
+      ...(input.projectId ? { project_id: input.projectId } : {}),
+    })
+    .select('*')
+    .single();
+  if (error) throw fromSupabaseError(error);
+  if (!isOwnerRow(data)) {
+    throw DomainError.configuration('Owner support ticket response has an unexpected shape.');
+  }
+  return mapPortalSupportTicket(data);
 }
 
 /**
- * Lists a ticket's messages in chronological order. RLS already hides
- * internal notes from non-staff (see support_ticket_messages_select in
- * 20260720101300_rls_policies.sql) -- this never filters client-side.
+ * Lists a ticket's public replies in chronological order. RLS already hides
+ * internal notes from non-staff -- `is_internal = false` is still applied
+ * client-side as defense in depth, never the sole guard.
  */
 export async function listMessages(ticketId: string): Promise<SupportTicketMessage[]> {
   if (shouldUseMockApi()) {
     await delay();
     return mockStore.ticketMessages.filter((m) => m.ticketId === ticketId);
   }
-  throw DomainError.configuration('CONTRACT_SURFACE_UNAVAILABLE:support_ticket_messages');
+  const supabase = requireLiveSupabase();
+  const { data, error } = await fromOwnerTable(supabase, 'support_ticket_messages')
+    .select('*')
+    .eq('ticket_id', ticketId)
+    .eq('is_internal', false)
+    .order('created_at', { ascending: true });
+  if (error) throw fromSupabaseError(error);
+  return (data ?? []).filter(isOwnerRow).map(mapPortalSupportReply);
+}
+
+/**
+ * Sends a customer-visible reply via `reply_portal_support_ticket`. Customer
+ * flows must never call an internal-note RPC -- this always replies publicly.
+ */
+export async function replyTicket(ticketId: string, body: string): Promise<SupportTicketMessage> {
+  const trimmed = body.trim();
+  if (!trimmed) {
+    throw DomainError.validation('A reply body is required');
+  }
+  if (shouldUseMockApi()) {
+    await delay();
+    const now = new Date().toISOString();
+    const message: SupportTicketMessage = {
+      id: `ticket-msg-${Date.now()}`,
+      ticketId,
+      authorId: 'demo-customer-0001',
+      body: trimmed,
+      isInternal: false,
+      createdAt: now,
+      updatedAt: now,
+    };
+    mockStore.ticketMessages.push(message);
+    return message;
+  }
+
+  const supabase = requireLiveSupabase();
+  const { data, error } = await rpcOwner(supabase, 'reply_portal_support_ticket', {
+    p_ticket_id: ticketId,
+    p_body: trimmed,
+  });
+  if (error) throw fromSupabaseError(error);
+  if (isOwnerRow(data)) return mapPortalSupportReply(data);
+
+  const replyId = typeof data === 'string' ? data : null;
+  if (replyId) {
+    const { data: row, error: fetchError } = await fromOwnerTable(
+      supabase,
+      'support_ticket_messages',
+    )
+      .select('*')
+      .eq('id', replyId)
+      .maybeSingle();
+    if (fetchError) throw fromSupabaseError(fetchError);
+    if (row && isOwnerRow(row)) return mapPortalSupportReply(row);
+  }
+
+  const now = new Date().toISOString();
+  return {
+    id: replyId ?? `ticket-msg-${Date.now()}`,
+    ticketId,
+    authorId: '',
+    body: trimmed,
+    isInternal: false,
+    createdAt: now,
+    updatedAt: now,
+  };
 }
 
 export const supportRepository = {
@@ -58,4 +178,5 @@ export const supportRepository = {
   get: getTicket,
   create: createTicket,
   listMessages,
+  replyTicket,
 };

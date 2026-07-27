@@ -282,6 +282,7 @@
     "ticket": {
       "new": "Nieuw",
       "open": "Open",
+      "in_progress": "In behandeling",
       "waiting_for_customer": "Wacht op klant",
       "waiting_for_vdb": "Wacht op VDB",
       "resolved": "Opgelost",

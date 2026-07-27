@@ -3,7 +3,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { listMessages, sendMessage } from '@/api/repositories/messagesRepository';
+import {
+  listMessages,
+  markConversationRead,
+  sendMessage,
+} from '@/api/repositories/messagesRepository';
 import { Button, ErrorState, LoadingState, Screen, Text, TextInput } from '@/design-system';
 import { useAuth } from '@/providers/AuthProvider';
 import type { Message } from '@/types/domain';
@@ -26,6 +30,11 @@ export default function MessageThreadScreen() {
     setError(false);
     try {
       setMessages(await listMessages(id));
+      try {
+        await markConversationRead(id);
+      } catch {
+        // Read-state is best-effort; do not fail the thread UI.
+      }
     } catch {
       setError(true);
     } finally {
@@ -68,7 +77,10 @@ export default function MessageThreadScreen() {
         renderItem={({ item }) => {
           const mine = item.senderId === profile?.id;
           return (
-            <View style={[styles.bubble, mine ? styles.mine : styles.theirs]} testID={`message-${item.id}`}>
+            <View
+              style={[styles.bubble, mine ? styles.mine : styles.theirs]}
+              testID={`message-${item.id}`}
+            >
               {!mine ? (
                 <Text variant="caption" color="champagneGold">
                   {item.senderName}

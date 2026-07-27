@@ -9,11 +9,12 @@ import {
 } from '@/api/contract/ownerMapping';
 import { BACKEND_CONTRACT } from '@/config/backendContract';
 
-describe('owner contract pin 0.2.0-rc.2', () => {
-  it('pins owner rc.2 and drops 0.1.1 as canonical', () => {
-    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.2');
-    expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.24.mobile-compat-rc2');
-    expect(BACKEND_CONTRACT.status).toBe('CONSUMER_PIN_OWNER_RC2');
+describe('owner contract pin 0.2.0-rc.3', () => {
+  it('pins owner rc.3 and drops 0.1.1 as canonical', () => {
+    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.3');
+    expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.25.messaging-support-appointments-rc3');
+    expect(BACKEND_CONTRACT.status).toBe('CONSUMER_PIN_OWNER_RC3');
+    expect(BACKEND_CONTRACT.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.3');
     expect(BACKEND_CONTRACT.supersededLocalProposal.version).toBe('0.1.1');
   });
 
@@ -31,6 +32,25 @@ describe('owner contract pin 0.2.0-rc.2', () => {
     expect(mapMobileRpcToOwner('register_partner_lead')).toBe('create_partner_lead');
     expect(mapMobileRpcToOwner('request_commission_payout')).toBe('request_partner_payout');
     expect(MOBILE_RPC_TO_OWNER.reject_quote).toBe('decline_portal_quote');
+  });
+
+  it('maps rc.3 messaging/support/appointments tables to portal_* canonical names', () => {
+    expect(mapMobileTableToOwner('conversations')).toBe(OWNER_TABLES.conversations);
+    expect(mapMobileTableToOwner('conversations')).toBe('portal_conversations');
+    expect(mapMobileTableToOwner('messages')).toBe('portal_messages');
+    expect(mapMobileTableToOwner('support_tickets')).toBe('portal_support_tickets');
+    expect(mapMobileTableToOwner('tickets')).toBe('portal_support_tickets');
+    expect(mapMobileTableToOwner('support_messages')).toBe('portal_support_replies');
+    expect(mapMobileTableToOwner('support_ticket_messages')).toBe('portal_support_replies');
+    expect(mapMobileTableToOwner('appointments')).toBe('portal_appointments');
+  });
+
+  it('maps rc.3 messaging/support/appointments RPCs to owner canonical names', () => {
+    expect(mapMobileRpcToOwner('book_appointment_slot')).toBe('book_portal_appointment');
+    expect(mapMobileRpcToOwner('cancel_appointment')).toBe('cancel_portal_appointment');
+    expect(mapMobileRpcToOwner('admin_reply_support_ticket')).toBe('reply_portal_support_ticket');
+    expect(mapMobileRpcToOwner('send_message')).toBe(OWNER_RPCS.sendMessage);
+    expect(mapMobileRpcToOwner('mark_conversation_read')).toBe(OWNER_RPCS.markConversationRead);
   });
 
   it('rejects marketing leads alias confusion', () => {

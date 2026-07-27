@@ -16,6 +16,14 @@ export const OWNER_TABLES = {
   partnerLeads: 'partner_leads',
   profiles: 'profiles',
   featureFlags: 'feature_flags',
+  conversations: 'portal_conversations',
+  conversationParticipants: 'portal_conversation_participants',
+  messages: 'portal_messages',
+  messageAttachments: 'portal_message_attachments',
+  supportTickets: 'portal_support_tickets',
+  supportReplies: 'portal_support_replies',
+  appointments: 'portal_appointments',
+  appointmentParticipants: 'portal_appointment_participants',
 } as const;
 
 export const OWNER_RPCS = {
@@ -29,6 +37,17 @@ export const OWNER_RPCS = {
   convertLead: 'confirm_partner_sale',
   featureFlagEnabled: 'feature_flag_enabled',
   verifyMobileCompat: 'verify_mobile_compat_contracts',
+  createConversation: 'create_portal_conversation',
+  sendMessage: 'send_portal_message',
+  markConversationRead: 'mark_portal_conversation_read',
+  manageParticipant: 'manage_portal_conversation_participant',
+  replySupportTicket: 'reply_portal_support_ticket',
+  assignSupportTicket: 'assign_portal_support_ticket',
+  transitionSupportTicket: 'transition_portal_support_ticket_status',
+  bookAppointment: 'book_portal_appointment',
+  rescheduleAppointment: 'reschedule_portal_appointment',
+  cancelAppointment: 'cancel_portal_appointment',
+  verifyMessagingSupportAppointments: 'verify_messaging_support_appointments_contracts',
 } as const;
 
 /** Legacy Mobile proposal RPC names → owner canonical. */
@@ -41,6 +60,16 @@ export const MOBILE_RPC_TO_OWNER: Record<string, string> = {
   request_commission_payout: OWNER_RPCS.requestCommissionPayout,
   admin_qualify_lead: OWNER_RPCS.qualifyLead,
   admin_convert_lead: OWNER_RPCS.convertLead,
+  create_conversation: OWNER_RPCS.createConversation,
+  send_message: OWNER_RPCS.sendMessage,
+  mark_conversation_read: OWNER_RPCS.markConversationRead,
+  manage_conversation_participant: OWNER_RPCS.manageParticipant,
+  admin_reply_support_ticket: OWNER_RPCS.replySupportTicket,
+  admin_assign_ticket: OWNER_RPCS.assignSupportTicket,
+  admin_update_ticket_status: OWNER_RPCS.transitionSupportTicket,
+  book_appointment_slot: OWNER_RPCS.bookAppointment,
+  reschedule_appointment: OWNER_RPCS.rescheduleAppointment,
+  cancel_appointment: OWNER_RPCS.cancelAppointment,
 };
 
 /** Legacy Mobile proposal table names → owner canonical. */
@@ -55,6 +84,16 @@ export const MOBILE_TABLE_TO_OWNER: Record<string, string> = {
   payout_requests: OWNER_TABLES.payoutRequests,
   sales: OWNER_TABLES.sales,
   app_profiles: OWNER_TABLES.profiles,
+  conversations: OWNER_TABLES.conversations,
+  conversation_participants: OWNER_TABLES.conversationParticipants,
+  messages: OWNER_TABLES.messages,
+  message_attachments: OWNER_TABLES.messageAttachments,
+  support_tickets: OWNER_TABLES.supportTickets,
+  tickets: OWNER_TABLES.supportTickets,
+  support_messages: OWNER_TABLES.supportReplies,
+  support_ticket_messages: OWNER_TABLES.supportReplies,
+  appointments: OWNER_TABLES.appointments,
+  appointment_participants: OWNER_TABLES.appointmentParticipants,
 };
 
 export function mapMobileTableToOwner(table: string): string {

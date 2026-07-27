@@ -114,3 +114,77 @@ export interface PortalFileRow {
   customer_visible?: boolean;
   version_number?: number;
 }
+
+export type PortalConversationType = 'DIRECT' | 'PROJECT' | 'SUPPORT' | 'INTERNAL' | string;
+
+export interface PortalConversationRow {
+  id: string;
+  organization_id: string;
+  project_id: string | null;
+  subject: string | null;
+  status?: string | null;
+  last_message_at: string | null;
+  conversation_type: PortalConversationType;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PortalMessageRow {
+  id: string;
+  conversation_id: string;
+  author_user_id: string | null;
+  body: string;
+  is_internal: boolean;
+  created_at: string;
+  updated_at?: string;
+  deleted_at?: string | null;
+}
+
+export type PortalSupportTicketStatus =
+  'NEW' | 'OPEN' | 'IN_PROGRESS' | 'WAITING_FOR_CUSTOMER' | 'RESOLVED' | 'CLOSED';
+
+export interface PortalSupportTicketRow {
+  id: string;
+  organization_id: string;
+  project_id?: string | null;
+  ticket_number?: string | null;
+  subject: string;
+  description: string;
+  category: string;
+  priority: string;
+  status: PortalSupportTicketStatus;
+  created_by: string | null;
+  assigned_to?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PortalSupportReplyRow {
+  id: string;
+  ticket_id: string;
+  author_user_id?: string | null;
+  created_by?: string | null;
+  body: string;
+  is_internal: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export type PortalAppointmentStatus =
+  'SCHEDULED' | 'CONFIRMED' | 'RESCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW';
+
+export interface PortalAppointmentRow {
+  id: string;
+  organization_id: string;
+  title: string;
+  starts_at: string;
+  ends_at: string;
+  status: PortalAppointmentStatus;
+  location: string | null;
+  timezone?: string | null;
+  meeting_link?: string | null;
+  organizer_user_id?: string | null;
+  created_at: string;
+  updated_at: string;
+}

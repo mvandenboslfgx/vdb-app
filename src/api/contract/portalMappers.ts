@@ -1,25 +1,39 @@
 import type {
+  PortalAppointmentRow,
+  PortalAppointmentStatus,
+  PortalConversationRow,
   PortalDocumentStatus,
   PortalFileRow,
   PortalInvoiceRow,
   PortalInvoiceStatus,
+  PortalMessageRow,
   PortalProjectRow,
   PortalProjectStatus,
   PortalQuoteItemRow,
   PortalQuoteRow,
   PortalQuoteStatus,
+  PortalSupportReplyRow,
+  PortalSupportTicketRow,
+  PortalSupportTicketStatus,
 } from '@/api/contract/portalRows';
 import type {
+  Appointment,
+  AppointmentStatus,
+  Conversation,
   Document,
   DocumentStatus,
   Invoice,
   InvoiceStatus,
+  Message,
   Project,
   ProjectStatus,
   Quote,
   QuoteItem,
   QuoteStatus,
   ScanStatus,
+  SupportTicket,
+  SupportTicketMessage,
+  SupportTicketStatus,
 } from '@/types/domain';
 
 const PROJECT_STATUS: Record<PortalProjectStatus, ProjectStatus> = {
@@ -67,6 +81,60 @@ const DOCUMENT_STATUS: Record<PortalDocumentStatus, DocumentStatus> = {
   ARCHIVED: 'archived',
   DELETED: 'archived',
 };
+
+const SUPPORT_TICKET_STATUS: Record<PortalSupportTicketStatus, SupportTicketStatus> = {
+  NEW: 'new',
+  OPEN: 'open',
+  IN_PROGRESS: 'in_progress',
+  WAITING_FOR_CUSTOMER: 'waiting_for_customer',
+  RESOLVED: 'resolved',
+  CLOSED: 'closed',
+};
+
+const APPOINTMENT_STATUS: Record<PortalAppointmentStatus, AppointmentStatus> = {
+  SCHEDULED: 'requested',
+  CONFIRMED: 'confirmed',
+  RESCHEDULED: 'rescheduled',
+  CANCELLED: 'cancelled',
+  COMPLETED: 'completed',
+  NO_SHOW: 'no_show',
+};
+
+const SUPPORT_TICKET_PRIORITIES: ReadonlySet<SupportTicket['priority']> = new Set([
+  'low',
+  'medium',
+  'high',
+  'urgent',
+]);
+
+function mapSupportTicketPriority(value: unknown): SupportTicket['priority'] {
+  const raw = str(value).toUpperCase();
+  if (raw === 'LOW') return 'low';
+  if (raw === 'NORMAL' || raw === 'MEDIUM') return 'medium';
+  if (raw === 'HIGH') return 'high';
+  if (raw === 'URGENT') return 'urgent';
+  const normalized = str(value).toLowerCase();
+  return SUPPORT_TICKET_PRIORITIES.has(normalized as SupportTicket['priority'])
+    ? (normalized as SupportTicket['priority'])
+    : 'medium';
+}
+
+/** Mobile priority → owner portal_support_tickets.priority CHECK values. */
+export function toOwnerSupportPriority(
+  priority: SupportTicket['priority'] | string | undefined,
+): 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT' {
+  switch (priority) {
+    case 'low':
+      return 'LOW';
+    case 'high':
+      return 'HIGH';
+    case 'urgent':
+      return 'URGENT';
+    case 'medium':
+    default:
+      return 'NORMAL';
+  }
+}
 
 function asRecord(value: unknown): Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -186,5 +254,93 @@ export function mapPortalFile(row: PortalFileRow | Record<string, unknown>): Doc
     scanStatus: mapScanStatus(r.scan_status),
     createdAt: str(r.created_at),
     updatedAt: str(r.updated_at),
+  };
+}
+
+export interface MapPortalConversationOptions {
+  lastReadAt?: string | null;
+  unreadCount?: number;
+}
+
+export function mapPortalConversation(
+  row: PortalConversationRow | Record<string, unknown>,
+  opts: MapPortalConversationOptions = {},
+): Conversation {
+  const r = asRecord(row);
+  return {
+    id: str(r.id),
+    title: str(r.subject) || 'Conversation',
+    // The owner schema does not denormalize a preview onto the conversation row;
+    // callers that need one must derive it from the latest `portal_messages` row.
+    lastMessagePreview: null,
+    lastMessageAt: nullableStr(r.last_message_at),
+    unreadCount: num(opts.unreadCount, 0),
+    projectId: nullableStr(r.project_id),
+    createdAt: str(r.created_at),
+    updatedAt: str(r.updated_at) || str(r.created_at),
+  };
+}
+
+export function mapPortalMessage(row: PortalMessageRow | Record<string, unknown>): Message {
+  const r = asRecord(row);
+  return {
+    id: str(r.id),
+    conversationId: str(r.conversation_id),
+    senderId: str(r.author_user_id),
+    senderName: str(r.sender_name, ''),
+    body: str(r.body),
+    deliveryStatus: 'sent',
+    createdAt: str(r.created_at),
+    updatedAt: str(r.updated_at) || str(r.created_at),
+  };
+}
+
+export function mapPortalSupportTicket(
+  row: PortalSupportTicketRow | Record<string, unknown>,
+): SupportTicket {
+  const r = asRecord(row);
+  const status = str(r.status, 'NEW').toUpperCase() as PortalSupportTicketStatus;
+  return {
+    id: str(r.id),
+    subject: str(r.subject),
+    category: str(r.category, 'other'),
+    priority: mapSupportTicketPriority(r.priority),
+    status: SUPPORT_TICKET_STATUS[status] ?? 'new',
+    description: str(r.description),
+    createdAt: str(r.created_at),
+    updatedAt: str(r.updated_at),
+  };
+}
+
+export function mapPortalSupportReply(
+  row: PortalSupportReplyRow | Record<string, unknown>,
+): SupportTicketMessage {
+  const r = asRecord(row);
+  return {
+    id: str(r.id),
+    ticketId: str(r.ticket_id),
+    authorId: str(r.author_user_id) || str(r.created_by),
+    body: str(r.body),
+    isInternal: bool(r.is_internal),
+    createdAt: str(r.created_at),
+    updatedAt: str(r.updated_at) || str(r.created_at),
+  };
+}
+
+export function mapPortalAppointment(
+  row: PortalAppointmentRow | Record<string, unknown>,
+): Appointment {
+  const r = asRecord(row);
+  const status = str(r.status, 'SCHEDULED').toUpperCase() as PortalAppointmentStatus;
+  return {
+    id: str(r.id),
+    title: str(r.title),
+    startsAt: str(r.starts_at),
+    endsAt: str(r.ends_at),
+    status: APPOINTMENT_STATUS[status] ?? 'requested',
+    location: nullableStr(r.location),
+    timezone: 'Europe/Amsterdam',
+    createdAt: str(r.created_at),
+    updatedAt: str(r.updated_at) || str(r.created_at),
   };
 }

@@ -42,6 +42,33 @@ const POSTGRES_CODE_MAP: Record<string, DomainErrorCode> = {
   '22P02': 'VALIDATION', // invalid_text_representation
 };
 
+/**
+ * Owner RPC exception codes (rc.3 messaging/support/appointments) that are
+ * raised as plain `RAISE EXCEPTION 'CODE:detail'` messages rather than
+ * Postgres error codes. Order matters -- checked top to bottom, first match wins.
+ */
+const RPC_MESSAGE_CODE_MAP: readonly (readonly [string, DomainErrorCode])[] = [
+  ['FEATURE_DISABLED', 'CONFIGURATION'],
+  ['NOT_PARTICIPANT', 'FORBIDDEN'],
+  ['DOUBLE_BOOKING', 'VALIDATION'],
+  ['INTERNAL_LEAK_DENIED', 'FORBIDDEN'],
+  ['INVALID_TRANSITION', 'VALIDATION'],
+  ['IDEMPOTENCY_CONFLICT', 'VALIDATION'],
+  ['AUTH_REQUIRED', 'UNAUTHORIZED'],
+  ['AUTH_NO_ACCESS', 'FORBIDDEN'],
+  ['VALIDATION_FAILED', 'VALIDATION'],
+  ['CONFLICT', 'VALIDATION'],
+  ['FORBIDDEN', 'FORBIDDEN'],
+  ['NOT_FOUND', 'NOT_FOUND'],
+];
+
+function mapRpcMessageToCode(message: string): DomainErrorCode | undefined {
+  for (const [needle, code] of RPC_MESSAGE_CODE_MAP) {
+    if (message.includes(needle)) return code;
+  }
+  return undefined;
+}
+
 export class DomainError extends Error {
   readonly code: DomainErrorCode;
   readonly details?: Record<string, unknown>;
@@ -103,16 +130,20 @@ export function fromSupabaseError(
   if (error instanceof DomainError) return error;
 
   if (isSupabaseLikeError(error)) {
+    const message = error.message ?? 'Request failed';
     const code =
-      (error.code ? POSTGRES_CODE_MAP[error.code] : undefined) ?? fallbackCode;
-    return new DomainError(code, error.message ?? 'Request failed', {
+      (error.code ? POSTGRES_CODE_MAP[error.code] : undefined) ??
+      mapRpcMessageToCode(message) ??
+      fallbackCode;
+    return new DomainError(code, message, {
       details: error.code ? { pgCode: error.code } : undefined,
       cause: error,
     });
   }
 
   if (error instanceof Error) {
-    return new DomainError(fallbackCode, error.message, { cause: error });
+    const code = mapRpcMessageToCode(error.message) ?? fallbackCode;
+    return new DomainError(code, error.message, { cause: error });
   }
 
   return new DomainError(fallbackCode, 'Unknown error', { cause: error });

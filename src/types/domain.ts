@@ -27,7 +27,13 @@ export type CommissionStatus =
   | 'reversed';
 
 export type SupportTicketStatus =
-  'new' | 'open' | 'waiting_for_customer' | 'waiting_for_vdb' | 'resolved' | 'closed';
+  | 'new'
+  | 'open'
+  | 'in_progress'
+  | 'waiting_for_customer'
+  | 'waiting_for_vdb'
+  | 'resolved'
+  | 'closed';
 
 export type DocumentStatus =
   | 'draft'
