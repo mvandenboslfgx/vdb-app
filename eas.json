@@ -37,7 +37,8 @@
       },
       "env": {
         "EXPO_PUBLIC_APP_ENV": "production",
-        "EXPO_PUBLIC_ENABLE_DEMO_MODE": "false"
+        "EXPO_PUBLIC_ENABLE_DEMO_MODE": "false",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     },
     "production-apk": {
@@ -49,7 +50,8 @@
       },
       "env": {
         "EXPO_PUBLIC_APP_ENV": "production",
-        "EXPO_PUBLIC_ENABLE_DEMO_MODE": "false"
+        "EXPO_PUBLIC_ENABLE_DEMO_MODE": "false",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     }
   },
