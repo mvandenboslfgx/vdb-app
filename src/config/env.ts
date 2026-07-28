@@ -26,6 +26,12 @@ const clientEnvSchema = z.object({
 export type AppEnv = z.infer<typeof appEnvSchema>;
 export type ClientEnv = z.infer<typeof clientEnvSchema>;
 
+/** Canonical Supabase project refs — cross-env leakage is a hard configuration error. */
+export const SUPABASE_PROJECT_REFS = {
+  production: 'nhsrdnjfsxfikfbdmdfj',
+  preview: 'qzekuvmgfekzsowdecyk',
+} as const;
+
 const PLACEHOLDER_URL = 'https://placeholder.supabase.local';
 const PLACEHOLDER_KEY = 'public-anon-key-placeholder';
 
@@ -109,8 +115,8 @@ function validateEnv(): ClientEnv & {
   const env = parsed.data;
   const hasSupabase = Boolean(
     env.EXPO_PUBLIC_SUPABASE_URL &&
-      env.EXPO_PUBLIC_SUPABASE_ANON_KEY &&
-      env.EXPO_PUBLIC_SUPABASE_URL !== PLACEHOLDER_URL,
+    env.EXPO_PUBLIC_SUPABASE_ANON_KEY &&
+    env.EXPO_PUBLIC_SUPABASE_URL !== PLACEHOLDER_URL,
   );
 
   const { demoAllowed, useMockData } = resolveDemoMode({
@@ -130,6 +136,13 @@ function validateEnv(): ClientEnv & {
     );
   }
 
+  if (
+    (env.EXPO_PUBLIC_APP_ENV === 'preview' || env.EXPO_PUBLIC_APP_ENV === 'production') &&
+    hasSupabase
+  ) {
+    assertSupabaseProjectRefForAppEnv(env.EXPO_PUBLIC_APP_ENV, supabaseUrl);
+  }
+
   return {
     ...env,
     hasSupabaseConfig: hasSupabase,
@@ -144,6 +157,65 @@ function isLocalhostUrl(url: string): boolean {
     return host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '0.0.0.0';
   } catch {
     return /localhost|127\.0\.0\.1/i.test(url);
+  }
+}
+
+/** Extract Supabase project ref from a project URL hostname (`<ref>.supabase.co`). */
+export function extractSupabaseProjectRef(url: string): string | null {
+  if (!url) return null;
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if (!host.endsWith('.supabase.co') && !host.endsWith('.supabase.in')) {
+      return host.split('.')[0] || null;
+    }
+    return host.split('.')[0] || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Preview may only use staging ref; production may only use production ref.
+ * Unknown / missing / cross-env refs fail closed.
+ */
+export function assertSupabaseProjectRefForAppEnv(appEnv: AppEnv, supabaseUrl: string): void {
+  if (appEnv !== 'preview' && appEnv !== 'production') {
+    return;
+  }
+  if (!supabaseUrl || supabaseUrl === PLACEHOLDER_URL) {
+    throw new ConfigurationError(
+      `Missing EXPO_PUBLIC_SUPABASE_URL for APP_ENV=${appEnv}. Demo fallback is disabled.`,
+    );
+  }
+  if (isLocalhostUrl(supabaseUrl)) {
+    throw new ConfigurationError(
+      `EXPO_PUBLIC_SUPABASE_URL must not use localhost/127.0.0.1 when APP_ENV=${appEnv}.`,
+    );
+  }
+  const ref = extractSupabaseProjectRef(supabaseUrl);
+  if (!ref) {
+    throw new ConfigurationError(
+      `Unable to parse Supabase project ref from EXPO_PUBLIC_SUPABASE_URL for APP_ENV=${appEnv}.`,
+    );
+  }
+  if (appEnv === 'production') {
+    if (ref !== SUPABASE_PROJECT_REFS.production) {
+      throw new ConfigurationError(
+        `Production APP_ENV rejects project ref "${ref}". Expected "${SUPABASE_PROJECT_REFS.production}".`,
+      );
+    }
+    return;
+  }
+  // preview
+  if (ref === SUPABASE_PROJECT_REFS.production) {
+    throw new ConfigurationError(
+      `Preview APP_ENV rejects production project ref "${SUPABASE_PROJECT_REFS.production}".`,
+    );
+  }
+  if (ref !== SUPABASE_PROJECT_REFS.preview) {
+    throw new ConfigurationError(
+      `Preview APP_ENV rejects project ref "${ref}". Expected "${SUPABASE_PROJECT_REFS.preview}".`,
+    );
   }
 }
 
@@ -176,4 +248,7 @@ export const __testables = {
   resolveDemoMode,
   PLACEHOLDER_URL,
   isLocalhostUrl,
+  extractSupabaseProjectRef,
+  assertSupabaseProjectRefForAppEnv,
+  SUPABASE_PROJECT_REFS,
 };

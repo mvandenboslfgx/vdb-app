@@ -1,7 +1,8 @@
 import type { ExpoConfig, ConfigContext } from 'expo/config';
 
 const APP_VERSION = '1.0.0';
-const VERSION_CODE = 1;
+/** Must exceed any versionCode previously uploaded to Google Play (remote EAS source is authoritative at build). */
+const VERSION_CODE = 2;
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -66,7 +67,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'expo-image-picker',
       {
         // Photos/documents only — no video mic capture in v1
-        photosPermission: 'VDB Digital needs photo access to attach images to documents and support.',
+        photosPermission:
+          'VDB Digital needs photo access to attach images to documents and support.',
         cameraPermission: 'VDB Digital needs camera access to capture document photos.',
         microphonePermission: false,
       },

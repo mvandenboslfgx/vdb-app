@@ -27,4 +27,11 @@ describe('featureFlags', () => {
   it('enables non-sensitive flags by default', () => {
     expect(isFeatureEnabled('registration')).toBe(true);
   });
+
+  it('keeps messaging realtime and financial checkout/payouts off by default', () => {
+    expect(isFeatureEnabled('realtimeChat')).toBe(false);
+    expect(isFeatureEnabled('mollieCheckout')).toBe(false);
+    expect(isFeatureEnabled('digitalProductCheckout')).toBe(false);
+    expect(isFeatureEnabled('partnerPayouts')).toBe(false);
+  });
 });

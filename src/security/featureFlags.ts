@@ -30,9 +30,11 @@ export const FAIL_CLOSED_FLAGS: readonly FeatureFlagKey[] = [
 const DEFAULT_FLAGS: FeatureFlagMap = {
   registration: true,
   partnerRegistration: true,
-  realtimeChat: true,
+  // Messaging list/send is live; realtime subscriptions stay off until explicitly enabled.
+  realtimeChat: false,
   documentUploads: true,
   documentApproval: true,
+  // Appointment list is live; booking remains fail-closed in repositories / server flags.
   appointments: true,
   reviews: true,
   mollieCheckout: false,
