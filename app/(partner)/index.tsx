@@ -61,6 +61,13 @@ export default function PartnerHomeScreen() {
       </View>
       <ListRow testID="partner-code-link" title={t('link')} subtitle={link} />
       <Button
+        testID="partner-support-open"
+        title={t('supportTickets')}
+        variant="secondary"
+        style={styles.cta}
+        onPress={() => router.push('/(partner)/support')}
+      />
+      <Button
         testID="partner-lead-create"
         title={t('leads')}
         variant="secondary"

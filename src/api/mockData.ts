@@ -446,6 +446,7 @@ export const mockPartner: PartnerProfile = {
   code: 'NOORDZEE',
   linkUrl: 'https://vdbdigital.nl/r/NOORDZEE',
   status: 'active',
+  partnerType: 'BUSINESS',
   createdAt: daysAgo(90),
   updatedAt: daysAgo(10),
 };

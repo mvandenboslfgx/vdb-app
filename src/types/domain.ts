@@ -246,7 +246,10 @@ export interface PartnerProfile extends Timestamps {
   companyName: string | null;
   code: string;
   linkUrl: string;
-  status: 'active' | 'suspended';
+  /** Domain mirror of partner_profiles.status for ticket/capability gates. */
+  status: 'active' | 'pending' | 'suspended' | 'unknown';
+  /** Owner partner_type when present — tickets ignore INDIVIDUAL vs BUSINESS. */
+  partnerType: 'INDIVIDUAL' | 'BUSINESS' | 'UNKNOWN' | null;
 }
 
 export interface Lead extends Timestamps {

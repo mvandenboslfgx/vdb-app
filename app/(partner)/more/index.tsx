@@ -2,7 +2,8 @@ import { useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Button, ListRow, Screen, Text } from '@/design-system';
+import { Button, ListRow, LoadingState, Screen, Text } from '@/design-system';
+import { usePartnerTicketGate } from '@/features/support/usePartnerTicketGate';
 import { useWhatsAppContact } from '@/features/support/useWhatsAppContact';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
@@ -19,6 +20,11 @@ export default function PartnerMoreScreen() {
   const { enabled } = useFeatureFlags();
   const whatsapp = useWhatsAppContact();
   const payoutsEnabled = enabled('partnerPayouts');
+  const ticketGate = usePartnerTicketGate();
+
+  if (ticketGate.loading) {
+    return <LoadingState />;
+  }
 
   return (
     <Screen scroll testID="screen-partner-more">
@@ -28,17 +34,31 @@ export default function PartnerMoreScreen() {
         title={tc('settings.title')}
         onPress={() => router.push('/(partner)/more/settings')}
       />
+      {ticketGate.access.canList ? (
+        <ListRow
+          testID="partner-more-support"
+          title={t('supportTickets')}
+          subtitle={t('supportTicketsHint')}
+          onPress={() => router.push('/(partner)/support')}
+        />
+      ) : (
+        <ListRow
+          testID="partner-more-support-denied"
+          title={t('supportTickets')}
+          subtitle={t('supportDenied')}
+        />
+      )}
       {whatsapp.enabled ? (
         <ListRow
           testID="partner-more-whatsapp"
-          title={whatsapp.title}
+          title={t('whatsappAdditional')}
           subtitle={whatsapp.subtitle}
           onPress={() => void whatsapp.open()}
         />
       ) : (
         <ListRow
           testID="partner-more-whatsapp-disabled"
-          title={whatsapp.title}
+          title={t('whatsappAdditional')}
           subtitle={whatsapp.subtitle}
         />
       )}

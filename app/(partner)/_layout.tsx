@@ -87,6 +87,10 @@ export default function PartnerLayout() {
         name="payouts"
         options={{ href: null, headerShown: false, title: tcom('payouts.title') }}
       />
+      <Tabs.Screen
+        name="support"
+        options={{ href: null, headerShown: false, title: t('tabs.tickets') }}
+      />
     </Tabs>
   );
 }

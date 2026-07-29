@@ -60,5 +60,9 @@
     "converted": "Omgezet naar verkoop",
     "rejected": "Afgewezen",
     "invalid": "Ongeldig"
-  }
+  },
+  "supportTickets": "Supporttickets",
+  "supportTicketsHint": "Maak een ticket aan of bekijk je gesprek met VDB Digital.",
+  "supportDenied": "Supporttickets zijn niet beschikbaar voor deze partnerstatus.",
+  "whatsappAdditional": "WhatsApp (aanvullend)"
 }

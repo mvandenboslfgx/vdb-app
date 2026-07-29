@@ -183,6 +183,7 @@ export const mockPartner: PartnerProfile = {
   code: 'VDB-DEMO',
   linkUrl: 'https://vdbdigital.nl/r/VDB-DEMO',
   status: 'active',
+  partnerType: 'BUSINESS',
   createdAt: iso(-90),
   updatedAt: iso(-1),
 };
@@ -237,7 +238,9 @@ export const mockNotifications: NotificationItem[] = [
 export function getMockCustomerDashboard(name: string): CustomerDashboard {
   return {
     welcomeName: name,
-    activeProjects: mockProjects.filter((p) => p.status !== 'completed' && p.status !== 'cancelled'),
+    activeProjects: mockProjects.filter(
+      (p) => p.status !== 'completed' && p.status !== 'cancelled',
+    ),
     openQuotes: mockQuotes.filter((q) => q.status === 'sent' || q.status === 'viewed'),
     openInvoices: mockInvoices.filter((i) => i.status === 'sent' || i.status === 'overdue'),
     unreadMessages: mockConversations.reduce((sum, c) => sum + c.unreadCount, 0),

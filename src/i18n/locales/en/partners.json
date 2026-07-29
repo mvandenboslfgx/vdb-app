@@ -60,5 +60,9 @@
     "converted": "Converted to sale",
     "rejected": "Rejected",
     "invalid": "Invalid"
-  }
+  },
+  "supportTickets": "Support tickets",
+  "supportTicketsHint": "Create a ticket or view your conversation with VDB Digital.",
+  "supportDenied": "Support tickets are not available for this partner status.",
+  "whatsappAdditional": "WhatsApp (additional)"
 }

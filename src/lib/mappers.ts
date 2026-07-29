@@ -354,13 +354,37 @@ export function mapPartnerProfile(
   row: PartnerProfileRow,
   extra: { code?: string; linkUrl?: string } = {},
 ): PartnerProfile {
+  const statusRaw = String(
+    (row as { status?: string }).status ?? (row.is_active ? 'ACTIVE' : 'SUSPENDED'),
+  ).toUpperCase();
+  let status: PartnerProfile['status'] = 'unknown';
+  if (statusRaw === 'ACTIVE' || statusRaw === 'APPROVED') status = 'active';
+  else if (
+    statusRaw === 'PENDING' ||
+    statusRaw === 'SUBMITTED' ||
+    statusRaw === 'UNDER_REVIEW' ||
+    statusRaw === 'IN_REVIEW' ||
+    statusRaw === 'DRAFT'
+  ) {
+    status = 'pending';
+  } else if (statusRaw === 'SUSPENDED' || statusRaw === 'REVOKED' || !row.is_active) {
+    status = 'suspended';
+  } else if (row.is_active) {
+    status = 'active';
+  }
+
+  const typeRaw = String((row as { partner_type?: string }).partner_type ?? '').toUpperCase();
+  const partnerType: PartnerProfile['partnerType'] =
+    typeRaw === 'INDIVIDUAL' || typeRaw === 'BUSINESS' ? typeRaw : typeRaw ? 'UNKNOWN' : null;
+
   return {
     id: row.id,
     userId: row.user_id,
     companyName: row.company_name,
     code: extra.code ?? '',
     linkUrl: extra.linkUrl ?? '',
-    status: row.is_active ? 'active' : 'suspended',
+    status,
+    partnerType,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

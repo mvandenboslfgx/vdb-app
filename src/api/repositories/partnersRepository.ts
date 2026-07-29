@@ -58,13 +58,30 @@ export async function getPartnerProfile(): Promise<PartnerProfile | null> {
   const code = await resolveActivePartnerCode(supabase, partnerId);
   const built = buildPartnerReferralUrl(code);
   const statusRaw = String(row.status ?? (row.is_active ? 'ACTIVE' : 'SUSPENDED')).toUpperCase();
+  let status: PartnerProfile['status'] = 'unknown';
+  if (statusRaw === 'ACTIVE' || statusRaw === 'APPROVED') status = 'active';
+  else if (
+    statusRaw === 'PENDING' ||
+    statusRaw === 'SUBMITTED' ||
+    statusRaw === 'UNDER_REVIEW' ||
+    statusRaw === 'IN_REVIEW' ||
+    statusRaw === 'DRAFT'
+  ) {
+    status = 'pending';
+  } else if (statusRaw === 'SUSPENDED' || statusRaw === 'REVOKED') status = 'suspended';
+
+  const typeRaw = String(row.partner_type ?? row.type ?? '').toUpperCase();
+  const partnerType: PartnerProfile['partnerType'] =
+    typeRaw === 'INDIVIDUAL' || typeRaw === 'BUSINESS' ? typeRaw : typeRaw ? 'UNKNOWN' : null;
+
   return {
     id: partnerId,
     userId: String(row.user_id ?? ''),
     companyName: typeof row.company_name === 'string' ? row.company_name : null,
     code,
     linkUrl: built.ok ? built.url : '',
-    status: statusRaw === 'ACTIVE' || statusRaw === 'APPROVED' ? 'active' : 'suspended',
+    status,
+    partnerType,
     createdAt: String(row.created_at ?? ''),
     updatedAt: String(row.updated_at ?? row.created_at ?? ''),
   };
