@@ -144,16 +144,20 @@ export async function listApprovals(): Promise<AdminQueueItem[]> {
 }
 
 /**
- * Approves a partner application via the `approve_partner_application`
- * SECURITY DEFINER RPC. The database performs the staff check, blocks
- * self-approval, grants the `partner` role, and creates/activates the
- * partner profile + code -- this repository never writes those tables
- * directly.
+ * Approves a partner application via Owner `review_partner_application`.
+ * Staff approval alone records approval / keeps profile PENDING — it does
+ * NOT auto-activate. Activation is a separate Owner gate.
+ *
+ * Canonical args (rc.5):
+ *   review_partner_application(p_application_id, p_approve, p_rejection_reason?, p_partner_code?)
  */
 export async function approvePartnerApplication(
   id: string,
-  reason?: string,
+  _reason?: string,
 ): Promise<{ id: string; status: 'approved'; partnerId?: string }> {
+  if (!id.trim()) {
+    throw DomainError.validation('Partner application id required');
+  }
   if (shouldUseMockApi()) {
     await delay();
     mockStore.adminQueue = mockStore.adminQueue.filter((item) => item.id !== id);
@@ -166,22 +170,25 @@ export async function approvePartnerApplication(
   const supabase = requireLiveSupabase();
   const { data, error } = await rpcOwner(supabase, 'approve_partner_application', {
     p_application_id: id,
-    p_reason: reason ?? undefined,
+    p_approve: true,
   });
   if (error) throw fromSupabaseError(error);
-  const result = data as { id: string; status: 'approved'; partnerId?: string };
-  return result;
+  const approvedId = typeof data === 'string' && data.length > 0 ? data : id;
+  return { id: approvedId, status: 'approved' };
 }
 
 /**
- * Rejects a partner application via the `reject_partner_application`
- * SECURITY DEFINER RPC. A non-empty reason is required both client-side
- * (fail fast) and server-side (the RPC re-validates independently).
+ * Rejects a partner application via Owner `review_partner_application`
+ * with `p_approve=false`. A non-empty rejection reason is required
+ * client-side (fail fast); the RPC stores it as `p_rejection_reason`.
  */
 export async function rejectPartnerApplication(
   id: string,
   reason: string,
 ): Promise<{ id: string; status: 'rejected' }> {
+  if (!id.trim()) {
+    throw DomainError.validation('Partner application id required');
+  }
   if (!reason.trim()) {
     throw DomainError.validation('Internal rejection reason required');
   }
@@ -193,10 +200,12 @@ export async function rejectPartnerApplication(
   const supabase = requireLiveSupabase();
   const { data, error } = await rpcOwner(supabase, 'reject_partner_application', {
     p_application_id: id,
-    p_reason: reason,
+    p_approve: false,
+    p_rejection_reason: reason.trim(),
   });
   if (error) throw fromSupabaseError(error);
-  return data as { id: string; status: 'rejected' };
+  const rejectedId = typeof data === 'string' && data.length > 0 ? data : id;
+  return { id: rejectedId, status: 'rejected' };
 }
 
 /** Suspends an approved partner via Owner RC4 `suspend_partner` (admin/owner + AAL2). */

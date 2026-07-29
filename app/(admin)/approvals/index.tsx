@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,8 @@ import {
   rejectPartnerApplication,
 } from '@/api/repositories/adminRepository';
 import type { AdminQueueItem } from '@/api/mockData';
+import { Aal2StepUpModal } from '@/features/auth/aal2/Aal2StepUpModal';
+import { useAal2StepUp } from '@/features/auth/aal2/useAal2StepUp';
 import {
   Button,
   EmptyState,
@@ -16,16 +18,28 @@ import {
   LoadingState,
   Screen,
   Text,
+  TextInput,
 } from '@/design-system';
+import { DomainError } from '@/lib/errors';
+import { useAuth } from '@/providers/AuthProvider';
+import { isAdmin } from '@/security/roles';
 import { spacing } from '@/theme';
 
 export default function ApprovalsScreen() {
   const { t } = useTranslation('admin');
   const { t: tc } = useTranslation('common');
+  const { roles } = useAuth();
+  const canReviewApplications = isAdmin(roles);
+  const aal2 = useAal2StepUp();
+
   const [items, setItems] = useState<AdminQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [actionErrorById, setActionErrorById] = useState<Record<string, string>>({});
+  const [rejectReasonById, setRejectReasonById] = useState<Record<string, string>>({});
+  /** Synchronous lock — React state alone cannot block double-tap in the same tick. */
+  const busyLockRef = useRef(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -43,22 +57,68 @@ export default function ApprovalsScreen() {
     void load();
   }, [load]);
 
-  async function onApprove(id: string) {
-    setBusyId(id);
-    try {
-      await approvePartnerApplication(id, 'Approved via mobile admin');
-      await load();
-    } finally {
-      setBusyId(null);
-    }
+  function setItemError(id: string, message: string | null) {
+    setActionErrorById((prev) => {
+      if (!message) {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      }
+      return { ...prev, [id]: message };
+    });
   }
 
-  async function onReject(id: string) {
+  async function runReview(action: 'approve' | 'reject', id: string) {
+    if (busyLockRef.current) return;
+    if (!canReviewApplications) {
+      setItemError(id, t('partnerLifecycle.staffReadOnly'));
+      return;
+    }
+    if (!id.trim()) {
+      setItemError(id, t('error'));
+      return;
+    }
+
+    const rejectReason = (rejectReasonById[id] ?? '').trim();
+    if (action === 'reject' && rejectReason.length < 8) {
+      setItemError(id, t('leads.reasonPlaceholder'));
+      return;
+    }
+
+    busyLockRef.current = true;
     setBusyId(id);
+    setItemError(id, null);
     try {
-      await rejectPartnerApplication(id, 'Rejected via mobile admin');
+      const result = await aal2.runWithStepUp(async () => {
+        if (action === 'approve') {
+          await approvePartnerApplication(id);
+        } else {
+          await rejectPartnerApplication(id, rejectReason);
+        }
+      });
+
+      if (result.status === 'cancelled') {
+        setItemError(id, t('aal2Cancelled'));
+        return;
+      }
+      if (result.status === 'enrollment_required') {
+        setItemError(id, t('aal2.enrollmentBody'));
+        return;
+      }
+      if (result.status === 'error') {
+        const err = result.error;
+        setItemError(id, err instanceof DomainError ? err.toUserMessage() : t('error'));
+        return;
+      }
+
+      setRejectReasonById((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
       await load();
     } finally {
+      busyLockRef.current = false;
       setBusyId(null);
     }
   }
@@ -68,10 +128,13 @@ export default function ApprovalsScreen() {
     return <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />;
   }
 
-  const firstPartnerApplicationIndex = items.findIndex((item) => item.type === 'partner_application');
+  const firstPartnerApplicationIndex = items.findIndex(
+    (item) => item.type === 'partner_application',
+  );
 
   return (
     <Screen scroll testID="screen-admin-approvals">
+      <Aal2StepUpModal visible={aal2.visible} status={aal2.status} onComplete={aal2.onComplete} />
       <Text variant="title">{t('queue')}</Text>
       {items.length === 0 ? (
         <EmptyState title={tc('empty')} />
@@ -85,30 +148,71 @@ export default function ApprovalsScreen() {
             <ListRow title={item.title} subtitle={item.subtitle} />
             {item.type === 'partner_application' ? (
               <View style={styles.actions}>
-                <Button
-                  testID={
-                    index === firstPartnerApplicationIndex
-                      ? 'admin-partner-approve'
-                      : `btn-approve-${item.id}`
-                  }
-                  title={t('actions.approvePartner')}
-                  variant="gold"
-                  size="sm"
-                  loading={busyId === item.id}
-                  onPress={() => void onApprove(item.id)}
-                />
-                <Button
-                  testID={
-                    index === firstPartnerApplicationIndex
-                      ? 'admin-partner-reject'
-                      : `btn-reject-${item.id}`
-                  }
-                  title={t('actions.rejectPartner')}
-                  variant="danger"
-                  size="sm"
-                  loading={busyId === item.id}
-                  onPress={() => void onReject(item.id)}
-                />
+                {!canReviewApplications ? (
+                  <Text testID="text-approvals-readonly" variant="caption" color="textMuted">
+                    {t('partnerLifecycle.staffReadOnly')}
+                  </Text>
+                ) : (
+                  <>
+                    <TextInput
+                      testID={
+                        index === firstPartnerApplicationIndex
+                          ? 'input-approvals-reject-reason'
+                          : `input-approvals-reject-reason-${item.id}`
+                      }
+                      label={t('leads.reason')}
+                      placeholder={t('leads.reasonPlaceholder')}
+                      value={rejectReasonById[item.id] ?? ''}
+                      onChangeText={(value) =>
+                        setRejectReasonById((prev) => ({ ...prev, [item.id]: value }))
+                      }
+                      multiline
+                    />
+                    {actionErrorById[item.id] ? (
+                      <Text
+                        testID={
+                          index === firstPartnerApplicationIndex
+                            ? 'text-approvals-error'
+                            : `text-approvals-error-${item.id}`
+                        }
+                        variant="caption"
+                        color="error"
+                      >
+                        {actionErrorById[item.id]}
+                      </Text>
+                    ) : null}
+                    <View style={styles.buttonRow}>
+                      <Button
+                        testID={
+                          index === firstPartnerApplicationIndex
+                            ? 'admin-partner-approve'
+                            : `btn-approve-${item.id}`
+                        }
+                        title={t('actions.approvePartner')}
+                        variant="gold"
+                        size="sm"
+                        loading={busyId === item.id}
+                        disabled={Boolean(busyId)}
+                        onPress={() => void runReview('approve', item.id)}
+                      />
+                      <Button
+                        testID={
+                          index === firstPartnerApplicationIndex
+                            ? 'admin-partner-reject'
+                            : `btn-reject-${item.id}`
+                        }
+                        title={t('actions.rejectPartner')}
+                        variant="danger"
+                        size="sm"
+                        loading={busyId === item.id}
+                        disabled={
+                          Boolean(busyId) || (rejectReasonById[item.id] ?? '').trim().length < 8
+                        }
+                        onPress={() => void runReview('reject', item.id)}
+                      />
+                    </View>
+                  </>
+                )}
               </View>
             ) : null}
           </View>
@@ -120,6 +224,6 @@ export default function ApprovalsScreen() {
 
 const styles = StyleSheet.create({
   card: { marginBottom: spacing.lg },
-  actions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm },
+  actions: { gap: spacing.sm, marginTop: spacing.sm },
+  buttonRow: { flexDirection: 'row', gap: spacing.sm },
 });
-
