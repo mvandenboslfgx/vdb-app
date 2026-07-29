@@ -27,10 +27,8 @@ export const DEMO_PARTNER_ID = 'demo-partner-0001';
 export const DEMO_STAFF_ID = 'demo-staff-0001';
 
 const now = '2026-07-20T12:00:00.000Z';
-const daysAgo = (n: number) =>
-  new Date(Date.UTC(2026, 6, 20 - n, 10, 0, 0)).toISOString();
-const daysFromNow = (n: number) =>
-  new Date(Date.UTC(2026, 6, 20 + n, 10, 0, 0)).toISOString();
+const daysAgo = (n: number) => new Date(Date.UTC(2026, 6, 20 - n, 10, 0, 0)).toISOString();
+const daysFromNow = (n: number) => new Date(Date.UTC(2026, 6, 20 + n, 10, 0, 0)).toISOString();
 
 export const mockProfile: Profile = {
   id: DEMO_CUSTOMER_ID,
@@ -49,8 +47,7 @@ export const mockProjects: Project[] = [
   {
     id: 'proj-webshop-001',
     title: 'Webshop herlancering',
-    description:
-      'Nieuwe Next.js webshop met Mollie-checkout, productcatalogus en klantportaal.',
+    description: 'Nieuwe Next.js webshop met Mollie-checkout, productcatalogus en klantportaal.',
     status: 'in_progress',
     customerId: DEMO_CUSTOMER_ID,
     progressPercent: 62,
@@ -579,13 +576,19 @@ export interface AdminQueueItem {
     | 'document_review'
     | 'support_ticket'
     | 'commission_review'
-    | 'payout_request';
+    | 'payout_request'
+    | 'appointment'
+    | 'unknown';
   title: string;
   subtitle: string;
   createdAt: string;
   priority: 'low' | 'medium' | 'high';
   companyName?: string;
   email?: string;
+  status?: string;
+  routeKey?: string;
+  requiresAal2?: boolean;
+  updatedAt?: string;
 }
 
 export const mockAdminQueue: AdminQueueItem[] = [
@@ -647,9 +650,7 @@ export const mockAdminStats: AdminDashboardStats = {
 export function buildCustomerDashboard(welcomeName = mockProfile.fullName): CustomerDashboard {
   return {
     welcomeName,
-    activeProjects: mockProjects.filter(
-      (p) => !['completed', 'cancelled'].includes(p.status),
-    ),
+    activeProjects: mockProjects.filter((p) => !['completed', 'cancelled'].includes(p.status)),
     openQuotes: mockQuotes.filter((q) => q.status === 'sent' || q.status === 'viewed'),
     openInvoices: mockInvoices.filter((i) =>
       ['sent', 'viewed', 'partially_paid', 'overdue'].includes(i.status),

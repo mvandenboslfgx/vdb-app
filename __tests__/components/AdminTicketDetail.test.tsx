@@ -3,7 +3,7 @@ import { useLocalSearchParams } from '../../__mocks__/expo-router';
 
 import AdminTicketDetailScreen from '../../app/(admin)/tickets/[id]';
 import { replyPublic, updateTicketStatus } from '@/api/repositories/adminRepository';
-import { getTicket, listMessages } from '@/api/repositories/supportRepository';
+import { getTicket, listStaffTicketMessages } from '@/api/repositories/supportRepository';
 import { DomainError } from '@/lib/errors';
 import type { SupportTicket, SupportTicketMessage } from '@/types/domain';
 
@@ -11,7 +11,9 @@ jest.mock('@/api/repositories/adminRepository');
 jest.mock('@/api/repositories/supportRepository');
 
 const mockGetTicket = getTicket as jest.MockedFunction<typeof getTicket>;
-const mockListMessages = listMessages as jest.MockedFunction<typeof listMessages>;
+const mockListStaffTicketMessages = listStaffTicketMessages as jest.MockedFunction<
+  typeof listStaffTicketMessages
+>;
 const mockReplyPublic = replyPublic as jest.MockedFunction<typeof replyPublic>;
 const mockUpdateTicketStatus = updateTicketStatus as jest.MockedFunction<typeof updateTicketStatus>;
 
@@ -49,7 +51,7 @@ describe('AdminTicketDetailScreen', () => {
 
   it('shows the ticket thread, distinguishing internal notes from public messages', async () => {
     mockGetTicket.mockResolvedValueOnce(makeTicket());
-    mockListMessages.mockResolvedValueOnce([
+    mockListStaffTicketMessages.mockResolvedValueOnce([
       makeMessage(),
       makeMessage({ id: 'msg-2', isInternal: true, body: 'Escalated to finance (internal)' }),
     ]);
@@ -65,7 +67,7 @@ describe('AdminTicketDetailScreen', () => {
 
   it('sends a public reply and appends it to the thread', async () => {
     mockGetTicket.mockResolvedValueOnce(makeTicket());
-    mockListMessages.mockResolvedValueOnce([makeMessage()]);
+    mockListStaffTicketMessages.mockResolvedValueOnce([makeMessage()]);
     mockReplyPublic.mockResolvedValueOnce(
       makeMessage({ id: 'msg-3', body: 'Sure, here is the breakdown.', authorId: 'staff-1' }),
     );
@@ -74,7 +76,10 @@ describe('AdminTicketDetailScreen', () => {
     await renderWithProviders(<AdminTicketDetailScreen />);
     await waitFor(() => expect(screen.getByTestId('input-ticket-reply')).toBeTruthy());
 
-    await fireEvent.changeText(screen.getByTestId('input-ticket-reply'), 'Sure, here is the breakdown.');
+    await fireEvent.changeText(
+      screen.getByTestId('input-ticket-reply'),
+      'Sure, here is the breakdown.',
+    );
     await fireEvent.press(screen.getByTestId('btn-ticket-send-reply'));
 
     await waitFor(() =>
@@ -85,7 +90,7 @@ describe('AdminTicketDetailScreen', () => {
 
   it('requires a reason before resolving a ticket, and surfaces status-update errors', async () => {
     mockGetTicket.mockResolvedValueOnce(makeTicket());
-    mockListMessages.mockResolvedValueOnce([]);
+    mockListStaffTicketMessages.mockResolvedValueOnce([]);
     mockUpdateTicketStatus.mockRejectedValueOnce(
       DomainError.validation('A reason is required to resolve or close a ticket'),
     );
@@ -96,14 +101,20 @@ describe('AdminTicketDetailScreen', () => {
     await fireEvent.press(screen.getByTestId('btn-ticket-status-resolved'));
 
     await waitFor(() => expect(screen.getByTestId('input-ticket-status-reason')).toBeTruthy());
-    expect(screen.getByTestId('btn-ticket-status-confirm').props.accessibilityState?.disabled).toBe(true);
+    expect(screen.getByTestId('btn-ticket-status-confirm').props.accessibilityState?.disabled).toBe(
+      true,
+    );
     expect(mockUpdateTicketStatus).not.toHaveBeenCalled();
 
     await fireEvent.changeText(screen.getByTestId('input-ticket-status-reason'), 'Issue clarified');
     await fireEvent.press(screen.getByTestId('btn-ticket-status-confirm'));
 
     await waitFor(() =>
-      expect(mockUpdateTicketStatus).toHaveBeenCalledWith('ticket-1', 'resolved', 'Issue clarified'),
+      expect(mockUpdateTicketStatus).toHaveBeenCalledWith(
+        'ticket-1',
+        'resolved',
+        'Issue clarified',
+      ),
     );
     await waitFor(() => expect(screen.getByTestId('text-ticket-status-error')).toBeTruthy());
   });

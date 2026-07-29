@@ -1,12 +1,11 @@
-import * as WebBrowser from 'expo-web-browser';
 import { useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Divider, ListRow, Screen, Text } from '@/design-system';
 import { isDevelopment } from '@/config/env';
+import { useWhatsAppContact } from '@/features/support/useWhatsAppContact';
 import { getCurrentLanguage, i18n } from '@/i18n';
-import { buildWhatsAppUrl } from '@/lib/whatsapp';
 import { useAuth } from '@/providers/AuthProvider';
 import { canAccessAdminArea, canAccessPartnerArea } from '@/security/roles';
 import { spacing } from '@/theme';
@@ -16,20 +15,13 @@ export default function CustomerMoreScreen() {
   const { t: tc } = useTranslation('common');
   const { t: ta } = useTranslation('auth');
   const { t: tp } = useTranslation('partners');
-  const { t: tm } = useTranslation('messages');
   const router = useRouter();
-  const { roles, signOut, profile } = useAuth();
+  const { roles, signOut } = useAuth();
   const lang = getCurrentLanguage();
+  const whatsapp = useWhatsAppContact();
 
   async function toggleLanguage() {
     await i18n.changeLanguage(lang === 'nl' ? 'en' : 'nl');
-  }
-
-  async function openWhatsApp() {
-    const url = buildWhatsAppUrl(undefined, `Hallo VDB Digital — ${profile?.fullName ?? ''}`);
-    if (url) {
-      await WebBrowser.openBrowserAsync(url);
-    }
   }
 
   return (
@@ -42,7 +34,20 @@ export default function CustomerMoreScreen() {
         subtitle={lang === 'nl' ? tc('languageNl') : tc('languageEn')}
         onPress={() => void toggleLanguage()}
       />
-      <ListRow title={tm('whatsapp')} subtitle={tm('whatsappHint')} onPress={() => void openWhatsApp()} />
+      {whatsapp.enabled ? (
+        <ListRow
+          testID="nav-whatsapp"
+          title={whatsapp.title}
+          subtitle={whatsapp.subtitle}
+          onPress={() => void whatsapp.open()}
+        />
+      ) : (
+        <ListRow
+          testID="nav-whatsapp-disabled"
+          title={whatsapp.title}
+          subtitle={whatsapp.subtitle}
+        />
+      )}
       <ListRow
         testID="nav-notifications"
         title={t('profile.notifications')}

@@ -22,6 +22,8 @@
     "acceptQuoteTerms": "Je moet de offertevoorwaarden accepteren",
     "companyNameMin": "Bedrijfsnaam is te kort",
     "companyNameMax": "Bedrijfsnaam is te lang",
+    "partnerTypeRequired": "Kies Particulier of Zakelijk",
+    "individualNoKvk": "Particulier mag geen KvK-nummer opgeven",
     "urlInvalid": "Ongeldige URL",
     "kvkInvalid": "KvK-nummer moet 8 cijfers zijn",
     "vatMax": "BTW-nummer is te lang",

@@ -10,7 +10,10 @@ import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories
 import { DomainError, fromSupabaseError } from '@/lib/errors';
 import { mapLead } from '@/lib/mappers';
 import type { Lead, PartnerProfile } from '@/types/domain';
-import type { PartnerApplicationInput } from '@/validation/partner';
+import {
+  normalizeOptionalPartnerBusinessFields,
+  type PartnerApplicationInput,
+} from '@/validation/partner';
 
 async function requireCurrentPartnerProfile(supabase: ReturnType<typeof requireLiveSupabase>) {
   const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -170,7 +173,8 @@ export async function submitPartnerApplication(
   input:
     | PartnerApplicationInput
     | {
-        companyName: string;
+        partnerType: 'INDIVIDUAL' | 'BUSINESS';
+        companyName?: string;
         contactName: string;
         email: string;
         phone?: string;
@@ -191,24 +195,46 @@ export async function submitPartnerApplication(
     throw DomainError.unauthorized('You must be signed in to apply as a partner.');
   }
 
-  const fullName = 'contactName' in input ? input.contactName : (userData.user.email ?? '');
-  const { data, error } = await fromOwnerTable(supabase, 'partner_applications')
-    .insert({
-      user_id: userData.user.id,
-      full_name: fullName,
-      company_name: input.companyName || null,
-      email: input.email,
-      phone: input.phone || null,
-      motivation: input.motivation ?? '',
-      status: 'submitted',
-      accepted_partner_rules: true,
-      accepted_privacy_policy: true,
-    })
-    .select('id')
-    .single();
+  const contactName = 'contactName' in input ? input.contactName.trim() : '';
+  const legalName = contactName || (userData.user.email ?? '').trim();
+  if (!legalName) {
+    throw DomainError.validation('Contact name is required');
+  }
+  const partnerType =
+    'partnerType' in input &&
+    (input.partnerType === 'INDIVIDUAL' || input.partnerType === 'BUSINESS')
+      ? input.partnerType
+      : null;
+  if (!partnerType) {
+    throw DomainError.validation('Partner type (INDIVIDUAL|BUSINESS) is required');
+  }
+  const business = normalizeOptionalPartnerBusinessFields({
+    companyName: input.companyName,
+    kvkNumber: 'kvkNumber' in input ? input.kvkNumber : null,
+  });
+  if (partnerType === 'INDIVIDUAL' && business.kvkNumber) {
+    throw DomainError.validation('INDIVIDUAL applications must not include a KVK number');
+  }
+  if (partnerType === 'BUSINESS' && (!business.companyName || !business.kvkNumber)) {
+    throw DomainError.validation('BUSINESS applications require company name and KVK');
+  }
+  const vat =
+    'vatNumber' in input && typeof input.vatNumber === 'string' && input.vatNumber.trim()
+      ? input.vatNumber.trim()
+      : null;
+
+  // RC5 typed intake — PENDING only. Never ACTIVE. Type is explicit, never inferred.
+  const { data, error } = await rpcOwner(supabase, 'submit_partner_application', {
+    p_partner_type: partnerType,
+    p_legal_name: legalName,
+    p_trade_name: business.companyName,
+    p_contact_email: input.email,
+    p_kvk: business.kvkNumber,
+    p_vat: vat,
+    p_phone: input.phone || null,
+  });
   if (error) throw fromSupabaseError(error);
-  const id =
-    data && typeof data === 'object' && 'id' in data ? String((data as { id: unknown }).id) : '';
+  const id = typeof data === 'string' ? data : data != null ? String(data) : '';
   return { id, status: 'submitted' };
 }
 

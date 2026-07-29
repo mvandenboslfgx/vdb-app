@@ -9,13 +9,14 @@ import {
 } from '@/api/contract/ownerMapping';
 import { BACKEND_CONTRACT } from '@/config/backendContract';
 
-describe('owner contract pin 0.2.0-rc.3', () => {
-  it('pins owner rc.3 and drops 0.1.1 as canonical', () => {
-    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.3');
-    expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.25.messaging-support-appointments-rc3');
-    expect(BACKEND_CONTRACT.status).toBe('CONSUMER_PIN_OWNER_RC3');
-    expect(BACKEND_CONTRACT.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.3');
-    expect(BACKEND_CONTRACT.supersededLocalProposal.version).toBe('0.1.1');
+describe('owner contract pin 0.2.0-rc.5', () => {
+  it('pins owner rc.5 and keeps rc.4/rc.3 as superseded', () => {
+    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.5');
+    expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.29.partner-identity-directory-rc5');
+    expect(BACKEND_CONTRACT.status).toBe('CONSUMER_PIN_OWNER_RC5');
+    expect(BACKEND_CONTRACT.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.5');
+    expect(BACKEND_CONTRACT.supersededPins.rc4.packageId).toBe('vdb-backend-contract@0.2.0-rc.4');
+    expect(BACKEND_CONTRACT.supersededPins.rc3.packageId).toBe('vdb-backend-contract@0.2.0-rc.3');
   });
 
   it('maps Mobile proposal tables to portal_/partner_ canonical names', () => {
@@ -49,6 +50,10 @@ describe('owner contract pin 0.2.0-rc.3', () => {
     expect(mapMobileRpcToOwner('book_appointment_slot')).toBe('book_portal_appointment');
     expect(mapMobileRpcToOwner('cancel_appointment')).toBe('cancel_portal_appointment');
     expect(mapMobileRpcToOwner('admin_reply_support_ticket')).toBe('reply_portal_support_ticket');
+    expect(mapMobileRpcToOwner('admin_update_ticket_status')).toBe(
+      'transition_portal_support_ticket_status',
+    );
+    expect(mapMobileRpcToOwner('approve_commission')).toBe('approve_partner_commission');
     expect(mapMobileRpcToOwner('send_message')).toBe(OWNER_RPCS.sendMessage);
     expect(mapMobileRpcToOwner('mark_conversation_read')).toBe(OWNER_RPCS.markConversationRead);
   });

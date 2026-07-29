@@ -7,6 +7,9 @@ import { premiumTabBarOptions } from '@/navigation/premiumTabBar';
 import { useAuth } from '@/providers/AuthProvider';
 import { canAccessAdminArea } from '@/security/roles';
 
+// Primary tab order must match `ADMIN_PRIMARY_TAB_NAMES` in `@/navigation/adminTabShell`.
+// Hidden routes (leads) use href: null — reachable via Meer only.
+
 export default function AdminLayout() {
   const { t } = useTranslation('common');
   const { loading, roles, session, profile } = useAuth();
@@ -53,10 +56,7 @@ export default function AdminLayout() {
           headerShown: false,
           tabBarButtonTestID: 'tab-admin-tickets',
           tabBarIcon: ({ focused }) => (
-            <PremiumTabIcon
-              name={focused ? 'headset' : 'headphones'}
-              focused={focused}
-            />
+            <PremiumTabIcon name={focused ? 'headset' : 'headphones'} focused={focused} />
           ),
         }}
       />
@@ -67,10 +67,7 @@ export default function AdminLayout() {
           headerShown: false,
           tabBarButtonTestID: 'tab-admin-finance',
           tabBarIcon: ({ focused }) => (
-            <PremiumTabIcon
-              name={focused ? 'finance' : 'chart-line'}
-              focused={focused}
-            />
+            <PremiumTabIcon name={focused ? 'finance' : 'chart-line'} focused={focused} />
           ),
         }}
       />
@@ -88,6 +85,8 @@ export default function AdminLayout() {
           ),
         }}
       />
+      {/* Reachable via Meer — must not appear as a sixth primary tab. */}
+      <Tabs.Screen name="leads" options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

@@ -1,0 +1,342 @@
+{
+  "at": "2026-07-29T06:02:22.602Z",
+  "stagingRef": "qzekuvmgfekzsowdecyk",
+  "schema": "2026.07.29.partner-identity-directory-rc5",
+  "verdict": "RC5 MOBILE INTEGRATION PASS — APK BUILD REQUIRES OWNER AUTHORIZATION",
+  "counts": {
+    "pass": 45,
+    "fail": 0,
+    "blocked": 2
+  },
+  "rows": [
+    {
+      "role": "-",
+      "surface": "preflight",
+      "check": "staging_ref",
+      "result": "PASS",
+      "detail": "qzekuvmgfekzsowdecyk"
+    },
+    {
+      "role": "anon",
+      "surface": "Directory detail",
+      "check": "admin_get_product_deny",
+      "result": "PASS",
+      "detail": "permission denied for function admin_get_product"
+    },
+    {
+      "role": "customer",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory detail",
+      "check": "deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Partner type",
+      "check": "individual_intake",
+      "result": "PASS",
+      "detail": "id=yes"
+    },
+    {
+      "role": "customer",
+      "surface": "Partner activation",
+      "check": "intake_not_active",
+      "result": "PASS",
+      "detail": "status=PENDING type=INDIVIDUAL"
+    },
+    {
+      "role": "partner_active",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory detail",
+      "check": "deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory detail",
+      "check": "deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "staff",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:products",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory detail",
+      "check": "admin_get_product",
+      "result": "PASS",
+      "detail": "schema=2026.07.29.partner-identity-directory-rc5"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory detail",
+      "check": "admin_get_partner",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory detail",
+      "check": "admin_get_customer",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory detail",
+      "check": "admin_get_project",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory detail",
+      "check": "admin_get_quote",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory detail",
+      "check": "admin_get_invoice",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory detail",
+      "check": "admin_get_appointment",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "staff",
+      "surface": "Tickets",
+      "check": "list_replies",
+      "result": "PASS",
+      "detail": "n=2"
+    },
+    {
+      "role": "staff",
+      "surface": "Tickets",
+      "check": "internal_note_write",
+      "result": "PASS",
+      "detail": "created"
+    },
+    {
+      "role": "admin",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:products",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory detail",
+      "check": "admin_get_product",
+      "result": "PASS",
+      "detail": "schema=2026.07.29.partner-identity-directory-rc5"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory detail",
+      "check": "admin_get_partner",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory detail",
+      "check": "admin_get_customer",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory detail",
+      "check": "admin_get_project",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory detail",
+      "check": "admin_get_quote",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory detail",
+      "check": "admin_get_invoice",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory detail",
+      "check": "admin_get_appointment",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "admin",
+      "surface": "Tickets",
+      "check": "list_replies",
+      "result": "PASS",
+      "detail": "n=3"
+    },
+    {
+      "role": "admin",
+      "surface": "Tickets",
+      "check": "internal_note_write",
+      "result": "PASS",
+      "detail": "created"
+    },
+    {
+      "role": "owner",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:products",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory detail",
+      "check": "admin_get_product",
+      "result": "PASS",
+      "detail": "schema=2026.07.29.partner-identity-directory-rc5"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory detail",
+      "check": "admin_get_partner",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory detail",
+      "check": "admin_get_customer",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory detail",
+      "check": "admin_get_project",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory detail",
+      "check": "admin_get_quote",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory detail",
+      "check": "admin_get_invoice",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory detail",
+      "check": "admin_get_appointment",
+      "result": "PASS",
+      "detail": "NOT_FOUND"
+    },
+    {
+      "role": "owner",
+      "surface": "Tickets",
+      "check": "list_replies",
+      "result": "PASS",
+      "detail": "n=4"
+    },
+    {
+      "role": "owner",
+      "surface": "Tickets",
+      "check": "internal_note_write",
+      "result": "PASS",
+      "detail": "created"
+    },
+    {
+      "role": "partner_suspended",
+      "surface": "auth",
+      "check": "login",
+      "result": "BLOCKED",
+      "detail": "no suspended vault credential"
+    },
+    {
+      "role": "admin_AAL2",
+      "surface": "Partner lifecycle",
+      "check": "aal2_success",
+      "result": "BLOCKED",
+      "detail": "no automated TOTP in harness"
+    },
+    {
+      "role": "-",
+      "surface": "Security",
+      "check": "no_service_role",
+      "result": "PASS",
+      "detail": "publishable key only"
+    },
+    {
+      "role": "-",
+      "surface": "Payout",
+      "check": "execution_disabled",
+      "result": "PASS",
+      "detail": "Mobile keeps payout mutations fail-closed"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "contractVersion": "vdb-backend-contract@0.2.0-rc.4",
+  "schemaVersion": "2026.07.29.admin-control-surface-rc4",
+  "minimumCompatibleClientVersion": ">=0.2.0-rc.4",
+  "partnerSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.1",
+  "mobileCompatCompatibleWith": "vdb-backend-contract@0.2.0-rc.2",
+  "messagingSupportCompatibleWith": "vdb-backend-contract@0.2.0-rc.3",
+  "generatedAt": "2026-07-29",
+  "sourceHeadHint": "admin-control-surface-rc4",
+  "canonicalBackendOwner": "VDB Digital 2.0",
+  "unpublished": true,
+  "notes": [
+    "Additive admin control surface for Mobile device remediation.",
+    "Canonical ticket transition remains transition_portal_support_ticket_status; deprecated alias transition_portal_support_ticket provided.",
+    "Commission accrual moved from confirm_partner_sale to approve_partner_commission.",
+    "Payout mutations remain fail-closed / not newly activated for Mobile.",
+    "Does not authorize production apply."
+  ]
+}

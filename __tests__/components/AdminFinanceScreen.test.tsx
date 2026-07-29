@@ -1,9 +1,32 @@
+import { Alert } from 'react-native';
+
 import { fireEvent, renderWithProviders, screen, waitFor } from '../test-utils';
 
 import AdminFinanceScreen from '../../app/(admin)/finance/index';
 import { adminRepository } from '@/api/repositories';
-import { DomainError } from '@/lib/errors';
 import type { Commission, PayoutRequest } from '@/types/domain';
+
+jest.mock('@/providers/AuthProvider', () => ({
+  useAuth: () => ({
+    roles: ['admin'],
+    session: {},
+    profile: { id: 'admin-1' },
+    loading: false,
+  }),
+}));
+
+jest.mock('@/features/auth/aal2/useAal2StepUp', () => ({
+  useAal2StepUp: () => ({
+    visible: false,
+    status: null,
+    onComplete: jest.fn(),
+    runWithStepUp: async (action: () => Promise<unknown>) => {
+      const value = await action();
+      return { status: 'ok', value };
+    },
+    probe: jest.fn(),
+  }),
+}));
 
 jest.mock('@/api/repositories', () => ({
   adminRepository: {
@@ -16,18 +39,22 @@ jest.mock('@/api/repositories', () => ({
   },
 }));
 
+jest.mock('@/api/repositories/adminRepository', () => ({
+  approveCommission: jest.fn(),
+  rejectCommission: jest.fn(),
+}));
+
 const mockListCommissions = adminRepository.listCommissions as jest.MockedFunction<
   typeof adminRepository.listCommissions
 >;
 const mockListPayoutRequests = adminRepository.listPayoutRequests as jest.MockedFunction<
   typeof adminRepository.listPayoutRequests
 >;
-const mockApproveCommission = adminRepository.approveCommission as jest.MockedFunction<
-  typeof adminRepository.approveCommission
->;
-const mockRejectPayoutRequest = adminRepository.rejectPayoutRequest as jest.MockedFunction<
-  typeof adminRepository.rejectPayoutRequest
->;
+
+const adminRepoDirect = jest.requireMock('@/api/repositories/adminRepository') as {
+  approveCommission: jest.Mock;
+  rejectCommission: jest.Mock;
+};
 
 function makeCommission(overrides: Partial<Commission> = {}): Commission {
   return {
@@ -63,6 +90,10 @@ function makePayoutRequest(overrides: Partial<PayoutRequest> = {}): PayoutReques
 describe('AdminFinanceScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(Alert, 'alert').mockImplementation((_title, _message, buttons) => {
+      const confirm = buttons?.find((b) => b.style !== 'cancel');
+      confirm?.onPress?.();
+    });
   });
 
   it('lists commissions under review and submitted payout requests', async () => {
@@ -79,7 +110,10 @@ describe('AdminFinanceScreen', () => {
   it('approves a commission once a reason is provided', async () => {
     mockListCommissions.mockResolvedValueOnce([makeCommission()]);
     mockListPayoutRequests.mockResolvedValueOnce([]);
-    mockApproveCommission.mockResolvedValueOnce({ id: 'commission-1', status: 'approved' });
+    adminRepoDirect.approveCommission.mockResolvedValueOnce({
+      id: 'commission-1',
+      status: 'approved',
+    });
     mockListCommissions.mockResolvedValueOnce([]);
     mockListPayoutRequests.mockResolvedValueOnce([]);
 
@@ -89,35 +123,30 @@ describe('AdminFinanceScreen', () => {
     await fireEvent.press(screen.getByTestId('row-finance-commission-0'));
     await waitFor(() => expect(screen.getByTestId('btn-finance-approve-commission')).toBeTruthy());
 
-    expect(screen.getByTestId('btn-finance-approve-commission').props.accessibilityState?.disabled).toBe(
-      true,
-    );
+    expect(
+      screen.getByTestId('btn-finance-approve-commission').props.accessibilityState?.disabled,
+    ).toBe(true);
 
     await fireEvent.changeText(screen.getByTestId('input-finance-reason'), 'Verified with client');
     await fireEvent.press(screen.getByTestId('btn-finance-approve-commission'));
 
     await waitFor(() =>
-      expect(mockApproveCommission).toHaveBeenCalledWith('commission-1', 'Verified with client'),
+      expect(adminRepoDirect.approveCommission).toHaveBeenCalledWith(
+        'commission-1',
+        'Verified with client',
+        expect.any(String),
+      ),
     );
   });
 
-  it('shows an error when rejecting a payout request fails', async () => {
+  it('explains payout processing as unavailable (Owner-disabled)', async () => {
     mockListCommissions.mockResolvedValueOnce([]);
     mockListPayoutRequests.mockResolvedValueOnce([makePayoutRequest()]);
-    mockRejectPayoutRequest.mockRejectedValueOnce(
-      DomainError.validation('Payout rejection reason required'),
-    );
 
     await renderWithProviders(<AdminFinanceScreen />);
     await waitFor(() => expect(screen.getByTestId('row-finance-payout-0')).toBeTruthy());
 
     await fireEvent.press(screen.getByTestId('row-finance-payout-0'));
-    await waitFor(() => expect(screen.getByTestId('btn-finance-reject-payout')).toBeTruthy());
-
-    await fireEvent.changeText(screen.getByTestId('input-finance-payout-reason'), 'Bank details invalid');
-    await fireEvent.press(screen.getByTestId('btn-finance-reject-payout'));
-
-    await waitFor(() => expect(screen.getByTestId('text-finance-error')).toBeTruthy());
-    expect(screen.getByText('Please check your input and try again.')).toBeTruthy();
+    await waitFor(() => expect(screen.getByTestId('text-finance-payout-unavailable')).toBeTruthy());
   });
 });

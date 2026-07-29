@@ -14,12 +14,15 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { clientEnv } from '@/config/env';
 import { fromOwnerTable } from '@/api/contract/ownerClient';
+import { shouldClearQueryCacheOnSessionChange } from '@/lib/auth/sessionCache';
 import { getSupabase } from '@/lib/supabase';
 import { isPubliclyAssignableRole } from '@/security/roles';
 import type { AppRole, Profile } from '@/types/domain';
@@ -195,24 +198,35 @@ const DEMO_PROFILES: Record<
 export function AuthProvider({ children }: { children: ReactNode }) {
   /** Demo only when explicitly enabled in development — never silent fallback. */
   const isDemoMode = clientEnv.useMockData;
+  const queryClient = useQueryClient();
+  const lastUserIdRef = useRef<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(!isDemoMode);
 
-  const applySession = useCallback(async (next: Session | null) => {
-    setSession(next);
-    setUser(next?.user ?? null);
-    if (!next?.user) {
-      setProfile(null);
-      setRoles([]);
-      return;
-    }
-    const nextRoles = await fetchRoles(next.user.id);
-    setRoles(nextRoles);
-    setProfile(mapProfileFromUser(next.user, nextRoles));
-  }, []);
+  const applySession = useCallback(
+    async (next: Session | null) => {
+      const nextId = next?.user?.id ?? null;
+      if (shouldClearQueryCacheOnSessionChange(lastUserIdRef.current, nextId)) {
+        queryClient.clear();
+      }
+      lastUserIdRef.current = nextId;
+
+      setSession(next);
+      setUser(next?.user ?? null);
+      if (!next?.user) {
+        setProfile(null);
+        setRoles([]);
+        return;
+      }
+      const nextRoles = await fetchRoles(next.user.id);
+      setRoles(nextRoles);
+      setProfile(mapProfileFromUser(next.user, nextRoles));
+    },
+    [queryClient],
+  );
 
   useEffect(() => {
     if (isDemoMode) {
@@ -252,6 +266,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!email.trim() || !password) {
           throw new Error('errors.auth.invalidCredentials');
         }
+        queryClient.clear();
+        lastUserIdRef.current = DEMO_USER_ID;
         setProfile({
           ...DEMO_PROFILE,
           email: email.trim().toLowerCase(),
@@ -275,7 +291,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // treats an empty role list as customer and skips admin/partner areas.
       await applySession(data.session);
     },
-    [applySession, isDemoMode],
+    [applySession, isDemoMode, queryClient],
   );
 
   const signUp = useCallback(
@@ -326,6 +342,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     if (isDemoMode) {
+      queryClient.clear();
+      lastUserIdRef.current = null;
       setProfile(null);
       setRoles([]);
       setSession(null);
@@ -335,10 +353,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabase();
     if (!supabase) return;
     await supabase.auth.signOut({ scope: 'local' });
-  }, [isDemoMode]);
+  }, [isDemoMode, queryClient]);
 
   const signOutAll = useCallback(async () => {
     if (isDemoMode) {
+      queryClient.clear();
+      lastUserIdRef.current = null;
       setProfile(null);
       setRoles([]);
       setSession(null);
@@ -348,7 +368,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabase();
     if (!supabase) return;
     await supabase.auth.signOut({ scope: 'global' });
-  }, [isDemoMode]);
+  }, [isDemoMode, queryClient]);
 
   const refresh = useCallback(async () => {
     if (isDemoMode) {

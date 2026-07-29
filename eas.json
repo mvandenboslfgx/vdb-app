@@ -26,6 +26,7 @@
       "env": {
         "EXPO_PUBLIC_APP_ENV": "preview",
         "EXPO_PUBLIC_ENABLE_DEMO_MODE": "false",
+        "EXPO_PUBLIC_WHATSAPP_NUMBER": "31628600727",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     },
@@ -38,6 +39,7 @@
       "env": {
         "EXPO_PUBLIC_APP_ENV": "production",
         "EXPO_PUBLIC_ENABLE_DEMO_MODE": "false",
+        "EXPO_PUBLIC_WHATSAPP_NUMBER": "31628600727",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     },
@@ -51,6 +53,7 @@
       "env": {
         "EXPO_PUBLIC_APP_ENV": "production",
         "EXPO_PUBLIC_ENABLE_DEMO_MODE": "false",
+        "EXPO_PUBLIC_WHATSAPP_NUMBER": "31628600727",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     }

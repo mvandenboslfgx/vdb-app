@@ -234,6 +234,7 @@ export const clientEnv = {
   supabaseAnonKey: env.EXPO_PUBLIC_SUPABASE_ANON_KEY || PLACEHOLDER_KEY,
   siteUrl: env.EXPO_PUBLIC_SITE_URL,
   supportEmail: env.EXPO_PUBLIC_SUPPORT_EMAIL || 'info@vdbdigital.nl',
+  // Empty env falls through to canonical default in src/config/whatsapp.ts
   whatsappNumber: env.EXPO_PUBLIC_WHATSAPP_NUMBER || '',
   sentryDsn: env.EXPO_PUBLIC_SENTRY_DSN || '',
   easProjectId: env.EXPO_PUBLIC_EAS_PROJECT_ID || '',

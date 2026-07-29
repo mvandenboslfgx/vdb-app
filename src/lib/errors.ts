@@ -48,6 +48,7 @@ const POSTGRES_CODE_MAP: Record<string, DomainErrorCode> = {
  * Postgres error codes. Order matters -- checked top to bottom, first match wins.
  */
 const RPC_MESSAGE_CODE_MAP: readonly (readonly [string, DomainErrorCode])[] = [
+  ['AAL2_REQUIRED', 'FORBIDDEN'],
   ['FEATURE_DISABLED', 'CONFIGURATION'],
   ['NOT_PARTICIPANT', 'FORBIDDEN'],
   ['DOUBLE_BOOKING', 'VALIDATION'],

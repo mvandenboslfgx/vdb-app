@@ -17,5 +17,7 @@
     "failed": "Failed"
   },
   "whatsapp": "WhatsApp",
-  "whatsappHint": "Prefer WhatsApp? Open a chat with VDB Digital."
+  "whatsappHint": "Prefer WhatsApp? Open a chat with VDB Digital.",
+  "whatsappUnavailable": "WhatsApp contact is not configured right now.",
+  "whatsappOpenFailed": "WhatsApp could not be opened. Try again later or email support."
 }

@@ -1,6 +1,6 @@
 /**
- * rc.3 contract surfaces that Mobile may query at runtime.
- * Source of truth: contracts/backend-contract.json (vdb-backend-contract@0.2.0-rc.3).
+ * rc.5 contract surfaces that Mobile may query at runtime.
+ * Source of truth: contracts/backend-contract.json (vdb-backend-contract@0.2.0-rc.5).
  */
 
 import {
@@ -10,7 +10,7 @@ import {
   OWNER_TABLES,
 } from '@/api/contract/ownerMapping';
 
-/** Tables explicitly listed in contracts/backend-contract.json rc.3 sharedDomains. */
+/** Tables explicitly listed in contracts/backend-contract.json sharedDomains. */
 export const RC3_OWNER_TABLES = new Set<string>([
   'profiles',
   'organizations',
@@ -47,7 +47,9 @@ export const RC3_OWNER_TABLES = new Set<string>([
   'partner_adjustments',
 ]);
 
-/** RPCs Mobile may call (canonical owner names from rc.3). */
+export const RC4_OWNER_TABLES = RC3_OWNER_TABLES;
+
+/** RPCs Mobile may call (canonical owner names from rc.4). */
 export const RC3_OWNER_RPCS = new Set<string>([
   'accept_portal_quote',
   'decline_portal_quote',
@@ -67,16 +69,47 @@ export const RC3_OWNER_RPCS = new Set<string>([
   'mark_portal_conversation_read',
   'manage_portal_conversation_participant',
   'reply_portal_support_ticket',
+  'add_portal_support_internal_note',
   'assign_portal_support_ticket',
   'transition_portal_support_ticket_status',
   'book_portal_appointment',
   'reschedule_portal_appointment',
   'cancel_portal_appointment',
   'verify_messaging_support_appointments_contracts',
+  'admin_dashboard_stats',
+  'admin_work_queue',
+  'approve_partner_commission',
+  'reject_partner_commission',
+  'suspend_partner',
+  'reactivate_partner',
+  'admin_list_products',
+  'admin_list_partners',
+  'admin_list_customers',
+  'admin_list_projects',
+  'admin_list_quotes',
+  'admin_list_invoices',
+  'admin_list_appointments',
+  'admin_get_settings_summary',
+  'admin_get_security_status',
+  'verify_admin_control_surface_contracts',
+  'admin_get_product',
+  'admin_get_partner',
+  'admin_get_customer',
+  'admin_get_project',
+  'admin_get_quote',
+  'admin_get_invoice',
+  'admin_get_appointment',
+  'list_portal_support_ticket_replies',
+  'partner_activation_checklist',
+  'accept_partner_agreement',
+  'activate_partner_profile',
+  'partner_try_activate',
   ...Object.values(OWNER_RPCS),
 ]);
 
-/** Logical Mobile names that are intentionally NOT in rc.3 sharedDomains. */
+export const RC4_OWNER_RPCS = RC3_OWNER_RPCS;
+export const RC5_OWNER_RPCS = RC3_OWNER_RPCS;
+
 export const RC3_UNSUPPORTED_LOGICAL_SURFACES = [
   'availability_slots',
   'project_milestones',
@@ -104,7 +137,7 @@ export function resolveRequiredOwnerTable(logicalOrOwner: string): string {
   return owner;
 }
 
-/** @deprecated kept for import-site stability; delegates to the rc.3 RPC allowlist. */
+/** @deprecated kept for import-site stability; delegates to the rc.4 RPC allowlist. */
 export function assertRc2Rpc(logicalOrOwnerRpc: string): string {
   const owner = mapMobileRpcToOwner(logicalOrOwnerRpc);
   if (!RC3_OWNER_RPCS.has(owner)) {
@@ -113,7 +146,6 @@ export function assertRc2Rpc(logicalOrOwnerRpc: string): string {
   return owner;
 }
 
-/** Proven A5 mappings that must always resolve. */
 export const REQUIRED_A5_TABLE_MAPPINGS = {
   projects: OWNER_TABLES.projects,
   quotes: OWNER_TABLES.quotes,
@@ -122,7 +154,6 @@ export const REQUIRED_A5_TABLE_MAPPINGS = {
   documents: OWNER_TABLES.documents,
 } as const;
 
-/** rc.3 messaging/support/appointments mappings that must always resolve. */
 export const REQUIRED_RC3_TABLE_MAPPINGS = {
   conversations: OWNER_TABLES.conversations,
   conversation_participants: OWNER_TABLES.conversationParticipants,
@@ -133,4 +164,33 @@ export const REQUIRED_RC3_TABLE_MAPPINGS = {
   support_ticket_messages: OWNER_TABLES.supportReplies,
   appointments: OWNER_TABLES.appointments,
   appointment_participants: OWNER_TABLES.appointmentParticipants,
+} as const;
+
+export const REQUIRED_RC5_DIRECTORY_DETAIL_RPCS = {
+  admin_get_product: OWNER_RPCS.adminGetProduct,
+  admin_get_partner: OWNER_RPCS.adminGetPartner,
+  admin_get_customer: OWNER_RPCS.adminGetCustomer,
+  admin_get_project: OWNER_RPCS.adminGetProject,
+  admin_get_quote: OWNER_RPCS.adminGetQuote,
+  admin_get_invoice: OWNER_RPCS.adminGetInvoice,
+  admin_get_appointment: OWNER_RPCS.adminGetAppointment,
+  list_portal_support_ticket_replies: OWNER_RPCS.listPortalSupportTicketReplies,
+} as const;
+
+export const REQUIRED_RC4_ADMIN_RPCS = {
+  admin_dashboard_stats: OWNER_RPCS.adminDashboardStats,
+  admin_work_queue: OWNER_RPCS.adminWorkQueue,
+  approve_commission: OWNER_RPCS.approveCommission,
+  reject_commission: OWNER_RPCS.rejectCommission,
+  suspend_partner: OWNER_RPCS.suspendPartner,
+  reactivate_partner: OWNER_RPCS.reactivatePartner,
+  admin_list_products: OWNER_RPCS.adminListProducts,
+  admin_list_partners: OWNER_RPCS.adminListPartners,
+  admin_list_customers: OWNER_RPCS.adminListCustomers,
+  admin_list_projects: OWNER_RPCS.adminListProjects,
+  admin_list_quotes: OWNER_RPCS.adminListQuotes,
+  admin_list_invoices: OWNER_RPCS.adminListInvoices,
+  admin_list_appointments: OWNER_RPCS.adminListAppointments,
+  admin_get_settings_summary: OWNER_RPCS.adminGetSettingsSummary,
+  admin_get_security_status: OWNER_RPCS.adminGetSecurityStatus,
 } as const;

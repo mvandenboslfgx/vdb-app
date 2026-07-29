@@ -6,31 +6,48 @@ import { useTranslation } from 'react-i18next';
 import { submitPartnerApplication } from '@/api/repositories/partnersRepository';
 import { Button, Screen, Text, TextInput } from '@/design-system';
 import { colors, radii, spacing } from '@/theme';
+import { partnerApplicationSchema, type CanonicalPartnerType } from '@/validation/partner';
 
 export default function PartnerApplyScreen() {
   const { t } = useTranslation('partners');
+  const { t: te } = useTranslation('errors');
   const router = useRouter();
+  const [partnerType, setPartnerType] = useState<CanonicalPartnerType | null>(null);
   const [companyName, setCompanyName] = useState('');
   const [contactName, setContactName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [kvkNumber, setKvkNumber] = useState('');
   const [motivation, setMotivation] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   async function onSubmit() {
-    if (!companyName.trim() || !contactName.trim() || !email.trim() || !acceptTerms) return;
+    setFormError(null);
+    const parsed = partnerApplicationSchema.safeParse({
+      partnerType: partnerType ?? undefined,
+      companyName,
+      contactName,
+      email,
+      phone,
+      kvkNumber: partnerType === 'INDIVIDUAL' ? '' : kvkNumber,
+      motivation,
+      acceptPartnerTerms: acceptTerms ? true : undefined,
+    });
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      const key = typeof issue?.message === 'string' ? issue.message : 'errors.validation.generic';
+      setFormError(key.startsWith('errors.') ? te(key.replace(/^errors\./, '') as never) : key);
+      return;
+    }
     setLoading(true);
     try {
-      await submitPartnerApplication({
-        companyName,
-        contactName,
-        email,
-        phone,
-        motivation,
-      });
+      await submitPartnerApplication(parsed.data);
       setDone(true);
+    } catch {
+      setFormError(te('generic'));
     } finally {
       setLoading(false);
     }
@@ -40,6 +57,9 @@ export default function PartnerApplyScreen() {
     return (
       <Screen testID="screen-partner-apply-success">
         <Text variant="title">{t('apply.success')}</Text>
+        <Text variant="body" color="textSecondary" style={styles.subtitle}>
+          {t('apply.pendingHint')}
+        </Text>
         <Button
           testID="btn-partner-apply-done"
           title={t('title')}
@@ -58,12 +78,50 @@ export default function PartnerApplyScreen() {
         {t('apply.subtitle')}
       </Text>
       <View style={styles.form}>
-        <TextInput
-          testID="input-partner-apply-company"
-          label={t('apply.companyName')}
-          value={companyName}
-          onChangeText={setCompanyName}
-        />
+        <Text variant="subtitle">{t('apply.partnerType')}</Text>
+        <View style={styles.typeRow}>
+          <Button
+            testID="btn-partner-type-individual"
+            title={t('apply.typeIndividual')}
+            variant={partnerType === 'INDIVIDUAL' ? 'gold' : 'secondary'}
+            size="sm"
+            onPress={() => {
+              setPartnerType('INDIVIDUAL');
+              setKvkNumber('');
+            }}
+          />
+          <Button
+            testID="btn-partner-type-business"
+            title={t('apply.typeBusiness')}
+            variant={partnerType === 'BUSINESS' ? 'gold' : 'secondary'}
+            size="sm"
+            onPress={() => setPartnerType('BUSINESS')}
+          />
+        </View>
+        <Text variant="caption" color="textMuted">
+          {t('apply.partnerTypeHint')}
+        </Text>
+
+        {partnerType === 'BUSINESS' ? (
+          <>
+            <TextInput
+              testID="input-partner-apply-company"
+              label={t('apply.companyNameRequired')}
+              placeholder={t('apply.companyNameHint')}
+              value={companyName}
+              onChangeText={setCompanyName}
+            />
+            <TextInput
+              testID="input-partner-apply-kvk"
+              label={t('apply.kvkNumberRequired')}
+              value={kvkNumber}
+              onChangeText={setKvkNumber}
+              keyboardType="number-pad"
+              maxLength={8}
+            />
+          </>
+        ) : null}
+
         <TextInput
           testID="input-partner-apply-contact"
           label={t('apply.contactName')}
@@ -78,7 +136,12 @@ export default function PartnerApplyScreen() {
           value={email}
           onChangeText={setEmail}
         />
-        <TextInput testID="input-partner-apply-phone" label={t('apply.phone')} value={phone} onChangeText={setPhone} />
+        <TextInput
+          testID="input-partner-apply-phone"
+          label={t('apply.phone')}
+          value={phone}
+          onChangeText={setPhone}
+        />
         <TextInput
           testID="input-partner-apply-motivation"
           label={t('apply.motivation')}
@@ -98,12 +161,21 @@ export default function PartnerApplyScreen() {
             {t('apply.acceptTerms')}
           </Text>
         </Pressable>
+        {formError ? (
+          <Text testID="text-partner-apply-error" variant="caption" color="error">
+            {formError}
+          </Text>
+        ) : null}
+        <Text variant="caption" color="textMuted">
+          {t('apply.kycUnavailable')}
+        </Text>
         <Button
           testID="btn-partner-apply-submit"
           title={t('apply.submit')}
           variant="gold"
           fullWidth
           loading={loading}
+          disabled={!partnerType}
           onPress={() => void onSubmit()}
         />
       </View>
@@ -114,6 +186,7 @@ export default function PartnerApplyScreen() {
 const styles = StyleSheet.create({
   subtitle: { marginTop: spacing.sm, marginBottom: spacing.xl },
   form: { gap: spacing.lg },
+  typeRow: { flexDirection: 'row', gap: spacing.sm },
   area: { minHeight: 100, textAlignVertical: 'top' },
   check: {
     padding: spacing.md,

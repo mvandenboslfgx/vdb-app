@@ -77,18 +77,18 @@ function makeClient() {
   return { from: mockFrom, rpc: mockRpc, auth: { getUser: mockGetUser } } as never;
 }
 
-describe('rc.3 contract pin', () => {
-  it('pins the JSON bundle and the TS pin module to the same rc.3 identity', () => {
-    expect(backendContract.version).toBe('0.2.0-rc.3');
-    expect(backendContract.schemaVersion).toBe('2026.07.25.messaging-support-appointments-rc3');
-    expect(backendContract.packageId).toBe('vdb-backend-contract@0.2.0-rc.3');
-    expect(backendContract.status).toBe('CONSUMER_PIN_OWNER_RC3');
-    expect(backendContract.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.3');
+describe('rc.5 contract pin', () => {
+  it('pins the JSON bundle and the TS pin module to the same rc.5 identity', () => {
+    expect(backendContract.version).toBe('0.2.0-rc.5');
+    expect(backendContract.schemaVersion).toBe('2026.07.29.partner-identity-directory-rc5');
+    expect(backendContract.packageId).toBe('vdb-backend-contract@0.2.0-rc.5');
+    expect(backendContract.status).toBe('CONSUMER_PIN_OWNER_RC5');
+    expect(backendContract.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.5');
     expect(backendContract.version).toBe(BACKEND_CONTRACT.version);
     expect(backendContract.schemaVersion).toBe(BACKEND_CONTRACT.schemaVersion);
   });
 
-  it('keeps messaging/support/appointments feature flags fail-closed', () => {
+  it('keeps messaging/support/appointments/payout feature flags fail-closed in the consumer pin', () => {
     expect(backendContract.featureFlags.messaging_realtime).toBe(false);
     expect(backendContract.featureFlags.support_internal_notes_rpc).toBe(false);
     expect(backendContract.featureFlags.appointments_booking).toBe(false);
@@ -367,15 +367,45 @@ describe('messagesRepository / supportRepository defense-in-depth is_internal fi
     expect(query.eq).toHaveBeenCalledWith('is_internal', false);
   });
 
-  it('supportRepository listMessages (replies) filters is_internal=false', async () => {
+  it('supportRepository listMessages (replies) uses RC5 replies RPC and drops internals', async () => {
     const client = makeClient();
     mockRequireLiveSupabase.mockReturnValue(client);
-    const query = makeQuery({ data: [], error: null });
-    mockFrom.mockReturnValue(query);
+    mockRpc.mockReturnValue(
+      makeQuery({
+        data: {
+          schema_version: BACKEND_CONTRACT.schemaVersion,
+          items: [
+            {
+              id: 'r1',
+              ticket_id: 'ticket-1',
+              body: 'public',
+              is_internal: false,
+              created_at: '2026-07-29T00:00:00Z',
+              author_user_id: 'u1',
+            },
+            {
+              id: 'r2',
+              ticket_id: 'ticket-1',
+              body: 'secret',
+              is_internal: true,
+              created_at: '2026-07-29T00:01:00Z',
+              author_user_id: 'staff-1',
+            },
+          ],
+          next_cursor: null,
+        },
+        error: null,
+      }),
+    );
 
-    await listTicketReplies('ticket-1');
-    expect(mockFrom).toHaveBeenCalledWith('portal_support_replies');
-    expect(query.eq).toHaveBeenCalledWith('is_internal', false);
+    const rows = await listTicketReplies('ticket-1');
+    expect(mockRpc).toHaveBeenCalledWith(
+      'list_portal_support_ticket_replies',
+      expect.objectContaining({ p_ticket_id: 'ticket-1' }),
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.body).toBe('public');
+    expect(rows.every((r) => r.isInternal === false)).toBe(true);
   });
 
   it('supportRepository never calls an internal-note RPC from customer flows', async () => {

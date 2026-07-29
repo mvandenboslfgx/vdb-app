@@ -9,8 +9,16 @@ import {
   updateTicketStatus,
   type AdminTicketStatus,
 } from '@/api/repositories/adminRepository';
-import { getTicket, listMessages } from '@/api/repositories/supportRepository';
-import { Button, ErrorState, LoadingState, Screen, StatusPill, Text, TextInput } from '@/design-system';
+import { getTicket, listStaffTicketMessages } from '@/api/repositories/supportRepository';
+import {
+  Button,
+  ErrorState,
+  LoadingState,
+  Screen,
+  StatusPill,
+  Text,
+  TextInput,
+} from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import type { SupportTicket, SupportTicketMessage } from '@/types/domain';
 import { colors, radii, spacing } from '@/theme';
@@ -29,6 +37,7 @@ export default function AdminTicketDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation('support');
   const { t: tc } = useTranslation('common');
+  const { t: ta } = useTranslation('admin');
 
   const [ticket, setTicket] = useState<SupportTicket | null>(null);
   const [messages, setMessages] = useState<SupportTicketMessage[]>([]);
@@ -50,7 +59,10 @@ export default function AdminTicketDetailScreen() {
     setLoading(true);
     setError(false);
     try {
-      const [ticketData, messageData] = await Promise.all([getTicket(id), listMessages(id)]);
+      const [ticketData, messageData] = await Promise.all([
+        getTicket(id),
+        listStaffTicketMessages(id),
+      ]);
       if (!ticketData) {
         setError(true);
         return;
@@ -73,7 +85,9 @@ export default function AdminTicketDetailScreen() {
     setSending(true);
     setReplyError(null);
     try {
-      const message = isInternal ? await replyInternal(id, replyBody) : await replyPublic(id, replyBody);
+      const message = isInternal
+        ? await replyInternal(id, replyBody)
+        : await replyPublic(id, replyBody);
       setMessages((prev) => [...prev, message]);
       setReplyBody('');
       if (!isInternal) {
@@ -81,7 +95,14 @@ export default function AdminTicketDetailScreen() {
         if (updated) setTicket(updated);
       }
     } catch (err) {
-      setReplyError(err instanceof DomainError ? err.toUserMessage() : t('detail.error'));
+      if (
+        err instanceof DomainError &&
+        (err.message.includes('FEATURE_DISABLED') || err.code === 'CONFIGURATION')
+      ) {
+        setReplyError(isInternal ? ta('internalNotesDisabled') : err.toUserMessage());
+      } else {
+        setReplyError(err instanceof DomainError ? err.toUserMessage() : t('detail.error'));
+      }
     } finally {
       setSending(false);
     }
@@ -129,7 +150,8 @@ export default function AdminTicketDetailScreen() {
             <Text variant="title">{ticket.subject}</Text>
             <StatusPill label={t(`status.${ticket.status}`)} tone="gold" />
             <Text variant="caption" color="textMuted" style={styles.meta}>
-              {t(`categories.${ticket.category}` as 'categories.other')} · {t(`priorities.${ticket.priority}`)}
+              {t(`categories.${ticket.category}` as 'categories.other')} ·{' '}
+              {t(`priorities.${ticket.priority}`)}
             </Text>
             <Text variant="body" color="textSecondary">
               {ticket.description}

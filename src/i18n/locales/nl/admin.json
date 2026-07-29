@@ -35,5 +35,56 @@
     "markInvalid": "Markeer als ongeldig",
     "convert": "Omzetten naar verkoop",
     "finalState": "Deze lead is in een definitieve status en kan niet meer worden gewijzigd."
+  },
+  "more": {
+    "products": "Producten",
+    "partners": "Partners",
+    "customers": "Klanten",
+    "projects": "Projecten",
+    "quotes": "Offertes",
+    "invoices": "Facturen",
+    "appointments": "Afspraken",
+    "settings": "Instellingen",
+    "security": "Beveiliging"
+  },
+  "unavailable": {
+    "title": "Nog niet beschikbaar",
+    "badge": "Nog niet beschikbaar",
+    "body": "Deze beheerfunctie wacht op canonieke Owner-RPC’s en contractgoedkeuring. Mobile blijft fail-closed tot die oppervlakken beschikbaar zijn.",
+    "detailPending": "Detailweergave is nog niet beschikbaar. De lijst komt uit de Owner RC4-RPC."
+  },
+  "payoutProcessingDisabled": "Uitbetalingsverwerking is uitgeschakeld tot aparte Owner-autorisatie.",
+  "mutationUnavailable": "Deze actie is nog niet beschikbaar. Wacht op de canonieke Owner-RPC.",
+  "aal2Required": "Extra verificatie (AAL2) is vereist. Voltooi step-up en probeer opnieuw.",
+  "aal2Cancelled": "Actie geannuleerd. Gevoelige wijzigingen blijven geblokkeerd zonder AAL2.",
+  "detail": {
+    "notFound": "Dit item bestaat niet of is niet zichtbaar.",
+    "contractDrift": "Contractversie komt niet overeen. Vernieuw of neem contact op.",
+    "activationTitle": "Activatiechecklist",
+    "activationReady": "Alle gates zijn groen — activatie gebeurt alleen via Owner/admin AAL2.",
+    "activationBlocked": "Nog niet activeerbaar. Ontbrekende stappen:",
+    "noSelfActivation": "Mobile activeert nooit zelf. Staffgoedkeuring alleen is onvoldoende.",
+    "kycUnavailable": "Identiteitsverificatie is nog niet beschikbaar (geen KYC-provider gekoppeld)."
+  },
+  "aal2": {
+    "title": "Extra verificatie vereist",
+    "body": "Deze actie vereist AAL2. Voer de 6-cijferige code uit je authenticator-app in. Annuleren houdt de actie geblokkeerd.",
+    "codeLabel": "Authenticatorcode",
+    "verify": "Verifiëren",
+    "invalidCode": "Die code klopt niet of is verlopen. Probeer opnieuw.",
+    "expired": "De verificatie is verlopen. Start opnieuw.",
+    "sessionError": "Sessie kon niet naar AAL2 worden bijgewerkt. Log uit en opnieuw in.",
+    "enrollmentTitle": "MFA nog niet geactiveerd",
+    "enrollmentBody": "Voor deze account is nog geen geverifieerde authenticator gekoppeld. Rond MFA-enrollment af in het Owner-webportaal (admin MFA). Mobile start geen aparte enrollmentflow tot die clientflow beschikbaar is."
+  },
+  "internalNotesDisabled": "Interne notities zijn uitgeschakeld (Owner-flag support_internal_notes_rpc). Alleen zichtbare klantantwoorden zijn beschikbaar.",
+  "partnerLifecycle": {
+    "title": "Partnerstatus",
+    "partnerId": "Partner-ID",
+    "suspend": "Partner schorsen",
+    "reactivate": "Partner heractiveren",
+    "confirmSuspend": "Partner schorsen? Dit blokkeert nieuwe leads.",
+    "confirmReactivate": "Partner heractiveren?",
+    "staffReadOnly": "Alleen admin/owner mogen schorsen of heractiveren."
   }
 }

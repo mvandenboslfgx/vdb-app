@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import {
-  useAdminFinance,
-  useAdminPayoutRequests,
-  useApproveCommission,
-  useProcessPayoutRequest,
-  useRejectCommission,
-  useRejectPayoutRequest,
-} from '@/features/admin/hooks/useAdminData';
+import { newIdempotencyKey } from '@/api/contract/adminRc4Mappers';
+import { approveCommission, rejectCommission } from '@/api/repositories/adminRepository';
+import { Aal2StepUpModal } from '@/features/auth/aal2/Aal2StepUpModal';
+import { useAal2StepUp } from '@/features/auth/aal2/useAal2StepUp';
+import { useAdminFinance, useAdminPayoutRequests } from '@/features/admin/hooks/useAdminData';
 import {
   Button,
   EmptyState,
@@ -23,6 +20,8 @@ import {
 } from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import { formatCurrency } from '@/lib/format';
+import { useAuth } from '@/providers/AuthProvider';
+import { isAdmin } from '@/security/roles';
 import { spacing } from '@/theme';
 
 type Selection = { kind: 'commission' | 'payout'; id: string } | null;
@@ -31,18 +30,17 @@ export default function AdminFinanceScreen() {
   const { t } = useTranslation('commissions');
   const { t: ta } = useTranslation('admin');
   const { t: tc } = useTranslation('common');
-  const { t: te } = useTranslation('errors');
+  const { roles } = useAuth();
+  const canReviewCommissions = isAdmin(roles);
+  const aal2 = useAal2StepUp();
 
   const finance = useAdminFinance();
   const payouts = useAdminPayoutRequests();
-  const approveCommission = useApproveCommission();
-  const rejectCommission = useRejectCommission();
-  const processPayout = useProcessPayoutRequest();
-  const rejectPayout = useRejectPayoutRequest();
-
   const [selection, setSelection] = useState<Selection>(null);
   const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
 
   const loading = finance.isLoading || payouts.isLoading;
   const error = finance.isError || payouts.isError;
@@ -51,38 +49,87 @@ export default function AdminFinanceScreen() {
     await Promise.all([finance.refetch(), payouts.refetch()]);
   }
 
-  function select(kind: 'commission' | 'payout', id: string) {
-    setSelection({ kind, id });
+  function selectCommission(id: string) {
+    setSelection({ kind: 'commission', id });
     setReason('');
     setActionError(null);
+    setIdempotencyKey(newIdempotencyKey('approve_commission'));
   }
 
-  async function runAction(action: () => Promise<unknown>) {
-    setActionError(null);
-    try {
-      await action();
-      setSelection(null);
-      setReason('');
-    } catch (err) {
-      setActionError(err instanceof DomainError ? err.toUserMessage() : te('generic'));
+  function runCommission(action: 'approve' | 'reject', id: string) {
+    if (!canReviewCommissions) {
+      setActionError(ta('partnerLifecycle.staffReadOnly'));
+      return;
     }
+    if (reason.trim().length < 8) {
+      setActionError(ta('leads.reasonPlaceholder'));
+      return;
+    }
+    const key =
+      idempotencyKey ??
+      newIdempotencyKey(action === 'approve' ? 'approve_commission' : 'reject_commission');
+    Alert.alert(
+      action === 'approve' ? ta('actions.approveCommission') : ta('actions.rejectCommission'),
+      reason.trim(),
+      [
+        { text: tc('cancel'), style: 'cancel' },
+        {
+          text: tc('confirm'),
+          style: action === 'reject' ? 'destructive' : 'default',
+          onPress: () => {
+            void (async () => {
+              if (busy) return;
+              setBusy(true);
+              setActionError(null);
+              try {
+                const result = await aal2.runWithStepUp(async () => {
+                  if (action === 'approve') {
+                    await approveCommission(id, reason.trim(), key);
+                  } else {
+                    await rejectCommission(id, reason.trim(), key);
+                  }
+                });
+                if (result.status === 'cancelled') {
+                  setActionError(ta('aal2Cancelled'));
+                  return;
+                }
+                if (result.status === 'enrollment_required') {
+                  setActionError(ta('aal2.enrollmentBody'));
+                  return;
+                }
+                if (result.status === 'error') {
+                  const err = result.error;
+                  setActionError(err instanceof DomainError ? err.toUserMessage() : ta('error'));
+                  return;
+                }
+                setSelection(null);
+                setReason('');
+                await reload();
+              } finally {
+                setBusy(false);
+              }
+            })();
+          },
+        },
+      ],
+    );
   }
 
   if (loading) return <LoadingState label={ta('loading')} />;
   if (error) {
-    return <ErrorState title={ta('error')} retryLabel={tc('retry')} onRetry={() => void reload()} />;
+    return (
+      <ErrorState title={ta('error')} retryLabel={tc('retry')} onRetry={() => void reload()} />
+    );
   }
 
-  const commissionsUnderReview = (finance.data ?? []).filter((c) => c.status === 'under_review');
+  const commissionsUnderReview = (finance.data ?? []).filter(
+    (c) => c.status === 'under_review' || c.status === 'pending',
+  );
   const submittedPayouts = (payouts.data ?? []).filter((p) => p.status === 'submitted');
-  const isBusy =
-    approveCommission.isPending ||
-    rejectCommission.isPending ||
-    processPayout.isPending ||
-    rejectPayout.isPending;
 
   return (
     <Screen scroll testID="screen-admin-finance">
+      <Aal2StepUpModal visible={aal2.visible} status={aal2.status} onComplete={aal2.onComplete} />
       <Text variant="title">{ta('stats.commissionsReview')}</Text>
       {commissionsUnderReview.length === 0 ? (
         <EmptyState title={t('empty')} />
@@ -93,40 +140,53 @@ export default function AdminFinanceScreen() {
               testID={index === 0 ? 'row-finance-commission-0' : `row-finance-commission-${c.id}`}
               title={c.saleLabel}
               meta={formatCurrency(c.amountCents)}
-              onPress={() => select('commission', c.id)}
-              right={<StatusPill label={t(`status.${c.status}`)} tone="gold" />}
+              onPress={() => selectCommission(c.id)}
+              right={
+                <StatusPill
+                  label={t(`status.${c.status}`, { defaultValue: c.status })}
+                  tone="gold"
+                />
+              }
             />
             {selection?.kind === 'commission' && selection.id === c.id ? (
               <View style={styles.actions}>
-                <TextInput
-                  testID="input-finance-reason"
-                  label={ta('leads.reason')}
-                  placeholder={ta('leads.reasonPlaceholder')}
-                  value={reason}
-                  onChangeText={setReason}
-                  multiline
-                />
-                {actionError ? (
-                  <Text testID="text-finance-error" variant="caption" color="error">
-                    {actionError}
+                {!canReviewCommissions ? (
+                  <Text variant="caption" color="textMuted">
+                    {ta('partnerLifecycle.staffReadOnly')}
                   </Text>
-                ) : null}
-                <Button
-                  testID="btn-finance-approve-commission"
-                  title={ta('actions.approveCommission')}
-                  variant="gold"
-                  loading={approveCommission.isPending}
-                  disabled={isBusy || !reason.trim()}
-                  onPress={() => void runAction(() => approveCommission.mutateAsync({ id: c.id, reason }))}
-                />
-                <Button
-                  testID="btn-finance-reject-commission"
-                  title={ta('actions.rejectCommission')}
-                  variant="danger"
-                  loading={rejectCommission.isPending}
-                  disabled={isBusy || !reason.trim()}
-                  onPress={() => void runAction(() => rejectCommission.mutateAsync({ id: c.id, reason }))}
-                />
+                ) : (
+                  <>
+                    <TextInput
+                      testID="input-finance-reason"
+                      label={ta('leads.reason')}
+                      placeholder={ta('leads.reasonPlaceholder')}
+                      value={reason}
+                      onChangeText={setReason}
+                      multiline
+                    />
+                    {actionError ? (
+                      <Text testID="text-finance-error" variant="caption" color="error">
+                        {actionError}
+                      </Text>
+                    ) : null}
+                    <Button
+                      testID="btn-finance-approve-commission"
+                      title={ta('actions.approveCommission')}
+                      variant="gold"
+                      loading={busy}
+                      disabled={busy || reason.trim().length < 8}
+                      onPress={() => runCommission('approve', c.id)}
+                    />
+                    <Button
+                      testID="btn-finance-reject-commission"
+                      title={ta('actions.rejectCommission')}
+                      variant="danger"
+                      loading={busy}
+                      disabled={busy || reason.trim().length < 8}
+                      onPress={() => runCommission('reject', c.id)}
+                    />
+                  </>
+                )}
               </View>
             ) : null}
           </View>
@@ -145,40 +205,14 @@ export default function AdminFinanceScreen() {
               testID={index === 0 ? 'row-finance-payout-0' : `row-finance-payout-${p.id}`}
               title={formatCurrency(p.amountCents)}
               subtitle={p.submittedAt ?? undefined}
-              onPress={() => select('payout', p.id)}
+              onPress={() => setSelection({ kind: 'payout', id: p.id })}
               right={<StatusPill label={t(`payouts.status.${p.status}`)} tone="gold" />}
             />
             {selection?.kind === 'payout' && selection.id === p.id ? (
               <View style={styles.actions}>
-                <TextInput
-                  testID="input-finance-payout-reason"
-                  label={ta('leads.reason')}
-                  placeholder={ta('leads.reasonPlaceholder')}
-                  value={reason}
-                  onChangeText={setReason}
-                  multiline
-                />
-                {actionError ? (
-                  <Text testID="text-finance-error" variant="caption" color="error">
-                    {actionError}
-                  </Text>
-                ) : null}
-                <Button
-                  testID="btn-finance-process-payout"
-                  title={ta('actions.processPayout')}
-                  variant="gold"
-                  loading={processPayout.isPending}
-                  disabled={isBusy || !reason.trim()}
-                  onPress={() => void runAction(() => processPayout.mutateAsync({ id: p.id, reason }))}
-                />
-                <Button
-                  testID="btn-finance-reject-payout"
-                  title={ta('actions.rejectPayout')}
-                  variant="danger"
-                  loading={rejectPayout.isPending}
-                  disabled={isBusy || !reason.trim()}
-                  onPress={() => void runAction(() => rejectPayout.mutateAsync({ id: p.id, reason }))}
-                />
+                <Text variant="caption" color="textMuted" testID="text-finance-payout-unavailable">
+                  {ta('payoutProcessingDisabled')}
+                </Text>
               </View>
             ) : null}
           </View>

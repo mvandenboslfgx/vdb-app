@@ -1,0 +1,23 @@
+{
+  "codes": [
+    "AUTH_REQUIRED",
+    "AUTH_NO_ACCESS",
+    "FORBIDDEN",
+    "NOT_FOUND",
+    "CONFLICT",
+    "VALIDATION_FAILED",
+    "CHECKOUT_DISABLED",
+    "CONTRACT_DRIFT",
+    "FEATURE_DISABLED",
+    "NOT_PARTICIPANT",
+    "INTERNAL_LEAK_DENIED",
+    "DOUBLE_BOOKING",
+    "INVALID_TRANSITION",
+    "IDEMPOTENCY_CONFLICT",
+    "AAL2_REQUIRED",
+    "PARTNER_LEAD_ALREADY_CONVERTED",
+    "partner_ledger_unbalanced",
+    "partner_ledger_immutable",
+    "partner_payout_paid_immutable"
+  ]
+}

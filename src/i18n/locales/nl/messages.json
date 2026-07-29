@@ -17,5 +17,7 @@
     "failed": "Mislukt"
   },
   "whatsapp": "WhatsApp",
-  "whatsappHint": "Liever via WhatsApp? Open een chat met VDB Digital."
+  "whatsappHint": "Liever via WhatsApp? Open een chat met VDB Digital.",
+  "whatsappUnavailable": "WhatsApp-contact is momenteel niet geconfigureerd.",
+  "whatsappOpenFailed": "WhatsApp kon niet worden geopend. Probeer het later opnieuw of mail naar support."
 }

@@ -5,6 +5,7 @@ import {
   mapPortalSupportTicket,
   toOwnerSupportPriority,
 } from '@/api/contract/portalMappers';
+import { mapSupportTicketRepliesPage } from '@/api/contract/adminRc5Mappers';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { resolveCallerOrganizationId } from '@/api/repositories/_org';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
@@ -96,23 +97,63 @@ export async function createTicket(input: SupportTicketInput): Promise<SupportTi
 }
 
 /**
- * Lists a ticket's public replies in chronological order. RLS already hides
- * internal notes from non-staff -- `is_internal = false` is still applied
- * client-side as defense in depth, never the sole guard.
+ * Lists ticket replies via Owner RC5 `list_portal_support_ticket_replies`.
+ * Customer-safe: server filters internals; client also drops is_internal as defense in depth.
  */
 export async function listMessages(ticketId: string): Promise<SupportTicketMessage[]> {
   if (shouldUseMockApi()) {
     await delay();
+    return mockStore.ticketMessages.filter(
+      (m) => m.ticketId === ticketId && m.isInternal === false,
+    );
+  }
+  const page = await listTicketRepliesPage(ticketId);
+  return page.items
+    .filter((m) => !m.isInternal)
+    .map((m) => ({
+      id: m.id,
+      ticketId: m.ticketId,
+      authorId: m.authorUserId ?? '',
+      body: m.body,
+      isInternal: false,
+      createdAt: m.createdAt,
+      updatedAt: m.createdAt,
+    }))
+    .reverse();
+}
+
+/**
+ * Staff/admin ticket detail via `list_portal_support_ticket_replies` (includes internals for staff).
+ */
+export async function listStaffTicketMessages(ticketId: string): Promise<SupportTicketMessage[]> {
+  if (shouldUseMockApi()) {
+    await delay();
     return mockStore.ticketMessages.filter((m) => m.ticketId === ticketId);
   }
+  const page = await listTicketRepliesPage(ticketId);
+  return page.items
+    .map((m) => ({
+      id: m.id,
+      ticketId: m.ticketId,
+      authorId: m.authorUserId ?? '',
+      body: m.body,
+      isInternal: m.isInternal,
+      createdAt: m.createdAt,
+      updatedAt: m.createdAt,
+    }))
+    .reverse();
+}
+
+async function listTicketRepliesPage(ticketId: string, cursor?: string | null) {
   const supabase = requireLiveSupabase();
-  const { data, error } = await fromOwnerTable(supabase, 'support_ticket_messages')
-    .select('*')
-    .eq('ticket_id', ticketId)
-    .eq('is_internal', false)
-    .order('created_at', { ascending: true });
+  const args: Record<string, unknown> = {
+    p_ticket_id: ticketId,
+    p_limit: 50,
+  };
+  if (cursor) args.p_cursor = cursor;
+  const { data, error } = await rpcOwner(supabase, 'list_portal_support_ticket_replies', args);
   if (error) throw fromSupabaseError(error);
-  return (data ?? []).filter(isOwnerRow).map(mapPortalSupportReply);
+  return mapSupportTicketRepliesPage(data);
 }
 
 /**
@@ -178,5 +219,6 @@ export const supportRepository = {
   get: getTicket,
   create: createTicket,
   listMessages,
+  listStaffTicketMessages,
   replyTicket,
 };

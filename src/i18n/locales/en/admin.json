@@ -35,5 +35,56 @@
     "markInvalid": "Mark invalid",
     "convert": "Convert to sale",
     "finalState": "This lead is in a final state and can no longer be changed."
+  },
+  "more": {
+    "products": "Products",
+    "partners": "Partners",
+    "customers": "Customers",
+    "projects": "Projects",
+    "quotes": "Quotes",
+    "invoices": "Invoices",
+    "appointments": "Appointments",
+    "settings": "Settings",
+    "security": "Security"
+  },
+  "unavailable": {
+    "title": "Not available yet",
+    "badge": "Not available yet",
+    "body": "This admin surface waits for canonical Owner RPCs and contract approval. Mobile stays fail-closed until those surfaces ship.",
+    "detailPending": "Detail view is not available yet. The list comes from the Owner RC4 RPC."
+  },
+  "payoutProcessingDisabled": "Payout processing is disabled until separately authorized by the Owner.",
+  "mutationUnavailable": "This action is not available yet. Waiting for the canonical Owner RPC.",
+  "aal2Required": "Additional verification (AAL2) is required. Complete step-up and try again.",
+  "aal2Cancelled": "Action cancelled. Sensitive changes stay blocked without AAL2.",
+  "detail": {
+    "notFound": "This item does not exist or is not visible.",
+    "contractDrift": "Contract version mismatch. Refresh or contact support.",
+    "activationTitle": "Activation checklist",
+    "activationReady": "All gates are green — activation only via Owner/admin AAL2.",
+    "activationBlocked": "Not activatable yet. Missing steps:",
+    "noSelfActivation": "Mobile never self-activates. Staff approval alone is not enough.",
+    "kycUnavailable": "Identity verification is not available yet (no KYC provider linked)."
+  },
+  "aal2": {
+    "title": "Additional verification required",
+    "body": "This action requires AAL2. Enter the 6-digit code from your authenticator app. Cancel keeps the action blocked.",
+    "codeLabel": "Authenticator code",
+    "verify": "Verify",
+    "invalidCode": "That code is incorrect or expired. Try again.",
+    "expired": "Verification expired. Start again.",
+    "sessionError": "Session could not be upgraded to AAL2. Sign out and sign in again.",
+    "enrollmentTitle": "MFA not enrolled yet",
+    "enrollmentBody": "This account has no verified authenticator factor. Complete MFA enrollment in the Owner web portal (admin MFA). Mobile does not invent a separate enrollment flow until that client flow exists."
+  },
+  "internalNotesDisabled": "Internal notes are disabled (Owner flag support_internal_notes_rpc). Only customer-visible replies are available.",
+  "partnerLifecycle": {
+    "title": "Partner status",
+    "partnerId": "Partner ID",
+    "suspend": "Suspend partner",
+    "reactivate": "Reactivate partner",
+    "confirmSuspend": "Suspend this partner? New leads will be blocked.",
+    "confirmReactivate": "Reactivate this partner?",
+    "staffReadOnly": "Only admin/owner may suspend or reactivate."
   }
 }

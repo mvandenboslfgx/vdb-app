@@ -22,6 +22,8 @@
     "acceptQuoteTerms": "You must accept the quote terms",
     "companyNameMin": "Company name is too short",
     "companyNameMax": "Company name is too long",
+    "partnerTypeRequired": "Choose Individual or Business",
+    "individualNoKvk": "Individuals must not supply a Chamber of Commerce number",
     "urlInvalid": "Invalid URL",
     "kvkInvalid": "Chamber of Commerce number must be 8 digits",
     "vatMax": "VAT number is too long",

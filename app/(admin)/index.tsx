@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { getAdminDashboardBundle } from '@/api/repositories/adminRepository';
-import { ErrorState, ListRow, LoadingState, Screen, Text } from '@/design-system';
+import { EmptyState, ErrorState, ListRow, LoadingState, Screen, Text } from '@/design-system';
+import { DomainError } from '@/lib/errors';
 import type { AdminDashboardStats } from '@/types/domain';
 import type { AdminQueueItem } from '@/api/mockData';
 import { spacing } from '@/theme';
@@ -16,17 +17,25 @@ export default function AdminHomeScreen() {
   const [stats, setStats] = useState<AdminDashboardStats | null>(null);
   const [queue, setQueue] = useState<AdminQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError(false);
+    setErrorCode(null);
     try {
       const data = await getAdminDashboardBundle();
       setStats(data.stats);
       setQueue(data.queue);
-    } catch {
-      setError(true);
+    } catch (err) {
+      setStats(null);
+      setQueue([]);
+      if (err instanceof DomainError) {
+        setErrorCode(err.code);
+      } else if (err instanceof Error && err.message.includes('CONTRACT_DRIFT')) {
+        setErrorCode('CONTRACT_DRIFT');
+      } else {
+        setErrorCode('UNKNOWN');
+      }
     } finally {
       setLoading(false);
     }
@@ -37,7 +46,7 @@ export default function AdminHomeScreen() {
   }, [load]);
 
   if (loading) return <LoadingState label={t('loading')} />;
-  if (error || !stats) {
+  if (errorCode || !stats) {
     return <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />;
   }
 
@@ -54,19 +63,33 @@ export default function AdminHomeScreen() {
       <Text variant="subtitle" style={styles.section}>
         {t('queue')}
       </Text>
-      {queue.map((item) => (
-        <ListRow
-          key={item.id}
-          title={item.title}
-          subtitle={item.subtitle}
-          onPress={() => {
-            if (item.type === 'support_ticket') router.push('/(admin)/tickets');
-            else if (item.type === 'partner_application' || item.type === 'document_review') {
-              router.push('/(admin)/approvals');
-            } else router.push('/(admin)/finance');
-          }}
-        />
-      ))}
+      {queue.length === 0 ? (
+        <EmptyState title={tc('empty')} />
+      ) : (
+        queue.map((item) => (
+          <ListRow
+            key={`${item.type}-${item.id}`}
+            title={item.title}
+            subtitle={item.subtitle}
+            onPress={() => {
+              if (item.type === 'support_ticket') router.push('/(admin)/tickets');
+              else if (
+                item.type === 'partner_application' ||
+                item.type === 'document_review' ||
+                item.type === 'commission_review'
+              ) {
+                router.push('/(admin)/approvals');
+              } else if (item.type === 'appointment') {
+                router.push('/(admin)/more/surface/appointments');
+              } else if (item.type === 'unknown') {
+                return;
+              } else {
+                router.push('/(admin)/finance');
+              }
+            }}
+          />
+        ))
+      )}
     </Screen>
   );
 }

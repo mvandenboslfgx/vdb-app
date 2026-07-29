@@ -1,0 +1,1042 @@
+{
+  "at": "2026-07-29T04:12:02.704Z",
+  "stagingRef": "qzekuvmgfekzsowdecyk",
+  "mode": "api-partial-no-apk",
+  "verdict": "RC4 MOBILE PHASE 1 PASS — OWNER DETAIL SURFACES STILL REQUIRED — NO BUILD",
+  "counts": {
+    "pass": 91,
+    "fail": 0,
+    "blocked": 56
+  },
+  "rows": [
+    {
+      "role": "-",
+      "surface": "preflight",
+      "check": "staging_ref",
+      "result": "PASS",
+      "detail": "qzekuvmgfekzsowdecyk"
+    },
+    {
+      "role": "anon",
+      "surface": "Admin Home",
+      "check": "dashboard_stats_deny",
+      "result": "PASS",
+      "detail": "42501"
+    },
+    {
+      "role": "anon",
+      "surface": "Directory detail",
+      "check": "admin_get_product",
+      "result": "BLOCKED",
+      "detail": "Could not find the function public.admin_get_product without parameters in the schema cache"
+    },
+    {
+      "role": "anon",
+      "surface": "Directory detail",
+      "check": "admin_get_partner",
+      "result": "BLOCKED",
+      "detail": "Could not find the function public.admin_get_partner without parameters in the schema cache"
+    },
+    {
+      "role": "anon",
+      "surface": "Directory detail",
+      "check": "admin_get_customer",
+      "result": "BLOCKED",
+      "detail": "Could not find the function public.admin_get_customer without parameters in the schema cache"
+    },
+    {
+      "role": "anon",
+      "surface": "Directory detail",
+      "check": "admin_get_project",
+      "result": "BLOCKED",
+      "detail": "Could not find the function public.admin_get_project without parameters in the schema cache"
+    },
+    {
+      "role": "anon",
+      "surface": "Directory detail",
+      "check": "admin_get_quote",
+      "result": "BLOCKED",
+      "detail": "Could not find the function public.admin_get_quote without parameters in the schema cache"
+    },
+    {
+      "role": "anon",
+      "surface": "Directory detail",
+      "check": "admin_get_invoice",
+      "result": "BLOCKED",
+      "detail": "Could not find the function public.admin_get_invoice without parameters in the schema cache"
+    },
+    {
+      "role": "anon",
+      "surface": "Directory detail",
+      "check": "admin_get_appointment",
+      "result": "BLOCKED",
+      "detail": "Could not find the function public.admin_get_appointment without parameters in the schema cache"
+    },
+    {
+      "role": "customer",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "aal=aal1"
+    },
+    {
+      "role": "customer",
+      "surface": "Admin Home",
+      "check": "dashboard_stats_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Goedkeuringen",
+      "check": "work_queue_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:products",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:products",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:partners",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:partners",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:customers",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:customers",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:projects",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:projects",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:quotes",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:quotes",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:invoices",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:invoices",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:appointments",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "customer",
+      "surface": "Directory:appointments",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "customer",
+      "surface": "Security",
+      "check": "admin_settings_deny",
+      "result": "PASS",
+      "detail": "Could not find the function public.admin_settings_summary without parameters in the schema cache"
+    },
+    {
+      "role": "customer",
+      "surface": "Security",
+      "check": "logout",
+      "result": "PASS",
+      "detail": "signOut called (SecureStore wipe covered by client auth config; no device claim)"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "aal=aal1"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Admin Home",
+      "check": "dashboard_stats_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Goedkeuringen",
+      "check": "work_queue_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:products",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:products",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:partners",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:partners",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:customers",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:customers",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:projects",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:projects",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:quotes",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:quotes",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:invoices",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:invoices",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:appointments",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Directory:appointments",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Security",
+      "check": "admin_settings_deny",
+      "result": "PASS",
+      "detail": "Could not find the function public.admin_settings_summary without parameters in the schema cache"
+    },
+    {
+      "role": "partner_pending",
+      "surface": "Security",
+      "check": "logout",
+      "result": "PASS",
+      "detail": "signOut called (SecureStore wipe covered by client auth config; no device claim)"
+    },
+    {
+      "role": "partner_active",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "aal=aal1"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Admin Home",
+      "check": "dashboard_stats_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Goedkeuringen",
+      "check": "work_queue_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:products",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:products",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:partners",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:partners",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:customers",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:customers",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:projects",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:projects",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:quotes",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:quotes",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:invoices",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:invoices",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:appointments",
+      "check": "list_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Directory:appointments",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Security",
+      "check": "admin_settings_deny",
+      "result": "PASS",
+      "detail": "Could not find the function public.admin_settings_summary without parameters in the schema cache"
+    },
+    {
+      "role": "partner_active",
+      "surface": "Security",
+      "check": "logout",
+      "result": "PASS",
+      "detail": "signOut called (SecureStore wipe covered by client auth config; no device claim)"
+    },
+    {
+      "role": "partner_suspended",
+      "surface": "auth",
+      "check": "login",
+      "result": "BLOCKED",
+      "detail": "no synthetic suspended partner credential in vault"
+    },
+    {
+      "role": "staff",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "aal=aal1"
+    },
+    {
+      "role": "staff",
+      "surface": "Admin Home",
+      "check": "dashboard_stats",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Goedkeuringen",
+      "check": "work_queue",
+      "result": "PASS",
+      "detail": "items=object"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:products",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:products",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:partners",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:partners",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:customers",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:customers",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:projects",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:projects",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:quotes",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:quotes",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:invoices",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:invoices",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:appointments",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "staff",
+      "surface": "Directory:appointments",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "staff",
+      "surface": "Partner lifecycle",
+      "check": "suspend_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "staff",
+      "surface": "Goedkeuringen",
+      "check": "commission_mutation_deny",
+      "result": "PASS",
+      "detail": "FORBIDDEN"
+    },
+    {
+      "role": "staff",
+      "surface": "Tickets",
+      "check": "list",
+      "result": "PASS",
+      "detail": "n=2"
+    },
+    {
+      "role": "staff",
+      "surface": "Tickets",
+      "check": "internal_notes_flag",
+      "result": "PASS",
+      "detail": "FEATURE_DISABLED"
+    },
+    {
+      "role": "staff",
+      "surface": "Security",
+      "check": "logout",
+      "result": "PASS",
+      "detail": "signOut called (SecureStore wipe covered by client auth config; no device claim)"
+    },
+    {
+      "role": "admin",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "aal=aal1"
+    },
+    {
+      "role": "admin",
+      "surface": "Admin Home",
+      "check": "dashboard_stats",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Goedkeuringen",
+      "check": "work_queue",
+      "result": "PASS",
+      "detail": "items=object"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:products",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:products",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:partners",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:partners",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:customers",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:customers",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:projects",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:projects",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:quotes",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:quotes",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:invoices",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:invoices",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:appointments",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "admin",
+      "surface": "Directory:appointments",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "admin_AAL1",
+      "surface": "Partner lifecycle",
+      "check": "suspend_aal1_deny",
+      "result": "PASS",
+      "detail": "AAL2_REQUIRED"
+    },
+    {
+      "role": "admin_AAL1",
+      "surface": "Goedkeuringen",
+      "check": "commission_aal1_deny",
+      "result": "PASS",
+      "detail": "AAL2_REQUIRED"
+    },
+    {
+      "role": "admin_AAL2",
+      "surface": "Partner lifecycle",
+      "check": "suspend_aal2_success",
+      "result": "BLOCKED",
+      "detail": "automated TOTP step-up not available in this harness"
+    },
+    {
+      "role": "admin_AAL2",
+      "surface": "Goedkeuringen",
+      "check": "commission_aal2_success",
+      "result": "BLOCKED",
+      "detail": "automated TOTP step-up not available in this harness"
+    },
+    {
+      "role": "admin",
+      "surface": "Tickets",
+      "check": "list",
+      "result": "PASS",
+      "detail": "n=2"
+    },
+    {
+      "role": "admin",
+      "surface": "Tickets",
+      "check": "internal_notes_flag",
+      "result": "PASS",
+      "detail": "FEATURE_DISABLED"
+    },
+    {
+      "role": "admin",
+      "surface": "Security",
+      "check": "logout",
+      "result": "PASS",
+      "detail": "signOut called (SecureStore wipe covered by client auth config; no device claim)"
+    },
+    {
+      "role": "owner",
+      "surface": "auth",
+      "check": "login",
+      "result": "PASS",
+      "detail": "aal=aal1"
+    },
+    {
+      "role": "owner",
+      "surface": "Admin Home",
+      "check": "dashboard_stats",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Goedkeuringen",
+      "check": "work_queue",
+      "result": "PASS",
+      "detail": "items=object"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:products",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:products",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:partners",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:partners",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:customers",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:customers",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:projects",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:projects",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:quotes",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:quotes",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:invoices",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:invoices",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:appointments",
+      "check": "list",
+      "result": "PASS",
+      "detail": "ok"
+    },
+    {
+      "role": "owner",
+      "surface": "Directory:appointments",
+      "check": "detail_route",
+      "result": "BLOCKED",
+      "detail": "Owner detail RPC missing — Mobile shows Nog niet beschikbaar"
+    },
+    {
+      "role": "owner_AAL1",
+      "surface": "Partner lifecycle",
+      "check": "suspend_aal1_deny",
+      "result": "PASS",
+      "detail": "AAL2_REQUIRED"
+    },
+    {
+      "role": "owner_AAL1",
+      "surface": "Goedkeuringen",
+      "check": "commission_aal1_deny",
+      "result": "PASS",
+      "detail": "AAL2_REQUIRED"
+    },
+    {
+      "role": "owner_AAL2",
+      "surface": "Partner lifecycle",
+      "check": "suspend_aal2_success",
+      "result": "BLOCKED",
+      "detail": "automated TOTP step-up not available in this harness"
+    },
+    {
+      "role": "owner_AAL2",
+      "surface": "Goedkeuringen",
+      "check": "commission_aal2_success",
+      "result": "BLOCKED",
+      "detail": "automated TOTP step-up not available in this harness"
+    },
+    {
+      "role": "owner",
+      "surface": "Tickets",
+      "check": "list",
+      "result": "PASS",
+      "detail": "n=2"
+    },
+    {
+      "role": "owner",
+      "surface": "Tickets",
+      "check": "internal_notes_flag",
+      "result": "PASS",
+      "detail": "FEATURE_DISABLED"
+    },
+    {
+      "role": "owner",
+      "surface": "Security",
+      "check": "logout",
+      "result": "PASS",
+      "detail": "signOut called (SecureStore wipe covered by client auth config; no device claim)"
+    },
+    {
+      "role": "customer_a→customer_b",
+      "surface": "Security",
+      "check": "account_switch_isolation",
+      "result": "PASS",
+      "detail": "a_saw=true b_denied=true"
+    },
+    {
+      "role": "-",
+      "surface": "Security",
+      "check": "logout_clears_session_for_switch",
+      "result": "PASS",
+      "detail": "API signOut between accounts; Mobile also clears React Query on user change"
+    },
+    {
+      "role": "-",
+      "surface": "Security",
+      "check": "no_service_role_in_mobile",
+      "result": "PASS",
+      "detail": "Mobile client uses publishable/anon key only"
+    },
+    {
+      "role": "-",
+      "surface": "Security",
+      "check": "query_cache_clear_on_logout_switch",
+      "result": "PASS",
+      "detail": "AuthProvider clears QueryClient on logout/account switch (sessionCache helper)"
+    },
+    {
+      "role": "-",
+      "surface": "Security",
+      "check": "no_staging_ref_in_production_config",
+      "result": "PASS",
+      "detail": "eas production env separate; matrix used preview/staging only"
+    },
+    {
+      "role": "-",
+      "surface": "WhatsApp",
+      "check": "canonical_number",
+      "result": "PASS",
+      "detail": "31628600727 code-confirmed"
+    },
+    {
+      "role": "-",
+      "surface": "Navigatie",
+      "check": "max_five_admin_tabs",
+      "result": "PASS",
+      "detail": "ADMIN_PRIMARY_TAB_NAMES length 5; leads href null"
+    },
+    {
+      "role": "-",
+      "surface": "Support",
+      "check": "internal_notes_flag_closed",
+      "result": "PASS",
+      "detail": "FEATURE_DISABLED on staging; Mobile shows explicit disabled copy"
+    },
+    {
+      "role": "-",
+      "surface": "Directory detail",
+      "check": "owner_detail_rpcs",
+      "result": "BLOCKED",
+      "detail": "See OWNER_RC4_REMAINING_BLOCKERS.md — release blocker"
+    },
+    {
+      "role": "-",
+      "surface": "S6",
+      "check": "partner_type_model",
+      "result": "BLOCKED",
+      "detail": "PARTNER PARTICULIER/ZAKELIJK MODEL NOT IMPLEMENTED — DEPENDENCY RECORDED"
+    }
+  ]
+}

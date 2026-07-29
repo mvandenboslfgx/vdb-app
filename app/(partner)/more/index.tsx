@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Button, ListRow, Screen, Text } from '@/design-system';
+import { useWhatsAppContact } from '@/features/support/useWhatsAppContact';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import { canAccessAdminArea } from '@/security/roles';
@@ -16,26 +17,37 @@ export default function PartnerMoreScreen() {
   const router = useRouter();
   const { roles, signOut } = useAuth();
   const { enabled } = useFeatureFlags();
+  const whatsapp = useWhatsAppContact();
+  const payoutsEnabled = enabled('partnerPayouts');
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-partner-more">
       <Text variant="title">{t('title')}</Text>
-      <ListRow
-        title={tc('switchArea.customer')}
-        onPress={() => router.replace('/(customer)')}
-      />
-      {canAccessAdminArea(roles) ? (
+      {whatsapp.enabled ? (
         <ListRow
-          title={tc('switchArea.admin')}
-          onPress={() => router.replace('/(admin)')}
+          testID="partner-more-whatsapp"
+          title={whatsapp.title}
+          subtitle={whatsapp.subtitle}
+          onPress={() => void whatsapp.open()}
         />
+      ) : (
+        <ListRow
+          testID="partner-more-whatsapp-disabled"
+          title={whatsapp.title}
+          subtitle={whatsapp.subtitle}
+        />
+      )}
+      <ListRow title={tc('switchArea.customer')} onPress={() => router.replace('/(customer)')} />
+      {canAccessAdminArea(roles) ? (
+        <ListRow title={tc('switchArea.admin')} onPress={() => router.replace('/(admin)')} />
       ) : null}
-      <ListRow
-        title={tcom('requestPayout')}
-        subtitle={enabled('partnerPayouts') ? undefined : tcom('payoutDisabled')}
-        onPress={() => router.push('/(partner)/payouts')}
-      />
+      {payoutsEnabled ? (
+        <ListRow title={tcom('requestPayout')} onPress={() => router.push('/(partner)/payouts')} />
+      ) : (
+        <ListRow title={tcom('requestPayout')} subtitle={tcom('payoutDisabled')} />
+      )}
       <Button
+        testID="auth-logout-button"
         title={ta('signOut')}
         variant="danger"
         style={styles.signOut}

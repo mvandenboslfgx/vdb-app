@@ -1,0 +1,86 @@
+{
+  "generatedAt": "2026-07-29",
+  "verdict": "RC3 MOBILE DEVICE REMEDIATION BLOCKED",
+  "rows": [
+    {
+      "id": "admin-tab-home",
+      "role": "admin",
+      "screen": "tabbar",
+      "element": "Home",
+      "hasHandler": true,
+      "status": "blocked_owner_rpc"
+    },
+    {
+      "id": "admin-tab-approvals",
+      "role": "admin",
+      "screen": "tabbar",
+      "element": "Goedkeuringen",
+      "hasHandler": true,
+      "status": "blocked_owner_rpc"
+    },
+    {
+      "id": "admin-tab-tickets",
+      "role": "admin",
+      "screen": "tabbar",
+      "element": "Tickets",
+      "hasHandler": true,
+      "status": "code_ok"
+    },
+    {
+      "id": "admin-tab-finance",
+      "role": "admin",
+      "screen": "tabbar",
+      "element": "Financien",
+      "hasHandler": true,
+      "status": "code_ok"
+    },
+    {
+      "id": "admin-tab-more",
+      "role": "admin",
+      "screen": "tabbar",
+      "element": "Meer",
+      "hasHandler": true,
+      "status": "code_ok"
+    },
+    {
+      "id": "admin-tab-leads-hidden",
+      "role": "admin",
+      "screen": "tabbar",
+      "element": "leads",
+      "hasHandler": false,
+      "status": "code_ok"
+    },
+    {
+      "id": "admin-more-whatsapp",
+      "role": "admin",
+      "screen": "Meer",
+      "element": "WhatsApp",
+      "hasHandler": true,
+      "status": "code_ok"
+    },
+    {
+      "id": "customer-more-whatsapp",
+      "role": "customer",
+      "screen": "Meer",
+      "element": "WhatsApp",
+      "hasHandler": true,
+      "status": "code_ok"
+    },
+    {
+      "id": "partner-more-whatsapp",
+      "role": "partner",
+      "screen": "Meer",
+      "element": "WhatsApp",
+      "hasHandler": true,
+      "status": "code_ok"
+    },
+    {
+      "id": "admin-home-retry",
+      "role": "admin",
+      "screen": "Home",
+      "element": "retry",
+      "hasHandler": true,
+      "status": "blocked_owner_rpc"
+    }
+  ]
+}
