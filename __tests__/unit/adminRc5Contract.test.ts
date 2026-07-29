@@ -8,9 +8,9 @@ import { REQUIRED_RC5_DIRECTORY_DETAIL_RPCS } from '@/api/contract/ownerSurfaces
 import { mapLegacyPartnerTypeLabel, partnerApplicationSchema } from '@/validation/partner';
 
 describe('RC5 contract surfaces', () => {
-  it('pins rc.5 schema', () => {
-    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.5');
-    expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.29.partner-identity-directory-rc5');
+  it('pins rc.6 schema', () => {
+    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.29.partner-approval-aal2-rc6');
   });
 
   it('allowlists directory detail RPCs', () => {

@@ -77,13 +77,13 @@ function makeClient() {
   return { from: mockFrom, rpc: mockRpc, auth: { getUser: mockGetUser } } as never;
 }
 
-describe('rc.5 contract pin', () => {
-  it('pins the JSON bundle and the TS pin module to the same rc.5 identity', () => {
-    expect(backendContract.version).toBe('0.2.0-rc.5');
-    expect(backendContract.schemaVersion).toBe('2026.07.29.partner-identity-directory-rc5');
-    expect(backendContract.packageId).toBe('vdb-backend-contract@0.2.0-rc.5');
-    expect(backendContract.status).toBe('CONSUMER_PIN_OWNER_RC5');
-    expect(backendContract.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.5');
+describe('rc.6 contract pin', () => {
+  it('pins the JSON bundle and the TS pin module to the same rc.6 identity', () => {
+    expect(backendContract.version).toBe('0.2.0-rc.6');
+    expect(backendContract.schemaVersion).toBe('2026.07.29.partner-approval-aal2-rc6');
+    expect(backendContract.packageId).toBe('vdb-backend-contract@0.2.0-rc.6');
+    expect(backendContract.status).toBe('CONSUMER_PIN_OWNER_RC6');
+    expect(backendContract.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.6');
     expect(backendContract.version).toBe(BACKEND_CONTRACT.version);
     expect(backendContract.schemaVersion).toBe(BACKEND_CONTRACT.schemaVersion);
   });
@@ -100,7 +100,7 @@ describe('rc.5 contract pin', () => {
     expect(JSON.stringify(backendContract)).not.toContain('nhsrdnjfsxfikfbdmdfj');
   });
 
-  it('lists the rc.3 error codes needed by messaging/support/appointments', () => {
+  it('lists the rc.3/rc.6 error codes needed by messaging/support/appointments/AAL2', () => {
     for (const code of [
       'FEATURE_DISABLED',
       'NOT_PARTICIPANT',
@@ -112,6 +112,7 @@ describe('rc.5 contract pin', () => {
       'AUTH_NO_ACCESS',
       'CONFLICT',
       'VALIDATION_FAILED',
+      'AAL2_REQUIRED',
     ]) {
       expect(backendContract.errorCodes).toContain(code);
     }

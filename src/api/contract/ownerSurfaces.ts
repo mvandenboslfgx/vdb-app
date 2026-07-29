@@ -1,6 +1,7 @@
 /**
- * rc.5 contract surfaces that Mobile may query at runtime.
- * Source of truth: contracts/backend-contract.json (vdb-backend-contract@0.2.0-rc.5).
+ * rc.6 contract surfaces that Mobile may query at runtime.
+ * Source of truth: contracts/backend-contract.json (vdb-backend-contract@0.2.0-rc.6).
+ * Owner bundle: contracts/releases/vdb-backend-contract-0.2.0-rc.6/
  */
 
 import {

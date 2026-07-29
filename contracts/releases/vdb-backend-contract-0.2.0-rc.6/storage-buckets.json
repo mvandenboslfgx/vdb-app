@@ -1,0 +1,30 @@
+{
+  "count": 6,
+  "buckets": [
+    {
+      "id": "customer-documents",
+      "public": false
+    },
+    {
+      "id": "invoice-documents",
+      "public": false
+    },
+    {
+      "id": "product-media",
+      "public": false
+    },
+    {
+      "id": "project-files",
+      "public": false
+    },
+    {
+      "id": "quote-documents",
+      "public": false
+    },
+    {
+      "id": "support-attachments",
+      "public": false
+    }
+  ],
+  "notes": "No 7th marketing_assets bucket in RC1 (BCP-009 deferred)"
+}

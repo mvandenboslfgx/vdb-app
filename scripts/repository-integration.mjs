@@ -3,6 +3,11 @@
  * Requires: supabase running + identities seeded.
  *
  * Usage: node scripts/repository-integration.mjs
+ *
+ * Payout coverage uses a per-run synthetic payable commission (service role)
+ * so the suite is order-independent and re-runnable without manual reseed.
+ * No real money movement: request_commission_payout only creates a local
+ * payout_requests row and flips commission status.
  */
 import { createClient } from '@supabase/supabase-js';
 import { execSync } from 'node:child_process';
@@ -10,10 +15,13 @@ import { execSync } from 'node:child_process';
 const PASSWORD = 'LocalTestVdb2026';
 const DEMO_ANON =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+const DEMO_SERVICE_ROLE =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 
 function loadEnv() {
   let apiUrl = 'http://127.0.0.1:54521';
   let anonKey = DEMO_ANON;
+  let serviceKey = DEMO_SERVICE_ROLE;
   try {
     const out = execSync('npx supabase status -o env', {
       encoding: 'utf8',
@@ -24,17 +32,118 @@ function loadEnv() {
       if (!m) continue;
       if (m[1] === 'API_URL') apiUrl = m[2];
       if (m[1] === 'ANON_KEY') anonKey = m[2];
+      if (m[1] === 'SERVICE_ROLE_KEY') serviceKey = m[2];
     }
   } catch {
     // local demo defaults
   }
-  return { apiUrl, anonKey };
+  return { apiUrl, anonKey, serviceKey };
 }
 
 function clientFor(url, key) {
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+}
+
+/**
+ * LOCAL ONLY: ensure partner A has a dedicated payable commission for this run.
+ * Mirrors the RLS suite's payout_test_commission pattern so repo-integration
+ * does not depend on leftover seed balance after a prior payout request.
+ */
+async function ensurePartnerAPayableFixture(admin) {
+  const flag = await admin
+    .from('feature_flags')
+    .update({ enabled: true })
+    .eq('key', 'partner_payouts');
+  if (flag.error) throw flag.error;
+
+  const profile = await admin
+    .from('app_profiles')
+    .select('id')
+    .eq('email', 'partner.active.a@local.vdb')
+    .maybeSingle();
+  if (profile.error) throw profile.error;
+  if (!profile.data?.id) {
+    throw new Error('partner.active.a@local.vdb missing — run npm run db:seed:identities');
+  }
+
+  const partner = await admin
+    .from('partner_profiles')
+    .select('id')
+    .eq('user_id', profile.data.id)
+    .maybeSingle();
+  if (partner.error) throw partner.error;
+  if (!partner.data?.id) {
+    throw new Error('partner profile for partner A missing — run npm run db:seed:identities');
+  }
+  const partnerId = partner.data.id;
+
+  const accounts = await admin
+    .from('payout_accounts')
+    .select('id')
+    .eq('partner_id', partnerId)
+    .is('deleted_at', null)
+    .limit(1);
+  if (accounts.error) throw accounts.error;
+  if (!accounts.data?.length) {
+    const inserted = await admin.from('payout_accounts').insert({
+      partner_id: partnerId,
+      account_holder_name: 'Partner Active A',
+      iban_encrypted: 'repo-int-encrypted-iban-partner-a',
+      bic: 'ABNANL2A',
+      country: 'NL',
+      is_default: true,
+    });
+    if (inserted.error) throw inserted.error;
+  }
+
+  const sale = await admin
+    .from('sales')
+    .insert({
+      partner_id: partnerId,
+      status: 'won',
+      currency: 'EUR',
+      gross_amount_cents: 1815,
+      net_amount_cents: 1500,
+      metadata: { source: 'repository-integration', purpose: 'payout_double_spend_guard' },
+    })
+    .select('id')
+    .single();
+  if (sale.error) throw sale.error;
+
+  const commission = await admin
+    .from('commissions')
+    .insert({
+      sale_id: sale.data.id,
+      partner_id: partnerId,
+      status: 'payable',
+      basis_amount_cents: 1500,
+      rate_bps: 1000,
+      commission_amount_cents: 150,
+      currency: 'EUR',
+      metadata: { source: 'repository-integration', purpose: 'payout_double_spend_guard' },
+    })
+    .select('id')
+    .single();
+  if (commission.error) throw commission.error;
+
+  return {
+    partnerId,
+    saleId: sale.data.id,
+    commissionId: commission.data.id,
+  };
+}
+
+async function cleanupPartnerAPayableFixture(admin, fixture, payoutRequestId) {
+  if (!fixture) return;
+  if (payoutRequestId) {
+    const delPayout = await admin.from('payout_requests').delete().eq('id', payoutRequestId);
+    if (delPayout.error) console.warn('cleanup payout_requests:', delPayout.error.message);
+  }
+  // commission_events cascade from commissions; commissions cascade from sales.
+  const delSale = await admin.from('sales').delete().eq('id', fixture.saleId);
+  if (delSale.error) console.warn('cleanup sales:', delSale.error.message);
 }
 
 const results = [];
@@ -45,8 +154,12 @@ function pass(name) {
 }
 
 function fail(name, err) {
-  results.push({ name, status: 'fail', err: String(err?.message ?? err) });
-  console.error(`FAIL ${name}: ${err?.message ?? err}`);
+  const detail =
+    err?.message ||
+    err?.code ||
+    (err && typeof err === 'object' ? JSON.stringify(err) : String(err));
+  results.push({ name, status: 'fail', err: detail });
+  console.error(`FAIL ${name}: ${detail}`);
 }
 
 async function asUser(url, anonKey, email) {
@@ -57,7 +170,8 @@ async function asUser(url, anonKey, email) {
 }
 
 async function main() {
-  const { apiUrl, anonKey } = loadEnv();
+  const { apiUrl, anonKey, serviceKey } = loadEnv();
+  const admin = clientFor(apiUrl, serviceKey);
   console.log(`API: ${apiUrl}`);
 
   // --- auth ---
@@ -327,30 +441,55 @@ async function main() {
     fail('partner_lead_register', e);
   }
 
-  // --- partner payout requests (requires feature_flags partner_payouts=true, see seed-local-identities.mjs) ---
-  try {
-    const { sb } = await asUser(apiUrl, anonKey, 'partner.active.a@local.vdb');
-    const before = await sb.from('commissions').select('id').eq('status', 'payable');
-    if (before.error) throw before.error;
-    if (!before.data?.length) throw new Error('expected a payable commission for partner A (see seed)');
+  // --- partner payout requests (local flag + synthetic payable fixture; no real payout) ---
+  {
+    let fixture = null;
+    let payoutRequestId = null;
+    try {
+      fixture = await ensurePartnerAPayableFixture(admin);
+      const { sb } = await asUser(apiUrl, anonKey, 'partner.active.a@local.vdb');
 
-    const { data, error } = await sb.rpc('request_commission_payout', {});
-    if (error) throw error;
-    if (!data?.id || data.status !== 'submitted') throw new Error('unexpected payout_requests result');
+      const before = await sb
+        .from('commissions')
+        .select('id,status')
+        .eq('id', fixture.commissionId)
+        .maybeSingle();
+      if (before.error) throw before.error;
+      if (!before.data || before.data.status !== 'payable') {
+        throw new Error('synthetic payable commission fixture missing for partner A');
+      }
 
-    const after = await sb.from('commissions').select('id').eq('status', 'payable');
-    if (after.error) throw after.error;
-    if ((after.data ?? []).some((c) => before.data.some((b) => b.id === c.id))) {
-      throw new Error('payable commissions should have moved to payout_requested');
+      const { data, error } = await sb.rpc('request_commission_payout', {
+        p_commission_ids: [fixture.commissionId],
+      });
+      if (error) throw error;
+      if (!data?.id || data.status !== 'submitted') throw new Error('unexpected payout_requests result');
+      payoutRequestId = data.id;
+
+      const after = await sb
+        .from('commissions')
+        .select('id,status')
+        .eq('id', fixture.commissionId)
+        .maybeSingle();
+      if (after.error) throw after.error;
+      if (after.data?.status !== 'payout_requested') {
+        throw new Error('payable commission should have moved to payout_requested');
+      }
+
+      // Double-spend guard: same commission must not be requestable again.
+      const second = await sb.rpc('request_commission_payout', {
+        p_commission_ids: [fixture.commissionId],
+      });
+      if (!second.error) {
+        throw new Error('expected second payout request to fail (commission no longer payable)');
+      }
+      pass('partner_payout_request_and_double_spend_guard');
+      await sb.auth.signOut();
+    } catch (e) {
+      fail('partner_payout_request_and_double_spend_guard', e);
+    } finally {
+      await cleanupPartnerAPayableFixture(admin, fixture, payoutRequestId);
     }
-
-    // Double-spend guard: no payable commissions left -> second request must fail closed.
-    const second = await sb.rpc('request_commission_payout', {});
-    if (!second.error) throw new Error('expected second payout request to fail (no payable commissions)');
-    pass('partner_payout_request_and_double_spend_guard');
-    await sb.auth.signOut();
-  } catch (e) {
-    fail('partner_payout_request_and_double_spend_guard', e);
   }
 
   try {

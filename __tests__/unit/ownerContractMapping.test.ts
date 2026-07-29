@@ -9,12 +9,19 @@ import {
 } from '@/api/contract/ownerMapping';
 import { BACKEND_CONTRACT } from '@/config/backendContract';
 
-describe('owner contract pin 0.2.0-rc.5', () => {
-  it('pins owner rc.5 and keeps rc.4/rc.3 as superseded', () => {
-    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.5');
-    expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.29.partner-identity-directory-rc5');
-    expect(BACKEND_CONTRACT.status).toBe('CONSUMER_PIN_OWNER_RC5');
-    expect(BACKEND_CONTRACT.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.5');
+describe('owner contract pin 0.2.0-rc.6', () => {
+  it('pins owner rc.6 and keeps rc.5/rc.4/rc.3 as superseded', () => {
+    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.29.partner-approval-aal2-rc6');
+    expect(BACKEND_CONTRACT.status).toBe('CONSUMER_PIN_OWNER_RC6');
+    expect(BACKEND_CONTRACT.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.partnerIdentityDirectoryCompatibleWith).toBe(
+      'vdb-backend-contract@0.2.0-rc.5',
+    );
+    expect(BACKEND_CONTRACT.supersededPins.rc5.packageId).toBe('vdb-backend-contract@0.2.0-rc.5');
+    expect(BACKEND_CONTRACT.supersededPins.rc5.schemaVersion).toBe(
+      '2026.07.29.partner-identity-directory-rc5',
+    );
     expect(BACKEND_CONTRACT.supersededPins.rc4.packageId).toBe('vdb-backend-contract@0.2.0-rc.4');
     expect(BACKEND_CONTRACT.supersededPins.rc3.packageId).toBe('vdb-backend-contract@0.2.0-rc.3');
   });

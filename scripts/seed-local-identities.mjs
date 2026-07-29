@@ -122,6 +122,7 @@ async function wipeSeedDomain(db, ids) {
     'invoice_items','payment_events','invoices',
     'project_activity','project_updates','project_milestones','project_members','projects',
     'commission_events','commissions','sale_attributions','sales',
+    'payout_requests',
     'partner_links','partner_codes',
     'partner_lead_staff_notes','partner_leads',
   ];

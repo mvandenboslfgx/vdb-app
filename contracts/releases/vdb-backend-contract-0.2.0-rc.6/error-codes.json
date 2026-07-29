@@ -1,0 +1,58 @@
+{
+  "codes": [
+    "AUTH_REQUIRED",
+    "AUTH_NO_ACCESS",
+    "FORBIDDEN",
+    "NOT_FOUND",
+    "CONFLICT",
+    "VALIDATION_FAILED",
+    "CHECKOUT_DISABLED",
+    "CONTRACT_DRIFT",
+    "FEATURE_DISABLED",
+    "NOT_PARTICIPANT",
+    "INTERNAL_LEAK_DENIED",
+    "DOUBLE_BOOKING",
+    "INVALID_TRANSITION",
+    "IDEMPOTENCY_CONFLICT",
+    "AAL2_REQUIRED",
+    "PARTNER_LEAD_ALREADY_CONVERTED",
+    "PRODUCT_NOT_FOUND",
+    "PRODUCT_NOT_PARTNER_ELIGIBLE",
+    "ACTIVATION_DENIED",
+    "partner_ledger_unbalanced",
+    "partner_ledger_immutable",
+    "partner_payout_paid_immutable"
+  ],
+  "activationDenied": {
+    "format": "ACTIVATION_DENIED:<code>",
+    "raisedBy": [
+      "partner_try_activate",
+      "activate_partner_profile",
+      "reactivate_partner"
+    ],
+    "note": "The suffix is the first blocking code from partner_activation_checklist.missing. Read the full checklist to render every remaining step; do not parse only the suffix. review_partner_application swallows this error so the staff approval still commits — the partner stays PENDING and activation_block_codes carries the codes.",
+    "codes": [
+      "PARTNER_TYPE_UNKNOWN",
+      "PARTNER_SUSPENDED",
+      "STAFF_APPROVAL_MISSING",
+      "AGE_NOT_VERIFIED",
+      "IDENTITY_NOT_VERIFIED",
+      "BUSINESS_NOT_VERIFIED",
+      "COMPANY_DETAILS_MISSING",
+      "AGREEMENT_NOT_ACCEPTED",
+      "PAYOUT_PROFILE_NOT_APPROVED",
+      "UNKNOWN"
+    ]
+  },
+  "rc5Notes": {
+    "VALIDATION_FAILED": "submit_partner_application raises this for an unknown p_partner_type, a missing legal name or contact email, a KvK supplied by an INDIVIDUAL, or a BUSINESS without a company name or without an 8-digit KvK.",
+    "FORBIDDEN": "All admin_get_* RPCs and partner_try_activate require staff. activate_partner_profile and reactivate_partner require OWNER/ADMIN. A partner can never activate itself.",
+    "FEATURE_DISABLED": "add_portal_support_internal_note requires support_internal_notes_rpc; staff_set_partner_compliance_fixture requires partner_compliance_fixtures.",
+    "AAL2_REQUIRED": "See rc6Notes.AAL2_REQUIRED — rc.6 adds review_partner_application to the AAL2-required set."
+  },
+  "rc6Notes": {
+    "AAL2_REQUIRED": "activate_partner_profile, reactivate_partner, approve_partner_commission, reject_partner_commission, suspend_partner, and review_partner_application require an aal2 session.",
+    "VALIDATION_FAILED": "review_partner_application raises this for a null application id or null approve flag.",
+    "INVALID_TRANSITION": "review_partner_application raises this when mutating an application that is not SUBMITTED (terminal APPROVED/REJECTED retries are idempotent no-ops)."
+  }
+}

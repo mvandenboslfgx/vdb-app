@@ -1,0 +1,18 @@
+{
+  "invariants": [
+    "one_commission_per_partner_sale",
+    "ledger_append_only",
+    "ledger_balanced_debit_eq_credit",
+    "available_liability_non_negative_floor",
+    "payout_capped_by_available_liability",
+    "paid_payout_immutable",
+    "refund_after_payout_via_adjustment",
+    "no_client_financial_authority",
+    "cash_receipt_staff_only_idempotent",
+    "payout_eligible_requires_approved_payout_profile"
+  ],
+  "calculationRuleVersion": "v1_flat_bps",
+  "rc5Notes": {
+    "payout_eligible_requires_approved_payout_profile": "partner_try_activate sets payout_eligible = (payout_profile_status = 'APPROVED'). Activation never infers payout eligibility, and no rc.5 RPC sets payout_eligible from any other source."
+  }
+}

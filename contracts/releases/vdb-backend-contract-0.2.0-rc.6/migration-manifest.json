@@ -1,0 +1,170 @@
+{
+  "partnerMigrationCount": 8,
+  "mobileCompatMigrationCount": 1,
+  "messagingSupportAppointmentsMigrationCount": 4,
+  "adminControlSurfaceMigrationCount": 3,
+  "partnerIdentityDirectoryMigrationCount": 5,
+  "stagingReconcileMigrationCount": 3,
+  "highestVersion": "20260729140400",
+  "outsideProductionBaselineEndingAt": "20260719170000",
+  "partnerMigrations": [
+    {
+      "version": "20260722100000",
+      "filename": "20260722100000_partner_identity_roles.sql",
+      "purpose": "Partner enums + partner_profiles + identity helpers (BCP-001)"
+    },
+    {
+      "version": "20260722110000",
+      "filename": "20260722110000_partner_applications_profiles_codes.sql",
+      "purpose": "Applications + codes (BCP-002..004)"
+    },
+    {
+      "version": "20260722120000",
+      "filename": "20260722120000_partner_leads_and_sales.sql",
+      "purpose": "partner_leads/sales — not marketing leads (BCP-005..006)"
+    },
+    {
+      "version": "20260722130000",
+      "filename": "20260722130000_partner_commissions_and_ledger.sql",
+      "purpose": "Commissions + balanced append-only ledger (BCP-007, 010)"
+    },
+    {
+      "version": "20260722140000",
+      "filename": "20260722140000_partner_payouts.sql",
+      "purpose": "Payout requests + payouts (BCP-008)"
+    },
+    {
+      "version": "20260722150000",
+      "filename": "20260722150000_partner_cash_receipts_adjustments.sql",
+      "purpose": "Cash receipts + adjustments (BCP-010)"
+    },
+    {
+      "version": "20260722160000",
+      "filename": "20260722160000_partner_rls_and_rpcs.sql",
+      "purpose": "RLS + partner mutation RPCs + grants"
+    },
+    {
+      "version": "20260722170000",
+      "filename": "20260722170000_partner_verify_contracts.sql",
+      "purpose": "verify_partner_admin_contracts"
+    }
+  ],
+  "mobileCompatMigrations": [
+    {
+      "version": "20260724160000",
+      "filename": "20260724160000_mobile_compat_rc2.sql",
+      "purpose": "feature_flags + feature_flag_enabled + payout flag gate + verify_mobile_compat_contracts"
+    }
+  ],
+  "messagingSupportAppointmentsMigrations": [
+    {
+      "version": "20260725120000",
+      "filename": "20260725120000_messaging_support_appointments_rc3.sql",
+      "purpose": "Conversation hardening, message_attachments, appointments, ticket NEW, flags, participant RLS"
+    },
+    {
+      "version": "20260725120100",
+      "filename": "20260725120100_messaging_support_appointments_rc3_rpcs.sql",
+      "purpose": "SECURITY DEFINER RPCs + verify_messaging_support_appointments_contracts + ticket DEFAULT NEW"
+    },
+    {
+      "version": "20260725120200",
+      "filename": "20260725120200_fix_appointment_rls_recursion.sql",
+      "purpose": "SECURITY DEFINER can_view_portal_appointment to break appointments/participants RLS recursion"
+    },
+    {
+      "version": "20260725120300",
+      "filename": "20260725120300_rc3_table_grants.sql",
+      "purpose": "GRANT authenticated/service_role DML on new rc.3 tables"
+    }
+  ],
+  "stagingReconcileMigrations": [
+    {
+      "version": "20260728090000",
+      "filename": "20260728090000_fix_partner_financial_summary_partner_id_ambiguity.sql",
+      "purpose": "Fix partner_financial_summary partner_id ambiguity"
+    },
+    {
+      "version": "20260728090100",
+      "filename": "20260728090100_partner_financial_summary_active_only.sql",
+      "purpose": "Partner financial summary active-only hardening"
+    },
+    {
+      "version": "20260728210000",
+      "filename": "20260728210000_partner_catalog_coupling.sql",
+      "purpose": "Partner catalog coupling on products + list_partner_catalog"
+    }
+  ],
+  "adminControlSurfaceMigrations": [
+    {
+      "version": "20260729120000",
+      "filename": "20260729120000_admin_control_surface_rc4.sql",
+      "purpose": "Admin helpers, idempotency store, REJECTED enum, ticket alias, confirm_partner_sale PENDING"
+    },
+    {
+      "version": "20260729120100",
+      "filename": "20260729120100_admin_control_surface_rc4_rpcs.sql",
+      "purpose": "admin_dashboard_stats, work_queue, commission review, partner lifecycle, directory, settings/security, verify"
+    },
+    {
+      "version": "20260729130000",
+      "filename": "20260729130000_harden_admin_idempotency_helper_execute.sql",
+      "purpose": "Revoke client EXECUTE on admin_idempotency_get/put; extend verifier ACL checks"
+    }
+  ],
+  "partnerIdentityDirectoryMigrations": [
+    {
+      "version": "20260729140000",
+      "filename": "20260729140000_partner_identity_directory_rc5_schema.sql",
+      "purpose": "Partner identity enums, additive columns on partner_applications/partner_profiles, partner_agreement_versions + partner_agreement_acceptances with RLS, placeholder agreement seed, conservative backfill, fail-closed flags"
+    },
+    {
+      "version": "20260729140100",
+      "filename": "20260729140100_partner_identity_directory_rc5_activation.sql",
+      "purpose": "partner_is_valid_kvk, partner_activation_checklist, partner_try_activate, typed submit_partner_application (7-arg), review_partner_application, activate_partner_profile, accept_partner_agreement, staff_set_partner_compliance_fixture, checklist-gated reactivate_partner, admin_list_partners identity keys"
+    },
+    {
+      "version": "20260729140200",
+      "filename": "20260729140200_admin_directory_detail_rc5_rpcs.sql",
+      "purpose": "admin_get_product/partner/customer/project/quote/invoice/appointment, list_portal_support_ticket_replies, rc.3 verifier realigned so the internal-notes flag may be enabled on staging"
+    },
+    {
+      "version": "20260729140300",
+      "filename": "20260729140300_partner_identity_directory_rc5_verify.sql",
+      "purpose": "admin_get_security_status rc.5 schema stamp, verify_partner_identity_directory_rc5_contracts, verify_partner_admin_contracts retargeted to the typed 7-arg submit signature"
+    },
+    {
+      "version": "20260729140400",
+      "filename": "20260729140400_rc5_verifier_fixture_flag_exists_only.sql",
+      "purpose": "Narrow partner_compliance_fixtures verifier check to existence so staging may enable fixtures; fail-closed still proven by fixtures:flag_gated"
+    }
+  ],
+  "applyOrder": [
+    "20260729140000_partner_identity_directory_rc5_schema.sql",
+    "20260729140100_partner_identity_directory_rc5_activation.sql",
+    "20260729140200_admin_directory_detail_rc5_rpcs.sql",
+    "20260729140300_partner_identity_directory_rc5_verify.sql",
+    "20260729140400_rc5_verifier_fixture_flag_exists_only.sql",
+    "20260729141024_review_partner_application_aal2_rc6.sql",
+    "20260729145145_admin_rpc_schema_stamps_rc6.sql"
+  ],
+  "applyPolicy": {
+    "local": "verified",
+    "staging": "authorized after local verify",
+    "production": "NOT AUTHORIZED"
+  },
+  "partnerApprovalAal2Migrations": [
+    {
+      "version": "20260729141024",
+      "filename": "20260729141024_review_partner_application_aal2_rc6.sql",
+      "purpose": "require_aal2 on review_partner_application; admin_get_security_status rc.6 stamp; verify_partner_approval_aal2_rc6_contracts"
+    }
+  ],
+  "adminRpcSchemaStampMigrations": [
+    {
+      "version": "20260729145145",
+      "filename": "20260729145145_admin_rpc_schema_stamps_rc6.sql",
+      "purpose": "Formal RC6 schema_version stamp bump for admin/directory/checklist read RPCs; verify_admin_rpc_schema_stamps_rc6"
+    }
+  ]
+}

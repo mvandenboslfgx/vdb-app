@@ -1,0 +1,24 @@
+{
+  "contractVersion": "vdb-backend-contract@0.2.0-rc.6",
+  "schemaVersion": "2026.07.29.partner-approval-aal2-rc6",
+  "minimumCompatibleClientVersion": ">=0.2.0-rc.6",
+  "partnerSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.1",
+  "mobileCompatCompatibleWith": "vdb-backend-contract@0.2.0-rc.2",
+  "messagingSupportCompatibleWith": "vdb-backend-contract@0.2.0-rc.3",
+  "adminControlSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.4",
+  "partnerIdentityDirectoryCompatibleWith": "vdb-backend-contract@0.2.0-rc.5",
+  "generatedAt": "2026-07-29",
+  "sourceHeadHint": "partner-approval-aal2-rc6",
+  "canonicalBackendOwner": "VDB Digital 2.0",
+  "unpublished": true,
+  "notes": [
+    "RC6 security amendment on top of rc.5 partner identity + admin directory detail.",
+    "review_partner_application now requires server-side AAL2 (require_aal2) after auth + staff capability checks and before any approve/reject mutation or success audit.",
+    "All publicly reachable overloads/wrappers of review_partner_application must be AAL2-gated (staging: single 4-arg overload).",
+    "Staff approval alone still never activates a partner; ACTIVE remains exclusive to partner_try_activate when the activation checklist passes.",
+    "admin_get_security_status schema_version stamp bumped to 2026.07.29.partner-approval-aal2-rc6.",
+    "verify_partner_approval_aal2_rc6_contracts proves AAL2 presence/order on review and sibling privileged RPCs.",
+    "Does not authorize production apply.",
+    "admin/directory/checklist read RPC schema_version stamps formally bumped to 2026.07.29.partner-approval-aal2-rc6 via migration 20260729145145."
+  ]
+}

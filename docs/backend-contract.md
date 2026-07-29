@@ -1,30 +1,33 @@
 # Backend contract (Mobile consumer)
 
 **Repository role:** `MOBILE_CLIENT`
-**Pinned package:** `vdb-backend-contract@0.2.0-rc.3`
-**Pinned schemaVersion:** `2026.07.25.messaging-support-appointments-rc3`
-**Status:** `CONSUMER_PIN_OWNER_RC3`
+**Pinned package:** `vdb-backend-contract@0.2.0-rc.6`
+**Pinned schemaVersion:** `2026.07.29.partner-approval-aal2-rc6`
+**Status:** `CONSUMER_PIN_OWNER_RC6`
 **Canonical publisher:** VDB Digital 2.0 only
+**Owner baseline commit:** `ccdeb8455696bf4381f2e6805e57e41aa3e51ca4`
 
 ## Explicit non-claims
 
+- Superseded pins (`0.2.0-rc.5`, `0.2.0-rc.4`, `0.2.0-rc.3`, and older) are **history only** — **not** live fallback. Runtime asserts the RC6 `schemaVersion` and fails closed on drift.
 - Mobile **`0.1.1` / `2026.07.24.remediation`** was a **local remediation proposal** only — **not** canonical, **not** for staging publish.
 - Owner historical **`0.1.0` / `2026.07.22.freeze`** is freeze history only — **not** the shared staging target.
 
 ## Consumer rules
 
-1. Pin exact owner `schemaVersion` before shared staging/preview builds (`2026.07.25.messaging-support-appointments-rc3` for RC3 freeze/staging).
+1. Pin exact owner `schemaVersion` before shared staging/preview builds (`2026.07.29.partner-approval-aal2-rc6` for RC6).
 2. Use `src/api/contract/ownerMapping.ts` for table/RPC name mapping to `portal_*` / `partner_*`.
 3. Local `supabase/migrations/*` in this repo remain **NON-CANONICAL** isolated proof SQL.
 4. Do not invent parallel base tables on shared staging.
-5. Financial flags stay fail-closed until owner enables them.
+5. Financial flags stay fail-closed until owner enables them. **Payout UI/features stay disabled.**
 6. Handle concurrency error codes `PARTNER_LEAD_ALREADY_CONVERTED` and `PARTNER_INSUFFICIENT_LIABILITY` on partner sale/payout paths.
-7. `portal_conversations`, `portal_conversation_participants`, `portal_messages`, `portal_message_attachments`, `portal_support_tickets`, `portal_support_replies`, `portal_appointments`, and `portal_appointment_participants` are now live surfaces — see `src/api/repositories/messagesRepository.ts`, `supportRepository.ts`, `appointmentsRepository.ts`.
-8. Customer message/reply reads must filter `is_internal = false` client-side as defense in depth, even though RLS already enforces this. Customer flows must never call internal-note RPCs.
-9. `messaging_realtime`, `support_internal_notes_rpc` and `appointments_booking` remain fail-closed (`false`) until the owner enables them. Booking/cancel/reschedule must surface `FEATURE_DISABLED` as a `DomainError.configuration`, never crash. `availability_slots` does not exist in rc.3 — `listAvailableSlots()` always returns `[]`.
+7. Treat `approve_partner_application` / `reject_partner_application` (Owner `review_partner_application`) as AAL2 step-up actions. Expect `AAL2_REQUIRED` at AAL1; complete MFA before retry.
+8. Staff approval alone never activates a partner — read `partner_activation_checklist` after approve when status remains `PENDING`.
+9. `messaging_realtime`, `support_internal_notes_rpc`, `appointments_booking`, and `partner_payouts` remain fail-closed (`false`) until the owner enables them.
 
 ## Related
 
-- Owner bundle: `vdbdigital2.0/contracts/releases/vdb-backend-contract-0.2.0-rc.3/`
-- Owner convergence: `vdbdigital2.0/docs/contract-convergence-rc3.md`
+- Vendored Owner bundle: `contracts/releases/vdb-backend-contract-0.2.0-rc.6/`
+- Consumer pin JSON: `contracts/backend-contract.json`
 - Mobile pin module: `src/config/backendContract.ts`
+- Provenance: `artifacts/rc6-contract-pin/PROVENANCE.md`
