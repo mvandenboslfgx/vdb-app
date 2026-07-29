@@ -50,15 +50,11 @@ describe('partner application review RPC contract', () => {
   it('reject sends p_approve=false and p_rejection_reason', async () => {
     mockRpcOwner.mockResolvedValueOnce({ data: 'app-1', error: null });
     const result = await rejectPartnerApplication('app-1', 'Not complete');
-    expect(mockRpcOwner).toHaveBeenCalledWith(
-      { id: 'fake-client' },
-      'reject_partner_application',
-      {
-        p_application_id: 'app-1',
-        p_approve: false,
-        p_rejection_reason: 'Not complete',
-      },
-    );
+    expect(mockRpcOwner).toHaveBeenCalledWith({ id: 'fake-client' }, 'reject_partner_application', {
+      p_application_id: 'app-1',
+      p_approve: false,
+      p_rejection_reason: 'Not complete',
+    });
     expect(result).toEqual({ id: 'app-1', status: 'rejected' });
   });
 
