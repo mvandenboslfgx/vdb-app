@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { accountRepository, type AccountDeletionRequest } from '@/api/repositories/accountRepository';
+import {
+  accountRepository,
+  type AccountDeletionRequest,
+} from '@/api/repositories/accountRepository';
 import { Button, Screen, Text, TextInput } from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import { spacing } from '@/theme';

@@ -9,36 +9,36 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-more"
+    id: 'tab-customer-more'
 - tapOn:
-    id: "nav-support"
+    id: 'nav-support'
 - tapOn:
-    id: "btn-support-new"
+    id: 'btn-support-new'
 - extendedWaitUntil:
     visible:
-      id: "screen-support-new"
+      id: 'screen-support-new'
     timeout: 15000
 - tapOn:
-    id: "input-support-subject"
+    id: 'input-support-subject'
 - eraseText
-- inputText: "Maestro support subject"
+- inputText: 'Maestro support subject'
 - tapOn:
-    id: "input-support-description"
+    id: 'input-support-description'
 - eraseText
-- inputText: "Maestro support body"
+- inputText: 'Maestro support body'
 - hideKeyboard
 - scrollUntilVisible:
     element:
-      id: "btn-support-submit"
+      id: 'btn-support-submit'
     direction: DOWN
     timeout: 10000
 - tapOn:
-    id: "btn-support-submit"
+    id: 'btn-support-submit'
 - extendedWaitUntil:
     visible:
-      id: "screen-support-detail"
+      id: 'screen-support-detail'
     timeout: 30000
-- takeScreenshot: "04-support-ticket"
+- takeScreenshot: '04-support-ticket'

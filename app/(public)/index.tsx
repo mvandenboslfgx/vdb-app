@@ -64,9 +64,24 @@ export default function PublicWelcomeScreen() {
           <Text variant="caption" color="textSecondary">
             {t('welcome.demoHint')}
           </Text>
-          <Button title={t('welcome.demoCustomer')} variant="secondary" fullWidth onPress={() => enterDemo('customer')} />
-          <Button title={t('welcome.demoPartner')} variant="secondary" fullWidth onPress={() => enterDemo('partner')} />
-          <Button title={t('welcome.demoAdmin')} variant="secondary" fullWidth onPress={() => enterDemo('admin')} />
+          <Button
+            title={t('welcome.demoCustomer')}
+            variant="secondary"
+            fullWidth
+            onPress={() => enterDemo('customer')}
+          />
+          <Button
+            title={t('welcome.demoPartner')}
+            variant="secondary"
+            fullWidth
+            onPress={() => enterDemo('partner')}
+          />
+          <Button
+            title={t('welcome.demoAdmin')}
+            variant="secondary"
+            fullWidth
+            onPress={() => enterDemo('admin')}
+          />
         </View>
       ) : null}
     </Screen>

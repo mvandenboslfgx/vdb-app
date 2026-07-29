@@ -10,26 +10,26 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-more"
+    id: 'tab-customer-more'
 - tapOn:
-    id: "nav-invoices"
+    id: 'nav-invoices'
 - extendedWaitUntil:
     visible:
-      id: "invoice-row-0"
+      id: 'invoice-row-0'
     timeout: 20000
 - tapOn:
-    id: "invoice-row-0"
+    id: 'invoice-row-0'
 - extendedWaitUntil:
     visible:
-      id: "screen-invoice-detail"
+      id: 'screen-invoice-detail'
     timeout: 60000
 - extendedWaitUntil:
     visible:
-      id: "customer-checkout-start"
+      id: 'customer-checkout-start'
     timeout: 60000
 - assertVisible:
-    id: "customer-checkout-start"
-- takeScreenshot: "16-checkout-browser-return"
+    id: 'customer-checkout-start'
+- takeScreenshot: '16-checkout-browser-return'

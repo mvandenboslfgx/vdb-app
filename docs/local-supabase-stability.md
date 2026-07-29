@@ -4,21 +4,21 @@ Updated: 2026-07-22
 
 ## Required stack (this repo only)
 
-| Field | Value |
-|---|---|
-| `project_id` | `vdb-digital-mobile-local` |
-| API | `127.0.0.1:54521` |
-| DB | `127.0.0.1:54522` |
-| Studio | `127.0.0.1:54523` |
+| Field          | Value                                    |
+| -------------- | ---------------------------------------- |
+| `project_id`   | `vdb-digital-mobile-local`               |
+| API            | `127.0.0.1:54521`                        |
+| DB             | `127.0.0.1:54522`                        |
+| Studio         | `127.0.0.1:54523`                        |
 | Kong container | `supabase_kong_vdb-digital-mobile-local` |
-| DB container | `supabase_db_vdb-digital-mobile-local` |
+| DB container   | `supabase_db_vdb-digital-mobile-local`   |
 
 Port block **5452x** is reserved for Mobile so it does not collide with:
 
-| Sibling | Ports |
-|---|---|
-| `vdbdigital2` | 54321 / 54322 (defaults) |
-| `vdb-partners` | 54421 / 54422 |
+| Sibling        | Ports                    |
+| -------------- | ------------------------ |
+| `vdbdigital2`  | 54321 / 54322 (defaults) |
+| `vdb-partners` | 54421 / 54422            |
 
 ## Architecture freeze
 

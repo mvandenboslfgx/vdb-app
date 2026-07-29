@@ -38,10 +38,7 @@ export default function NewReviewScreen() {
                 backgroundColor: value <= rating ? colors.champagneGold : colors.surfaceElevated,
               }}
             >
-              <Text
-                variant="label"
-                color={value <= rating ? 'backgroundPrimary' : 'textSecondary'}
-              >
+              <Text variant="label" color={value <= rating ? 'backgroundPrimary' : 'textSecondary'}>
                 {value}
               </Text>
             </Pressable>

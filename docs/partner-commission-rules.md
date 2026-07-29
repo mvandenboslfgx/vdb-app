@@ -2,7 +2,6 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 ## Eligibility (all must be true)
 
 1. Sale attributed to a valid active partner
@@ -14,18 +13,18 @@
 
 ## Status machine
 
-| Status | Meaning |
-|---|---|
-| `pending` | Attribution recorded |
-| `awaiting_payment` | Waiting for customer payment |
-| `payment_received` | Mollie confirmed paid |
-| `under_review` | Staff review |
-| `approved` | Approved amount locked |
-| `payable` | Eligible for payout batch |
-| `payout_requested` | Partner requested payout |
-| `paid` | Payout completed |
-| `rejected` | Not payable |
-| `reversed` | Clawback after prior approval/pay |
+| Status             | Meaning                           |
+| ------------------ | --------------------------------- |
+| `pending`          | Attribution recorded              |
+| `awaiting_payment` | Waiting for customer payment      |
+| `payment_received` | Mollie confirmed paid             |
+| `under_review`     | Staff review                      |
+| `approved`         | Approved amount locked            |
+| `payable`          | Eligible for payout batch         |
+| `payout_requested` | Partner requested payout          |
+| `paid`             | Payout completed                  |
+| `rejected`         | Not payable                       |
+| `reversed`         | Clawback after prior approval/pay |
 
 Every transition writes `commission_events` + `audit_logs`.
 

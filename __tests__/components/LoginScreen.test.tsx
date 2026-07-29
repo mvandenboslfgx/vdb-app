@@ -48,7 +48,9 @@ describe('LoginScreen', () => {
     await fireEvent.changeText(screen.getByTestId('auth-password-input'), 'supersecret');
     await fireEvent.press(screen.getByTestId('auth-login-submit'));
 
-    await waitFor(() => expect(mockSignIn).toHaveBeenCalledWith('demo@vdbdigital.nl', 'supersecret'));
+    await waitFor(() =>
+      expect(mockSignIn).toHaveBeenCalledWith('demo@vdbdigital.nl', 'supersecret'),
+    );
   });
 
   it('shows a backend error message when signIn rejects', async () => {

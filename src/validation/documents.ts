@@ -105,7 +105,8 @@ export const documentUploadSchema = z
       .max(MAX_UPLOAD_BYTES, 'errors.validation.documentTooLarge'),
   })
   .refine(
-    (data) => !(BLOCKED_UPLOAD_EXTENSIONS as readonly string[]).includes(fileExtension(data.fileName)),
+    (data) =>
+      !(BLOCKED_UPLOAD_EXTENSIONS as readonly string[]).includes(fileExtension(data.fileName)),
     { message: 'errors.validation.documentMimeNotAllowed', path: ['fileName'] },
   );
 

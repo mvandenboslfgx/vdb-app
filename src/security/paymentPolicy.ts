@@ -38,9 +38,7 @@ export interface PaymentPolicyInput {
   countryCode?: string;
 }
 
-export function evaluatePaymentPolicy(
-  input: PaymentPolicyInput,
-): PaymentPolicyDecision {
+export function evaluatePaymentPolicy(input: PaymentPolicyInput): PaymentPolicyDecision {
   if (!input.mollieCheckoutEnabled) {
     return {
       allowed: false,
@@ -49,10 +47,7 @@ export function evaluatePaymentPolicy(
     };
   }
 
-  if (
-    input.productType === 'restricted' ||
-    input.productType === 'external_subscription'
-  ) {
+  if (input.productType === 'restricted' || input.productType === 'external_subscription') {
     return {
       allowed: false,
       reason: 'restricted_product',

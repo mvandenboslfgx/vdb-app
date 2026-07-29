@@ -1,9 +1,4 @@
-import {
-  formatCurrency,
-  formatDate,
-  formatNumber,
-  formatPercent,
-} from '@/lib/format';
+import { formatCurrency, formatDate, formatNumber, formatPercent } from '@/lib/format';
 
 describe('format', () => {
   it('formats EUR cents for nl locale', () => {

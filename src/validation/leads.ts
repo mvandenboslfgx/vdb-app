@@ -21,7 +21,12 @@ export const leadRegistrationSchema = z.object({
 export type LeadRegistrationInput = z.infer<typeof leadRegistrationSchema>;
 
 export const leadContactUpdateSchema = z.object({
-  name: z.string().trim().min(2, 'errors.validation.leadNameMin').max(120, 'errors.validation.leadNameMax').optional(),
+  name: z
+    .string()
+    .trim()
+    .min(2, 'errors.validation.leadNameMin')
+    .max(120, 'errors.validation.leadNameMax')
+    .optional(),
   phone: z.string().trim().max(32, 'errors.validation.phoneMax').optional().or(z.literal('')),
   interest: z.string().trim().max(160).optional().or(z.literal('')),
   notes: z.string().trim().max(2000).optional().or(z.literal('')),
@@ -35,7 +40,12 @@ export const leadQualifyStatuses = ['contacted', 'qualified', 'rejected', 'inval
 export const adminLeadQualifySchema = z
   .object({
     status: z.enum(leadQualifyStatuses, { error: 'errors.validation.decisionRequired' }),
-    reason: z.string().trim().max(2000, 'errors.validation.commentMax').optional().or(z.literal('')),
+    reason: z
+      .string()
+      .trim()
+      .max(2000, 'errors.validation.commentMax')
+      .optional()
+      .or(z.literal('')),
   })
   .refine(
     (data) =>

@@ -27,9 +27,7 @@ describe('Premium UI components', () => {
   });
 
   it('renders inactive tab icon in muted state', async () => {
-    await renderWithProviders(
-      <PremiumTabIcon name="folder-outline" focused={false} />,
-    );
+    await renderWithProviders(<PremiumTabIcon name="folder-outline" focused={false} />);
     expect(screen.toJSON()).toBeTruthy();
   });
 

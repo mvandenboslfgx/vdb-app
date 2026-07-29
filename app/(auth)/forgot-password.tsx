@@ -44,7 +44,12 @@ export default function ForgotPasswordScreen() {
           {t('forgot.successBody')}
         </Text>
         <Link href="/(auth)/login" asChild>
-          <Button testID="btn-forgot-back-to-login" title={t('forgot.backToLogin')} variant="gold" fullWidth />
+          <Button
+            testID="btn-forgot-back-to-login"
+            title={t('forgot.backToLogin')}
+            variant="gold"
+            fullWidth
+          />
         </Link>
       </Screen>
     );

@@ -9,22 +9,22 @@ appId: nl.vdbdigital.app
       EMAIL: customer.b@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-more"
+    id: 'tab-customer-more'
 - tapOn:
-    id: "nav-partner-apply"
+    id: 'nav-partner-apply'
 - assertVisible:
-    id: "screen-partner-apply"
+    id: 'screen-partner-apply'
 - tapOn:
-    id: "input-partner-apply-company"
+    id: 'input-partner-apply-company'
     optional: true
-- inputText: "Maestro Partner BV"
+- inputText: 'Maestro Partner BV'
 - tapOn:
-    id: "btn-partner-apply-accept-terms"
+    id: 'btn-partner-apply-accept-terms'
     optional: true
 - tapOn:
-    id: "btn-partner-apply-submit"
+    id: 'btn-partner-apply-submit'
     optional: true
-- takeScreenshot: "08-partner-application"
+- takeScreenshot: '08-partner-application'

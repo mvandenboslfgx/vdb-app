@@ -2,7 +2,6 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 ## Prerequisites
 
 - Node 20+

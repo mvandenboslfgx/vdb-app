@@ -70,7 +70,11 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'gold' || variant === 'primary' ? colors.backgroundPrimary : colors.champagneGold}
+          color={
+            variant === 'gold' || variant === 'primary'
+              ? colors.backgroundPrimary
+              : colors.champagneGold
+          }
         />
       ) : (
         <Text

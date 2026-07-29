@@ -19,11 +19,11 @@ Locally: three isolated stacks (unique project_id + ports + volumes)
 
 ## Environment rule
 
-| Environment | Backend |
-|---|---|
-| Local development | Each repo’s own Supabase stack |
-| Shared staging | Same staging Supabase project |
-| Production | Same production Supabase project |
+| Environment       | Backend                          |
+| ----------------- | -------------------------------- |
+| Local development | Each repo’s own Supabase stack   |
+| Shared staging    | Same staging Supabase project    |
+| Production        | Same production Supabase project |
 
 **Local apart, staging and production together.**
 

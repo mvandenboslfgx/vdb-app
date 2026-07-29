@@ -2,7 +2,6 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 ## Lawful basis (draft — owner/legal must confirm)
 
 - Contract performance (projects, invoices, support)
@@ -19,13 +18,13 @@
 
 ## Retention (proposed defaults)
 
-| Data | Retention |
-|---|---|
-| Financial records | 7 years (NL tax) |
-| Support messages | 3 years after close |
-| Audit logs | 2+ years |
-| Push tokens | Until logout / inactive 180 days |
-| Soft-deleted profiles | Purge after deletion SLA |
+| Data                  | Retention                        |
+| --------------------- | -------------------------------- |
+| Financial records     | 7 years (NL tax)                 |
+| Support messages      | 3 years after close              |
+| Audit logs            | 2+ years                         |
+| Push tokens           | Until logout / inactive 180 days |
+| Soft-deleted profiles | Purge after deletion SLA         |
 
 Exact periods require owner/legal sign-off — see `manual-owner-actions.md`.
 

@@ -1,8 +1,4 @@
-import {
-  __testables,
-  ConfigurationError,
-  resolveDemoMode,
-} from '@/config/env';
+import { __testables, ConfigurationError, resolveDemoMode } from '@/config/env';
 
 describe('demo mode hardening', () => {
   it('allows demo only in development when explicitly enabled', () => {

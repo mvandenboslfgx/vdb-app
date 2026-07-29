@@ -20,9 +20,7 @@ import { listExecutableFlowNames, writeSuiteManifestMarkdown } from './maestro-s
 
 const MAESTRO =
   process.env.MAESTRO_BIN ||
-  (process.platform === 'win32'
-    ? String.raw`C:\Users\XXX\maestro\bin\maestro.bat`
-    : 'maestro');
+  (process.platform === 'win32' ? String.raw`C:\Users\XXX\maestro\bin\maestro.bat` : 'maestro');
 
 const MAESTRO_CLIENT_JAR =
   process.env.MAESTRO_CLIENT_JAR ||
@@ -43,9 +41,7 @@ const FLOWS = listExecutableFlowNames();
 const TOTAL = FLOWS.length;
 
 const device =
-  process.env.ANDROID_SERIAL ||
-  process.argv.find((a, i) => i >= 2 && !a.startsWith('-')) ||
-  '';
+  process.env.ANDROID_SERIAL || process.argv.find((a, i) => i >= 2 && !a.startsWith('-')) || '';
 const mode = process.env.MAESTRO_MODE || (process.argv.includes('--suite') ? 'suite' : 'per-flow');
 const fromArg = process.argv.find((a) => a.startsWith('--from='));
 const fromFlow = fromArg ? fromArg.slice('--from='.length) : process.env.MAESTRO_FROM || '';
@@ -117,7 +113,7 @@ function healthGate() {
   const res = run('node', ['scripts/device-test-harness.mjs', 'prepare'], { stdio: 'inherit' });
   if ((res.status ?? 1) !== 0) {
     console.error('INFRASTRUCTURE BLOCKED: health gate failed — suite aborted');
-    process.exit(res.status === 2 ? 2 : res.status ?? 1);
+    process.exit(res.status === 2 ? 2 : (res.status ?? 1));
   }
 }
 
@@ -133,7 +129,9 @@ console.log(FLOWS.map((f, i) => `  ${i + 1}. ${f}`).join('\n'));
 
 let selected = FLOWS;
 if (fromFlow) {
-  const idx = FLOWS.findIndex((f) => f === fromFlow || f.startsWith(fromFlow) || f.includes(fromFlow));
+  const idx = FLOWS.findIndex(
+    (f) => f === fromFlow || f.startsWith(fromFlow) || f.includes(fromFlow),
+  );
   if (idx < 0) {
     console.error(`--from=${fromFlow} did not match any discovered flow`);
     process.exit(1);
@@ -165,13 +163,18 @@ if (mode === 'suite' && !fromFlow) {
     out
       .split(/\r?\n/)
       .map((l) => l.trim())
-      .find((l) => /Element not|Assertion|FAILED|Error|Unable|Parse|not found|Timeout|driver|INFRASTRUCTURE/i.test(l)) ??
-    `exit ${res.status}`
+      .find((l) =>
+        /Element not|Assertion|FAILED|Error|Unable|Parse|not found|Timeout|driver|INFRASTRUCTURE/i.test(
+          l,
+        ),
+      ) ?? `exit ${res.status}`
   ).slice(0, 200);
 
   for (const flow of FLOWS) {
     const stem = flow.replace(/\.yaml$/, '');
-    const shotDone = new RegExp(`Take screenshot ${stem}(?:\\.png)?\\.\\.\\. COMPLETED`, 'i').test(out);
+    const shotDone = new RegExp(`Take screenshot ${stem}(?:\\.png)?\\.\\.\\. COMPLETED`, 'i').test(
+      out,
+    );
     const startedFlow = out.includes(`> Flow ${stem}`) || out.includes(flow);
     let result = 'FAIL';
     let note = failNote;
@@ -217,8 +220,9 @@ if (mode === 'suite' && !fromFlow) {
         out
           .split(/\r?\n/)
           .map((l) => l.trim())
-          .find((l) => /Element not|Assertion|FAILED|Error|Unable|Parse|not found|Timeout|driver/i.test(l)) ??
-        `exit ${res.status}`;
+          .find((l) =>
+            /Element not|Assertion|FAILED|Error|Unable|Parse|not found|Timeout|driver/i.test(l),
+          ) ?? `exit ${res.status}`;
       note = line.slice(0, 200);
       console.log(out.slice(-2500));
     }
@@ -259,6 +263,8 @@ fs.writeFileSync(
   JSON.stringify(summary, null, 2),
 );
 
-console.log(`\nMAESTRO_DEVICE_SUMMARY ${label} passed=${passed} failed=${failed} blocked=${blocked} denominator=${TOTAL}`);
-if (failed > 0 || blocked > 0 || passed < TOTAL && !fromFlow) process.exitCode = 1;
+console.log(
+  `\nMAESTRO_DEVICE_SUMMARY ${label} passed=${passed} failed=${failed} blocked=${blocked} denominator=${TOTAL}`,
+);
+if (failed > 0 || blocked > 0 || (passed < TOTAL && !fromFlow)) process.exitCode = 1;
 if (fromFlow && (failed > 0 || blocked > 0)) process.exitCode = 1;

@@ -10,34 +10,34 @@ appId: nl.vdbdigital.app
       EMAIL: admin@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "admin-dashboard-screen"
+      id: 'admin-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-admin-tickets"
+    id: 'tab-admin-tickets'
 - assertVisible:
-    id: "screen-admin-tickets"
+    id: 'screen-admin-tickets'
 - extendedWaitUntil:
     visible:
-      id: "row-ticket-0"
+      id: 'row-ticket-0'
     timeout: 20000
 - tapOn:
-    id: "row-ticket-0"
+    id: 'row-ticket-0'
 - extendedWaitUntil:
     visible:
-      id: "screen-admin-ticket-detail"
+      id: 'screen-admin-ticket-detail'
     timeout: 20000
 - tapOn:
-    id: "input-ticket-reply"
+    id: 'input-ticket-reply'
 - eraseText
-- inputText: "Maestro admin reply"
+- inputText: 'Maestro admin reply'
 - hideKeyboard
 - scrollUntilVisible:
     element:
-      id: "btn-ticket-send-reply"
+      id: 'btn-ticket-send-reply'
     direction: DOWN
     timeout: 10000
 - tapOn:
-    id: "btn-ticket-send-reply"
+    id: 'btn-ticket-send-reply'
 - assertVisible:
-    id: "screen-admin-ticket-detail"
-- takeScreenshot: "20-admin-ticket-reply"
+    id: 'screen-admin-ticket-detail'
+- takeScreenshot: '20-admin-ticket-reply'

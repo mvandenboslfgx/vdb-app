@@ -220,11 +220,7 @@ describe('suspended fixture — staging validation script reference', () => {
     const fsMod = require('fs');
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pathMod = require('path');
-    const scriptPath = pathMod.join(
-      process.cwd(),
-      'scripts',
-      'rc5-suspended-staging-validate.mjs',
-    );
+    const scriptPath = pathMod.join(process.cwd(), 'scripts', 'rc5-suspended-staging-validate.mjs');
     const exists = (fsMod as { existsSync: (p: string) => boolean }).existsSync(scriptPath);
     expect(exists).toBe(true);
   });

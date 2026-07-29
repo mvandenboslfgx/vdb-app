@@ -15,13 +15,13 @@ No silent system installs are performed by the agent. Follow these steps manuall
 
 In SDK Manager:
 
-| Component | Recommendation |
-|---|---|
-| Android SDK Platform | **API 35** (and API 34 if listed) |
-| Android SDK Build-Tools | Latest stable (e.g. 35.x) |
-| Android SDK Platform-Tools | Always install (`adb`) |
-| Android SDK Command-line Tools | Latest |
-| Emulator (optional) | Only if you want AVD; S25 uses USB |
+| Component                      | Recommendation                     |
+| ------------------------------ | ---------------------------------- |
+| Android SDK Platform           | **API 35** (and API 34 if listed)  |
+| Android SDK Build-Tools        | Latest stable (e.g. 35.x)          |
+| Android SDK Platform-Tools     | Always install (`adb`)             |
+| Android SDK Command-line Tools | Latest                             |
+| Emulator (optional)            | Only if you want AVD; S25 uses USB |
 
 Apply / OK and wait for downloads.
 

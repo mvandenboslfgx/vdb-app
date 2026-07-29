@@ -9,30 +9,30 @@ appId: nl.vdbdigital.app
       EMAIL: admin@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "admin-dashboard-screen"
+      id: 'admin-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-admin-finance"
+    id: 'tab-admin-finance'
 - assertVisible:
-    id: "screen-admin-finance"
+    id: 'screen-admin-finance'
 - extendedWaitUntil:
     visible:
-      id: "row-finance-commission-0"
+      id: 'row-finance-commission-0'
     timeout: 20000
 - tapOn:
-    id: "row-finance-commission-0"
+    id: 'row-finance-commission-0'
 - assertVisible:
-    id: "input-finance-reason"
+    id: 'input-finance-reason'
 - tapOn:
-    id: "input-finance-reason"
+    id: 'input-finance-reason'
 - eraseText
-- inputText: "Maestro commission approve"
+- inputText: 'Maestro commission approve'
 - hideKeyboard
 - scrollUntilVisible:
     element:
-      id: "btn-finance-approve-commission"
+      id: 'btn-finance-approve-commission'
     direction: DOWN
     timeout: 10000
 - assertVisible:
-    id: "btn-finance-approve-commission"
-- takeScreenshot: "21-admin-finance"
+    id: 'btn-finance-approve-commission'
+- takeScreenshot: '21-admin-finance'

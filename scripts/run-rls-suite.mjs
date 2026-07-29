@@ -17,8 +17,19 @@ function dockerPsql(sqlFile) {
   const sql = readFileSync(abs, 'utf8');
   const result = spawnSync(
     'docker',
-    ['exec', '-i', DB_CONTAINER, 'psql', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=0'],
-    { input: sql, encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 }
+    [
+      'exec',
+      '-i',
+      DB_CONTAINER,
+      'psql',
+      '-U',
+      'postgres',
+      '-d',
+      'postgres',
+      '-v',
+      'ON_ERROR_STOP=0',
+    ],
+    { input: sql, encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 },
   );
   const out = `${result.stdout || ''}\n${result.stderr || ''}`;
   return { code: result.status ?? 1, out };
@@ -29,7 +40,7 @@ function parseSuite(out) {
   const fails = [...out.matchAll(/\bFAIL\s+([a-z0-9_]+)/gi)].map((m) => m[1]);
   const skips = [...out.matchAll(/\bSKIP\s+([a-z0-9_]+)/gi)].map((m) => m[1]);
   const summary = out.match(
-    /RLS_SUITE_SUMMARY tests=(\d+) passed=(\d+) failed=(\d+) skipped=(\d+)/
+    /RLS_SUITE_SUMMARY tests=(\d+) passed=(\d+) failed=(\d+) skipped=(\d+)/,
   );
   return {
     passes,
@@ -61,7 +72,8 @@ function main() {
   process.stdout.write(multi.out);
 
   const parsed = parseSuite(multi.out);
-  const tests = parsed.summary?.tests ?? parsed.passes.length + parsed.fails.length + parsed.skips.length;
+  const tests =
+    parsed.summary?.tests ?? parsed.passes.length + parsed.fails.length + parsed.skips.length;
   const passed = parsed.summary?.passed ?? parsed.passes.length;
   const failed = parsed.summary?.failed ?? parsed.fails.length;
   const skipped = parsed.summary?.skipped ?? parsed.skips.length;
@@ -78,8 +90,8 @@ function main() {
         skipNames: parsed.skips,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 
   if (failed > 0 || /RLS suite failed/i.test(multi.out)) {

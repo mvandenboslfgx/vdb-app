@@ -45,9 +45,7 @@ export function FeatureFlagsProvider({ children }: { children: ReactNode }) {
     [flags, isEnabled, override],
   );
 
-  return (
-    <FeatureFlagsContext.Provider value={value}>{children}</FeatureFlagsContext.Provider>
-  );
+  return <FeatureFlagsContext.Provider value={value}>{children}</FeatureFlagsContext.Provider>;
 }
 
 export function useFeatureFlags(): FeatureFlagsContextValue {

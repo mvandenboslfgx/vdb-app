@@ -26,12 +26,7 @@ export const registerSchema = z
       .min(2, 'errors.validation.fullNameMin')
       .max(120, 'errors.validation.fullNameMax'),
     email: emailSchema,
-    phone: z
-      .string()
-      .trim()
-      .max(32, 'errors.validation.phoneMax')
-      .optional()
-      .or(z.literal('')),
+    phone: z.string().trim().max(32, 'errors.validation.phoneMax').optional().or(z.literal('')),
     password: passwordSchema,
     confirmPassword: z.string().min(1, 'errors.validation.confirmPasswordRequired'),
     acceptTerms: z.literal(true, {

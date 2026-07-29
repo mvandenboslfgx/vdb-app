@@ -9,35 +9,35 @@ appId: nl.vdbdigital.app
       EMAIL: partner.active.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "partner-dashboard-screen"
+      id: 'partner-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-partner-leads"
+    id: 'tab-partner-leads'
 - tapOn:
-    id: "btn-lead-new"
+    id: 'btn-lead-new'
 - assertVisible:
-    id: "screen-lead-new"
+    id: 'screen-lead-new'
 - tapOn:
-    id: "input-lead-name"
+    id: 'input-lead-name'
 - eraseText
-- inputText: "Maestro Lead"
+- inputText: 'Maestro Lead'
 - tapOn:
-    id: "input-lead-email"
+    id: 'input-lead-email'
 - eraseText
-- inputText: "maestro.lead@local.vdb"
+- inputText: 'maestro.lead@local.vdb'
 - hideKeyboard
 - scrollUntilVisible:
     element:
-      id: "check-lead-consent"
+      id: 'check-lead-consent'
     direction: DOWN
     timeout: 10000
 - tapOn:
-    id: "check-lead-consent"
+    id: 'check-lead-consent'
 - scrollUntilVisible:
     element:
-      id: "btn-lead-submit"
+      id: 'btn-lead-submit'
     direction: DOWN
     timeout: 10000
 - tapOn:
-    id: "btn-lead-submit"
-- takeScreenshot: "10-partner-lead"
+    id: 'btn-lead-submit'
+- takeScreenshot: '10-partner-lead'

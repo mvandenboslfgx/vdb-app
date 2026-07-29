@@ -2,10 +2,7 @@ import { z } from 'zod';
 
 export const emailSchema = z.string().trim().email();
 
-export const passwordSchema = z
-  .string()
-  .min(8, 'password_too_short')
-  .max(128, 'password_too_long');
+export const passwordSchema = z.string().min(8, 'password_too_short').max(128, 'password_too_long');
 
 export const loginSchema = z.object({
   email: emailSchema,
@@ -76,15 +73,7 @@ export type QuoteAcceptInput = z.infer<typeof quoteAcceptSchema>;
 export const projectRequestSchema = z.object({
   title: z.string().trim().min(3).max(160),
   description: z.string().trim().min(10).max(5000),
-  category: z.enum([
-    'website',
-    'webshop',
-    'custom',
-    'automation',
-    'ai',
-    'advice',
-    'other',
-  ]),
+  category: z.enum(['website', 'webshop', 'custom', 'automation', 'ai', 'advice', 'other']),
 });
 
 export type ProjectRequestInput = z.infer<typeof projectRequestSchema>;

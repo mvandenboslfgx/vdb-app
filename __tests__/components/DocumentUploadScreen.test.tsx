@@ -20,7 +20,9 @@ jest.mock('@/api/repositories/projectsRepository');
 const mockGetDocumentAsync = DocumentPicker.getDocumentAsync as jest.MockedFunction<
   typeof DocumentPicker.getDocumentAsync
 >;
-const mockUploadProjectDocument = uploadProjectDocument as jest.MockedFunction<typeof uploadProjectDocument>;
+const mockUploadProjectDocument = uploadProjectDocument as jest.MockedFunction<
+  typeof uploadProjectDocument
+>;
 const mockListProjects = listProjects as jest.MockedFunction<typeof listProjects>;
 
 function makeDocument(overrides: Partial<Document> = {}): Document {
@@ -49,7 +51,9 @@ describe('DocumentUploadScreen', () => {
     await renderWithProviders(<DocumentUploadScreen />);
 
     await waitFor(() => expect(screen.getByTestId('screen-document-upload')).toBeTruthy());
-    expect(screen.getByTestId('btn-document-upload-submit').props.accessibilityState?.disabled).toBe(true);
+    expect(
+      screen.getByTestId('btn-document-upload-submit').props.accessibilityState?.disabled,
+    ).toBe(true);
     expect(mockUploadProjectDocument).not.toHaveBeenCalled();
   });
 

@@ -2,16 +2,15 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 ## Signals
 
-| Signal | Tool |
-|---|---|
-| Mobile crashes | Sentry React Native |
-| API errors | Sentry + Supabase logs |
+| Signal                   | Tool                                       |
+| ------------------------ | ------------------------------------------ |
+| Mobile crashes           | Sentry React Native                        |
+| API errors               | Sentry + Supabase logs                     |
 | Payment webhook failures | `payment_webhook_events.processing_status` |
-| Notification failures | `notification_deliveries` |
-| Auth anomalies | Supabase Auth logs |
+| Notification failures    | `notification_deliveries`                  |
+| Auth anomalies           | Supabase Auth logs                         |
 
 ## Alerting (recommended)
 

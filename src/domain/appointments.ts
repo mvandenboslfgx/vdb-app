@@ -10,8 +10,7 @@ export interface AvailabilitySlot {
 }
 
 export type ReserveResult =
-  | { ok: true; slot: AvailabilitySlot }
-  | { ok: false; reason: 'full' | 'invalid' };
+  { ok: true; slot: AvailabilitySlot } | { ok: false; reason: 'full' | 'invalid' };
 
 export function reserveSlot(slot: AvailabilitySlot): ReserveResult {
   if (slot.capacity <= 0 || slot.reservedCount < 0) {

@@ -52,13 +52,7 @@ export function RegisterForm({ onSuccess, onSignIn }: RegisterFormProps) {
     } catch (err) {
       const key = err instanceof Error ? err.message : 'errors.generic';
       setFormError(
-        t(
-          key.startsWith('errors.')
-            ? key
-            : isDemoMode
-              ? 'errors.auth.demoOnly'
-              : 'errors.generic',
-        ),
+        t(key.startsWith('errors.') ? key : isDemoMode ? 'errors.auth.demoOnly' : 'errors.generic'),
       );
     }
   });
@@ -156,9 +150,7 @@ export function RegisterForm({ onSuccess, onSignIn }: RegisterFormProps) {
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            error={
-              errors.confirmPassword?.message ? t(errors.confirmPassword.message) : undefined
-            }
+            error={errors.confirmPassword?.message ? t(errors.confirmPassword.message) : undefined}
           />
         )}
       />

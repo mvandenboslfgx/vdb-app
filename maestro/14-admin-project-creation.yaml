@@ -9,10 +9,10 @@ appId: nl.vdbdigital.app
       EMAIL: admin@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "admin-dashboard-screen"
+      id: 'admin-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-admin-approvals"
+    id: 'tab-admin-approvals'
 - assertVisible:
-    id: "screen-admin-approvals"
-- takeScreenshot: "14-admin-project-creation"
+    id: 'screen-admin-approvals'
+- takeScreenshot: '14-admin-project-creation'

@@ -87,9 +87,7 @@ export function parseAppDeepLink(url: string): DeepLinkTarget {
 
     if (parsed.protocol === `${CUSTOM_SCHEME}:`) {
       // vdbdigital://app/projects/123 or vdbdigital://projects/123
-      const path = parsed.hostname
-        ? `/${parsed.hostname}${parsed.pathname}`
-        : parsed.pathname;
+      const path = parsed.hostname ? `/${parsed.hostname}${parsed.pathname}` : parsed.pathname;
       return parseAppPath(path.startsWith('/app') ? path : `/app${path}`, parsed.searchParams);
     }
 
@@ -144,9 +142,7 @@ export function deepLinkToHref(target: DeepLinkTarget): string | null {
     case 'home':
       return '/(customer)';
     case 'paymentReturn':
-      return target.invoiceId
-        ? `/(customer)/invoices/${target.invoiceId}`
-        : '/(customer)/invoices';
+      return target.invoiceId ? `/(customer)/invoices/${target.invoiceId}` : '/(customer)/invoices';
     case 'unknown':
       return null;
   }

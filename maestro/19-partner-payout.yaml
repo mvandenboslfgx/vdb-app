@@ -9,18 +9,18 @@ appId: nl.vdbdigital.app
       EMAIL: partner.active.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "partner-dashboard-screen"
+      id: 'partner-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "partner-payout-request"
+    id: 'partner-payout-request'
 - extendedWaitUntil:
     visible:
-      id: "screen-partner-payouts"
+      id: 'screen-partner-payouts'
     timeout: 60000
 - extendedWaitUntil:
     visible:
-      id: "text-payout-balance"
+      id: 'text-payout-balance'
     timeout: 60000
 - assertVisible:
-    id: "btn-payout-request"
-- takeScreenshot: "19-partner-payout"
+    id: 'btn-payout-request'
+- takeScreenshot: '19-partner-payout'

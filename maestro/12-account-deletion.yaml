@@ -9,14 +9,14 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-more"
+    id: 'tab-customer-more'
 - tapOn:
-    id: "nav-account-delete"
+    id: 'nav-account-delete'
 - assertVisible:
-    id: "screen-account-deletion"
+    id: 'screen-account-deletion'
 - assertVisible:
-    id: "customer-account-delete"
-- takeScreenshot: "12-account-deletion"
+    id: 'customer-account-delete'
+- takeScreenshot: '12-account-deletion'

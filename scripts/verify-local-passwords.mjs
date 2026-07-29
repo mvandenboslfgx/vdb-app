@@ -21,11 +21,7 @@ const admin = createClient(apiUrl, serviceKey, {
 const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 100 });
 if (error) throw error;
 
-const emails = [
-  'customer.a@local.vdb',
-  'partner.active.a@local.vdb',
-  'admin@local.vdb',
-];
+const emails = ['customer.a@local.vdb', 'partner.active.a@local.vdb', 'admin@local.vdb'];
 
 for (const email of emails) {
   const u = data.users.find((x) => x.email?.toLowerCase() === email);

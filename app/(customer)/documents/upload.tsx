@@ -59,7 +59,10 @@ export default function DocumentUploadScreen() {
     });
     if (result.canceled || !result.assets?.[0]) return;
     const asset = result.assets[0];
-    if (!asset.mimeType || !(ALLOWED_UPLOAD_MIME_TYPES as readonly string[]).includes(asset.mimeType)) {
+    if (
+      !asset.mimeType ||
+      !(ALLOWED_UPLOAD_MIME_TYPES as readonly string[]).includes(asset.mimeType)
+    ) {
       setError(t('uploadForm.mimeNotAllowed'));
       return;
     }

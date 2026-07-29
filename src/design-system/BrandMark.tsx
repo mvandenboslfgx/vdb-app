@@ -14,11 +14,7 @@ export interface BrandMarkProps {
 const logoSource = require('../../assets/brand/logo-mark.png');
 
 /** Official VDB Digital brand mark + optional wordmark. */
-export function BrandMark({
-  subtitle,
-  compact = false,
-  markOnly = false,
-}: BrandMarkProps) {
+export function BrandMark({ subtitle, compact = false, markOnly = false }: BrandMarkProps) {
   const size = compact ? 40 : 56;
 
   return (
@@ -30,7 +26,11 @@ export function BrandMark({
       />
       {markOnly ? null : (
         <View style={styles.textCol}>
-          <Text variant={compact ? 'label' : 'title'} weight="semibold" style={compact ? styles.compactTitle : undefined}>
+          <Text
+            variant={compact ? 'label' : 'title'}
+            weight="semibold"
+            style={compact ? styles.compactTitle : undefined}
+          >
             VDB Digital
           </Text>
           {subtitle ? (

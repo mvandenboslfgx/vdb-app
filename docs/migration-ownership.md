@@ -5,14 +5,14 @@
 
 ## Ownership table
 
-| Artifact | Owner | Mobile |
-|---|---|---|
-| Production / staging migrations | VDB Digital 2.0 | Propose only |
-| RLS / Storage policies | VDB Digital 2.0 | Propose only |
-| Financial RPCs / commission logic | VDB Digital 2.0 | Call, never redefine remotely |
-| Edge Functions (checkout, Mollie, approvals) | VDB Digital 2.0 | Local copies for tests only |
-| Published `Database` types + contract | VDB Digital 2.0 | Consume + pin `schemaVersion` |
-| Local `supabase/migrations/*` in Mobile | Mobile (proposal) | Apply only to `vdb-digital-mobile-local` |
+| Artifact                                     | Owner             | Mobile                                   |
+| -------------------------------------------- | ----------------- | ---------------------------------------- |
+| Production / staging migrations              | VDB Digital 2.0   | Propose only                             |
+| RLS / Storage policies                       | VDB Digital 2.0   | Propose only                             |
+| Financial RPCs / commission logic            | VDB Digital 2.0   | Call, never redefine remotely            |
+| Edge Functions (checkout, Mollie, approvals) | VDB Digital 2.0   | Local copies for tests only              |
+| Published `Database` types + contract        | VDB Digital 2.0   | Consume + pin `schemaVersion`            |
+| Local `supabase/migrations/*` in Mobile      | Mobile (proposal) | Apply only to `vdb-digital-mobile-local` |
 
 ## Remote project reference
 

@@ -9,28 +9,28 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-messages"
+    id: 'tab-customer-messages'
 - extendedWaitUntil:
     visible:
-      id: "conversation-row-0"
+      id: 'conversation-row-0'
     timeout: 20000
 - tapOn:
-    id: "conversation-row-0"
+    id: 'conversation-row-0'
 - assertVisible:
-    id: "screen-message-thread"
+    id: 'screen-message-thread'
 - tapOn:
-    id: "customer-chat-input"
+    id: 'customer-chat-input'
 - eraseText
-- inputText: "Maestro chat ping"
+- inputText: 'Maestro chat ping'
 - hideKeyboard
 - scrollUntilVisible:
     element:
-      id: "customer-chat-send"
+      id: 'customer-chat-send'
     direction: DOWN
     timeout: 10000
 - tapOn:
-    id: "customer-chat-send"
-- takeScreenshot: "03-project-chat"
+    id: 'customer-chat-send'
+- takeScreenshot: '03-project-chat'

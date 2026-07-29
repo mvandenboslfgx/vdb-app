@@ -2,14 +2,13 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 ## Components
 
-| Table | Purpose |
-|---|---|
-| `push_tokens` | Device tokens per user |
-| `notifications` | In-app notification records |
-| `notification_deliveries` | Per-channel send attempts |
+| Table                     | Purpose                     |
+| ------------------------- | --------------------------- |
+| `push_tokens`             | Device tokens per user      |
+| `notifications`           | In-app notification records |
+| `notification_deliveries` | Per-channel send attempts   |
 
 ## Triggers (examples)
 

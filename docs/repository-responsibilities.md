@@ -2,11 +2,11 @@
 
 **This repo:** VDB Digital Mobile (`MOBILE_CLIENT`)
 
-| Repository | Role | Owns |
-|---|---|---|
-| VDB Digital 2.0 | `CANONICAL_BACKEND_OWNER` | Website, web admin, production migrations, RLS, Edge Functions, published contracts |
-| VDB Digital Mobile | `MOBILE_CLIENT` | Android/iOS Expo client, local mobile test stack, Maestro device suite, mobile UX |
-| VDB Partner Portal / Affiliate | `PARTNER_CLIENT` | Seller web portal (leads, sales, commissions, payouts UI) |
+| Repository                     | Role                      | Owns                                                                                |
+| ------------------------------ | ------------------------- | ----------------------------------------------------------------------------------- |
+| VDB Digital 2.0                | `CANONICAL_BACKEND_OWNER` | Website, web admin, production migrations, RLS, Edge Functions, published contracts |
+| VDB Digital Mobile             | `MOBILE_CLIENT`           | Android/iOS Expo client, local mobile test stack, Maestro device suite, mobile UX   |
+| VDB Partner Portal / Affiliate | `PARTNER_CLIENT`          | Seller web portal (leads, sales, commissions, payouts UI)                           |
 
 ## Mobile may
 

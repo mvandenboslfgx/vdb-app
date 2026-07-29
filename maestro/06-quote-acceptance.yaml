@@ -9,25 +9,25 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-more"
+    id: 'tab-customer-more'
 - tapOn:
-    id: "nav-quotes"
+    id: 'nav-quotes'
 - extendedWaitUntil:
     visible:
-      id: "quote-row-0"
+      id: 'quote-row-0'
     timeout: 20000
 - tapOn:
-    id: "quote-row-0"
+    id: 'quote-row-0'
 - extendedWaitUntil:
     visible:
-      id: "screen-quote-detail"
+      id: 'screen-quote-detail'
     timeout: 30000
 - tapOn:
-    id: "checkbox-quote-terms"
+    id: 'checkbox-quote-terms'
     optional: true
 - assertVisible:
-    id: "customer-quote-accept"
-- takeScreenshot: "06-quote-acceptance"
+    id: 'customer-quote-accept'
+- takeScreenshot: '06-quote-acceptance'

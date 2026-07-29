@@ -33,9 +33,7 @@ export function DashboardGreeting({
   const name = firstName(fullName ?? '');
   const key = useMemo(() => greetingKey(now.getHours()), [now]);
 
-  const title = name
-    ? t(`dashboard.${key}`, { name })
-    : t('dashboard.greetingWelcomeBack');
+  const title = name ? t(`dashboard.${key}`, { name }) : t('dashboard.greetingWelcomeBack');
 
   return (
     <View style={styles.wrap} testID={testID} accessibilityRole="header">

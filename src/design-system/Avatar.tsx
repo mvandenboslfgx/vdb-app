@@ -30,10 +30,7 @@ export function Avatar({ name, uri, size = 40 }: AvatarProps) {
 
   return (
     <View
-      style={[
-        styles.fallback,
-        { width: size, height: size, borderRadius: size / 2 },
-      ]}
+      style={[styles.fallback, { width: size, height: size, borderRadius: size / 2 }]}
       accessibilityLabel={name}
     >
       <Text variant="label" weight="semibold" color="champagneGoldLight">

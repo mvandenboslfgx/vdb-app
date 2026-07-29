@@ -31,10 +31,7 @@ const ALLOWED: Record<CommissionStatus, readonly CommissionStatus[]> = {
   reversed: [],
 };
 
-export function canTransitionCommission(
-  from: CommissionStatus,
-  to: CommissionStatus,
-): boolean {
+export function canTransitionCommission(from: CommissionStatus, to: CommissionStatus): boolean {
   return ALLOWED[from].includes(to);
 }
 
@@ -65,10 +62,7 @@ export function assertPayablePreconditions(input: {
   }
 }
 
-export function calculateCommissionCents(input: {
-  basisCents: number;
-  rateBps: number;
-}): number {
+export function calculateCommissionCents(input: { basisCents: number; rateBps: number }): number {
   if (input.basisCents < 0 || input.rateBps < 0 || input.rateBps > 10_000) {
     throw new Error('Invalid commission inputs');
   }

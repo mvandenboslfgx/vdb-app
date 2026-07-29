@@ -7,12 +7,12 @@
 
 **`OWNER CONFIRMATION REQUIRED`**
 
-| Check | Finding |
-|---|---|
-| MCP project list | Single project `vdb nieuw` / **`nhsrdnjfsxfikfbdmdfj`** (eu-west-1) |
-| Name matches VDB Digital Software? | Probable — owner must confirm website dashboard ref |
-| Safe to apply mobile migrations remotely? | **No** |
-| Local work | Yes |
+| Check                                     | Finding                                                             |
+| ----------------------------------------- | ------------------------------------------------------------------- |
+| MCP project list                          | Single project `vdb nieuw` / **`nhsrdnjfsxfikfbdmdfj`** (eu-west-1) |
+| Name matches VDB Digital Software?        | Probable — owner must confirm website dashboard ref                 |
+| Safe to apply mobile migrations remotely? | **No**                                                              |
+| Local work                                | Yes                                                                 |
 
 ### Owner check
 

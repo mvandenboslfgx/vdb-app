@@ -9,27 +9,27 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-more"
+    id: 'tab-customer-more'
 - tapOn:
-    id: "nav-documents"
+    id: 'nav-documents'
 - extendedWaitUntil:
     visible:
-      id: "document-row-0"
+      id: 'document-row-0'
     timeout: 20000
 - tapOn:
-    id: "document-row-0"
+    id: 'document-row-0'
 - assertVisible:
-    id: "screen-document-detail"
+    id: 'screen-document-detail'
 - assertVisible:
-    id: "btn-document-request-changes"
+    id: 'btn-document-request-changes'
 - tapOn:
-    id: "input-document-comment"
+    id: 'input-document-comment'
 - eraseText
-- inputText: "Maestro change request"
+- inputText: 'Maestro change request'
 - hideKeyboard
 - assertVisible:
-    id: "btn-document-request-changes"
-- takeScreenshot: "15-document-version-2"
+    id: 'btn-document-request-changes'
+- takeScreenshot: '15-document-version-2'

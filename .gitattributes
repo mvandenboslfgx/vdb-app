@@ -1,0 +1,26 @@
+# Canonical line endings for text: LF in the repository and working tree.
+# Keeps Windows checkouts and Ubuntu CI aligned with Prettier endOfLine=lf.
+* text=auto eol=lf
+
+# Explicitly binary — do not normalize
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.apk binary
+*.aab binary
+*.keystore binary
+*.jks binary
+*.p8 binary
+*.p12 binary
+*.mobileprovision binary
+*.pdf binary
+*.xlsx binary
+*.zip binary
+*.gz binary

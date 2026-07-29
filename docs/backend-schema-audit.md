@@ -2,26 +2,25 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 ## Remote project
 
-| Field | Value |
-|---|---|
-| Name | vdb nieuw |
-| Ref | `nhsrdnjfsxfikfbdmdfj` |
+| Field      | Value                                   |
+| ---------- | --------------------------------------- |
+| Name       | vdb nieuw                               |
+| Ref        | `nhsrdnjfsxfikfbdmdfj`                  |
 | Audit mode | Read-only inventory for mobile planning |
 
 ## Tables already present (reuse)
 
 All listed tables have **RLS enabled** on remote.
 
-| Domain | Tables |
-|---|---|
-| Identity | `profiles`, `admin_roles` |
-| Catalog | `categories`, `products`, `product_features`, `product_faqs` |
-| Commerce | `carts`, `cart_items`, `customers`, `orders`, `order_items`, `payments` |
-| Leads / content | `leads`, `quote_requests`, `contact_submissions`, `case_studies` |
-| Ops / privacy | `audit_logs`, `webhook_events`, `site_settings`, `consent_records` |
+| Domain          | Tables                                                                  |
+| --------------- | ----------------------------------------------------------------------- |
+| Identity        | `profiles`, `admin_roles`                                               |
+| Catalog         | `categories`, `products`, `product_features`, `product_faqs`            |
+| Commerce        | `carts`, `cart_items`, `customers`, `orders`, `order_items`, `payments` |
+| Leads / content | `leads`, `quote_requests`, `contact_submissions`, `case_studies`        |
+| Ops / privacy   | `audit_logs`, `webhook_events`, `site_settings`, `consent_records`      |
 
 ## Gaps for mobile portal (proposed locally)
 

@@ -6,19 +6,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = path.dirname(fileURLToPath(new URL('.', import.meta.url))) === path.join(process.cwd(), 'scripts')
-  ? process.cwd()
-  : process.cwd();
+const ROOT =
+  path.dirname(fileURLToPath(new URL('.', import.meta.url))) === path.join(process.cwd(), 'scripts')
+    ? process.cwd()
+    : process.cwd();
 
-const SKIP_DIRS = new Set([
-  'node_modules',
-  '.git',
-  '.expo',
-  'dist',
-  'coverage',
-  'android',
-  'ios',
-]);
+const SKIP_DIRS = new Set(['node_modules', '.git', '.expo', 'dist', 'coverage', 'android', 'ios']);
 
 const PATTERNS = [
   { name: 'supabase_service_role', re: /SERVICE_ROLE_KEY\s*[:=]\s*['"]eyJ/i },
@@ -27,12 +20,7 @@ const PATTERNS = [
   { name: 'aws_access_key', re: /AKIA[0-9A-Z]{16}/ },
 ];
 
-const ALLOW = [
-  /\.env\.example$/,
-  /^docs\//,
-  /scripts\/secret-scan\.mjs$/,
-  /^maestro\//,
-];
+const ALLOW = [/\.env\.example$/, /^docs\//, /scripts\/secret-scan\.mjs$/, /^maestro\//];
 
 let findings = 0;
 

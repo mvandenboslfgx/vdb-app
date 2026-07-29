@@ -34,22 +34,20 @@ export function listExecutableFlowNames() {
 export function getSuiteManifest() {
   const flows = listExecutableFlowNames();
   const excluded = fs.existsSync(ROOT)
-    ? fs
-        .readdirSync(ROOT, { withFileTypes: true })
-        .flatMap((d) => {
-          if (d.isDirectory() && d.name === 'shared') {
-            return fs
-              .readdirSync(path.join(ROOT, 'shared'))
-              .filter((f) => f.endsWith('.yaml'))
-              .map((f) => `shared/${f} (helper)`);
-          }
-          if (!d.isFile() || !d.name.endsWith('.yaml')) return [];
-          if (FLOW_RE.test(d.name)) return [];
-          if (d.name.startsWith('device-suite')) return [`${d.name} (suite wrapper)`];
-          if (/^\d{2}_/.test(d.name)) return [`${d.name} (legacy underscore skeleton)`];
-          if (d.name.startsWith('_')) return [`${d.name} (probe)`];
-          return [`${d.name} (excluded)`];
-        })
+    ? fs.readdirSync(ROOT, { withFileTypes: true }).flatMap((d) => {
+        if (d.isDirectory() && d.name === 'shared') {
+          return fs
+            .readdirSync(path.join(ROOT, 'shared'))
+            .filter((f) => f.endsWith('.yaml'))
+            .map((f) => `shared/${f} (helper)`);
+        }
+        if (!d.isFile() || !d.name.endsWith('.yaml')) return [];
+        if (FLOW_RE.test(d.name)) return [];
+        if (d.name.startsWith('device-suite')) return [`${d.name} (suite wrapper)`];
+        if (/^\d{2}_/.test(d.name)) return [`${d.name} (legacy underscore skeleton)`];
+        if (d.name.startsWith('_')) return [`${d.name} (probe)`];
+        return [`${d.name} (excluded)`];
+      })
     : [];
 
   const numbers = flows.map((f) => Number(f.slice(0, 2)));

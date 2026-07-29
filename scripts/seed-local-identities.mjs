@@ -15,8 +15,7 @@ const DEMO_URL = 'http://127.0.0.1:54521';
 
 function loadLocalEnv() {
   let apiUrl = process.env.SUPABASE_URL || process.env.API_URL || DEMO_URL;
-  let serviceKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY || '';
+  let serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY || '';
   try {
     const out = execSync('npx supabase status -o env', {
       encoding: 'utf8',
@@ -100,34 +99,54 @@ async function upsertUser(admin, identity) {
 
 async function setRole(db, userId, role) {
   // Ensure customer always present; then elevated role if different
-  await db.from('user_roles').upsert(
-    { user_id: userId, role: 'customer', notes: 'seed' },
-    { onConflict: 'user_id,role' }
-  );
+  await db
+    .from('user_roles')
+    .upsert({ user_id: userId, role: 'customer', notes: 'seed' }, { onConflict: 'user_id,role' });
   if (role !== 'customer') {
-    await db.from('user_roles').upsert(
-      { user_id: userId, role, notes: 'seed' },
-      { onConflict: 'user_id,role' }
-    );
+    await db
+      .from('user_roles')
+      .upsert({ user_id: userId, role, notes: 'seed' }, { onConflict: 'user_id,role' });
   }
 }
 
 async function wipeSeedDomain(db, ids) {
   const idList = Object.values(ids);
   const tables = [
-    'message_receipts','messages','conversation_participants','conversations',
-    'support_ticket_messages','support_tickets',
-    'document_reviews','document_versions','documents',
-    'quote_acceptances','quote_items','quotes',
-    'invoice_items','payment_events','invoices',
-    'project_activity','project_updates','project_milestones','project_members','projects',
-    'commission_events','commissions','sale_attributions','sales',
+    'message_receipts',
+    'messages',
+    'conversation_participants',
+    'conversations',
+    'support_ticket_messages',
+    'support_tickets',
+    'document_reviews',
+    'document_versions',
+    'documents',
+    'quote_acceptances',
+    'quote_items',
+    'quotes',
+    'invoice_items',
+    'payment_events',
+    'invoices',
+    'project_activity',
+    'project_updates',
+    'project_milestones',
+    'project_members',
+    'projects',
+    'commission_events',
+    'commissions',
+    'sale_attributions',
+    'sales',
     'payout_requests',
-    'partner_links','partner_codes',
-    'partner_lead_staff_notes','partner_leads',
+    'partner_links',
+    'partner_codes',
+    'partner_lead_staff_notes',
+    'partner_leads',
   ];
   for (const table of tables) {
-    const { error } = await db.from(table).delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    const { error } = await db
+      .from(table)
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
     if (error) console.warn(`wipe ${table}:`, error.message);
   }
   {
@@ -568,7 +587,9 @@ async function main() {
   }
 
   console.log('Seed complete.');
-  console.log(JSON.stringify({ projectId: project.id, conversationId: convo.id, quoteId: quote.id }, null, 2));
+  console.log(
+    JSON.stringify({ projectId: project.id, conversationId: convo.id, quoteId: quote.id }, null, 2),
+  );
 }
 
 main().catch((err) => {

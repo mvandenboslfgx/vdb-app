@@ -2,7 +2,6 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 Package: `nl.vdbdigital.app`  
 Name: **VDB Digital** — Software & Project Portal
 
@@ -33,12 +32,12 @@ Provide Play Console reviewers:
 
 ## Preview / internal test readiness
 
-| Item | Status |
-|---|---|
-| Debug APK on device | **BLOCKED** — Android SDK missing |
-| EAS project linked | **BLOCKED BY EAS CONFIGURATION** |
-| Preview AAB built | Not started |
-| Play Store upload | **Forbidden** until explicit approval |
+| Item                | Status                                |
+| ------------------- | ------------------------------------- |
+| Debug APK on device | **BLOCKED** — Android SDK missing     |
+| EAS project linked  | **BLOCKED BY EAS CONFIGURATION**      |
+| Preview AAB built   | Not started                           |
+| Play Store upload   | **Forbidden** until explicit approval |
 
 ## Do not publish without
 
@@ -48,4 +47,3 @@ Provide Play Console reviewers:
 - Production signing via EAS
 - Policy gate reviewed for catalog contents
 - Successful Samsung S25 device validation (Phase 6)
-

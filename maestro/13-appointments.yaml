@@ -9,25 +9,25 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-more"
+    id: 'tab-customer-more'
 - scrollUntilVisible:
     element:
-      id: "nav-appointments"
+      id: 'nav-appointments'
     direction: DOWN
     timeout: 15000
 - tapOn:
-    id: "nav-appointments"
+    id: 'nav-appointments'
 - extendedWaitUntil:
     visible:
-      id: "screen-appointments"
+      id: 'screen-appointments'
     timeout: 30000
 - tapOn:
-    id: "btn-appointments-book"
+    id: 'btn-appointments-book'
 - extendedWaitUntil:
     visible:
-      id: "screen-appointments-book"
+      id: 'screen-appointments-book'
     timeout: 30000
-- takeScreenshot: "13-appointments"
+- takeScreenshot: '13-appointments'

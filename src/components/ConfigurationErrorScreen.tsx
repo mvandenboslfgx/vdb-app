@@ -4,13 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { BrandMark, Screen, Text } from '@/design-system';
 import { spacing } from '@/theme';
 
-export function ConfigurationErrorScreen({
-  title,
-  message,
-}: {
-  title: string;
-  message: string;
-}) {
+export function ConfigurationErrorScreen({ title, message }: { title: string; message: string }) {
   return (
     <Screen scroll>
       <View style={styles.wrap} accessibilityRole="alert">

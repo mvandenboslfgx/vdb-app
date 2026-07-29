@@ -5,13 +5,12 @@ Stack: Expo SDK 57 · React Native 0.86 · React 19.2.3 · Supabase · Mollie
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 ## What this app is
 
 Production-oriented mobile portal for:
 
-1. **Customers** — projects, documents, quotes, invoices, chat, support, appointments  
-2. **Sales partners** — applications, links/codes, leads, commissions, payouts  
+1. **Customers** — projects, documents, quotes, invoices, chat, support, appointments
+2. **Sales partners** — applications, links/codes, leads, commissions, payouts
 3. **Staff / admins** — approvals and operations (mobile subset; web remains primary)
 
 ## Quick start
@@ -31,15 +30,15 @@ npx supabase db reset
 
 ## Repository map
 
-| Path | Contents |
-|---|---|
-| `app/` | Expo Router screens |
-| `src/` | Domain, repositories, i18n, lib |
-| `supabase/migrations/` | **NOT APPLIED** local SQL proposals |
-| `supabase/functions/` | Edge function stubs |
-| `docs/` | Architecture & runbooks (section 29) |
-| `maestro/` | E2E flow skeletons |
-| `.github/workflows/ci.yml` | Lint, typecheck, tests, scans |
+| Path                       | Contents                             |
+| -------------------------- | ------------------------------------ |
+| `app/`                     | Expo Router screens                  |
+| `src/`                     | Domain, repositories, i18n, lib      |
+| `supabase/migrations/`     | **NOT APPLIED** local SQL proposals  |
+| `supabase/functions/`      | Edge function stubs                  |
+| `docs/`                    | Architecture & runbooks (section 29) |
+| `maestro/`                 | E2E flow skeletons                   |
+| `.github/workflows/ci.yml` | Lint, typecheck, tests, scans        |
 
 ## Critical rules
 

@@ -4,14 +4,14 @@ appId: nl.vdbdigital.app
 # Placeholder flow — update testIDs when screens are implemented.
 - launchApp
 - assertVisible:
-    id: "app-root"
+    id: 'app-root'
 - tapOn:
-    id: "nav-partner"
+    id: 'nav-partner'
     optional: true
 - tapOn:
-    id: "screen-partner-apply"
+    id: 'screen-partner-apply'
     optional: true
 - assertVisible:
-    id: "screen-partner-apply"
+    id: 'screen-partner-apply'
     optional: true
-- takeScreenshot: "10_partner_apply"
+- takeScreenshot: '10_partner_apply'

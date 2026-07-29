@@ -2,14 +2,13 @@
 
 > **Backend remote migrations: NOT APPLIED.** All SQL under `supabase/migrations/` is a local proposal only. Do not apply to project `nhsrdnjfsxfikfbdmdfj` without explicit owner approval.
 
-
 ## Profiles (expected in `eas.json`)
 
-| Profile | Use |
-|---|---|
-| `development` | Dev client |
-| `preview` | Internal QA |
-| `production` | Play Store |
+| Profile       | Use         |
+| ------------- | ----------- |
+| `development` | Dev client  |
+| `preview`     | Internal QA |
+| `production`  | Play Store  |
 
 ## Commands
 

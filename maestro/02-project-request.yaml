@@ -9,34 +9,34 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-customer-projects"
+    id: 'tab-customer-projects'
 - tapOn:
-    id: "btn-projects-request"
+    id: 'btn-projects-request'
 - assertVisible:
-    id: "screen-project-request"
+    id: 'screen-project-request'
 - tapOn:
-    id: "input-project-request-title"
+    id: 'input-project-request-title'
 - eraseText
-- inputText: "Maestro project request"
+- inputText: 'Maestro project request'
 - tapOn:
-    id: "input-project-request-description"
+    id: 'input-project-request-description'
 - eraseText
-- inputText: "Created by Maestro device flow 02"
+- inputText: 'Created by Maestro device flow 02'
 - tapOn:
-    id: "input-project-request-title"
+    id: 'input-project-request-title'
 - hideKeyboard
 - scrollUntilVisible:
     element:
-      id: "btn-project-request-submit"
+      id: 'btn-project-request-submit'
     direction: DOWN
     timeout: 10000
 - tapOn:
-    id: "btn-project-request-submit"
+    id: 'btn-project-request-submit'
 - extendedWaitUntil:
     visible:
-      id: "screen-project-request-success"
+      id: 'screen-project-request-success'
     timeout: 20000
-- takeScreenshot: "02-project-request"
+- takeScreenshot: '02-project-request'

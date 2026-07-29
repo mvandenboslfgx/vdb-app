@@ -19,12 +19,7 @@ export function IconButton({ label, icon, tone = 'default', style, ...rest }: Ic
       accessibilityRole="button"
       accessibilityLabel={label}
       hitSlop={hitSlop.md}
-      style={({ pressed }) => [
-        styles.base,
-        toneStyles[tone],
-        pressed && styles.pressed,
-        style,
-      ]}
+      style={({ pressed }) => [styles.base, toneStyles[tone], pressed && styles.pressed, style]}
       {...rest}
     >
       <MaterialCommunityIcons name={icon} size={22} color={color} />

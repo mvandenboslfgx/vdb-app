@@ -35,7 +35,12 @@ export default function VerifyEmailScreen() {
       </Text>
 
       {status === 'sent' ? (
-        <Text variant="caption" color="success" testID="verify-resend-success" style={styles.status}>
+        <Text
+          variant="caption"
+          color="success"
+          testID="verify-resend-success"
+          style={styles.status}
+        >
           {t('verify.resendSuccess')}
         </Text>
       ) : null}
@@ -55,7 +60,12 @@ export default function VerifyEmailScreen() {
         style={styles.resend}
       />
       <Link href="/(auth)/login" asChild>
-        <Button testID="btn-verify-back-to-login" title={t('register.signIn')} variant="gold" fullWidth />
+        <Button
+          testID="btn-verify-back-to-login"
+          title={t('register.signIn')}
+          variant="gold"
+          fullWidth
+        />
       </Link>
     </Screen>
   );

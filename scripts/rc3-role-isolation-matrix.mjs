@@ -13,7 +13,8 @@ import path from 'node:path';
 import process from 'node:process';
 
 const SERIAL = process.env.ANDROID_SERIAL || 'R3GYC00EBYY';
-const VAULT = process.env.VDB_RC3_VAULT || 'C:/Users/XXX/.vdb-vault/mobile-rc3-staging-role-matrix.env';
+const VAULT =
+  process.env.VDB_RC3_VAULT || 'C:/Users/XXX/.vdb-vault/mobile-rc3-staging-role-matrix.env';
 const MANIFEST =
   process.env.VDB_RC3_MANIFEST ||
   'C:/Users/XXX/.vdb-vault/mobile-rc3-staging-role-matrix.manifest.json';
@@ -139,7 +140,11 @@ function ensureLoggedOut() {
     return { ok: true, alreadyPublic: true };
   }
   // Try More → Sign out / Uitloggen
-  if (!tapResource(xml, 'tab-customer-more') && !tapResource(xml, 'tab-partner-more') && !tapResource(xml, 'tab-admin-more')) {
+  if (
+    !tapResource(xml, 'tab-customer-more') &&
+    !tapResource(xml, 'tab-partner-more') &&
+    !tapResource(xml, 'tab-admin-more')
+  ) {
     // partner/admin more tabs may differ; try text
     tapText(xml, 'Meer') || tapText(xml, 'More');
   }
@@ -169,7 +174,11 @@ function ensureLoggedOut() {
 
 function login(email, password, alias) {
   let xml = dumpUi(`login-${alias}-start`);
-  if (!tapResource(xml, 'btn-public-login') && !tapText(xml, 'Sign in') && !tapText(xml, 'Inloggen')) {
+  if (
+    !tapResource(xml, 'btn-public-login') &&
+    !tapText(xml, 'Sign in') &&
+    !tapText(xml, 'Inloggen')
+  ) {
     return { ok: false, reason: 'login_button_missing' };
   }
   sleep(1500);
@@ -181,7 +190,8 @@ function login(email, password, alias) {
   sleep(300);
   if (!tapResource(xml, 'auth-password-input')) {
     xml = dumpUi(`login-${alias}-pw`);
-    if (!tapResource(xml, 'auth-password-input')) return { ok: false, reason: 'password_input_missing' };
+    if (!tapResource(xml, 'auth-password-input'))
+      return { ok: false, reason: 'password_input_missing' };
   }
   sleep(300);
   clearField();
@@ -189,7 +199,11 @@ function login(email, password, alias) {
   sleep(300);
   adb(['shell', 'input', 'keyevent', '111']); // hide keyboard ESC-ish; may no-op
   xml = dumpUi(`login-${alias}-before-submit`);
-  if (!tapResource(xml, 'auth-login-submit') && !tapText(xml, 'Sign in') && !tapText(xml, 'Inloggen')) {
+  if (
+    !tapResource(xml, 'auth-login-submit') &&
+    !tapText(xml, 'Sign in') &&
+    !tapText(xml, 'Inloggen')
+  ) {
     return { ok: false, reason: 'submit_missing' };
   }
   sleep(5000);
@@ -203,31 +217,46 @@ function login(email, password, alias) {
 
 function openDeepLink(path) {
   const url = `vdbdigital://app/${path.replace(/^\//, '')}`;
-  adb([
-    'shell',
-    'am',
-    'start',
-    '-a',
-    'android.intent.action.VIEW',
-    '-d',
-    url,
-    PACKAGE,
-  ]);
+  adb(['shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url, PACKAGE]);
   sleep(2500);
 }
 
 function classifyShell(texts) {
-  if (hasAny(texts, ['admin-dashboard-screen']) || hasAny(texts, ['Partner goedkeuringen', 'Approvals', 'Beheer'])) {
+  if (
+    hasAny(texts, ['admin-dashboard-screen']) ||
+    hasAny(texts, ['Partner goedkeuringen', 'Approvals', 'Beheer'])
+  ) {
     // prefer resource later
   }
   const xmlBlob = texts.join(' ');
-  if (hasAny(texts, ['partner-dashboard']) || hasAny(texts, ['Partnerdashboard', 'Partner dashboard', 'Jouw link', 'Your link'])) {
+  if (
+    hasAny(texts, ['partner-dashboard']) ||
+    hasAny(texts, ['Partnerdashboard', 'Partner dashboard', 'Jouw link', 'Your link'])
+  ) {
     return 'partner';
   }
-  if (hasAny(texts, ['admin-dashboard', 'Openstaande', 'Approvals', 'Tickets', 'Finance', 'Goedkeuringen'])) {
+  if (
+    hasAny(texts, [
+      'admin-dashboard',
+      'Openstaande',
+      'Approvals',
+      'Tickets',
+      'Finance',
+      'Goedkeuringen',
+    ])
+  ) {
     // ambiguous
   }
-  if (hasAny(texts, ['Goedemorgen', 'Good morning', 'Good afternoon', 'Goedemiddag', 'Actieve projecten', 'Active projects'])) {
+  if (
+    hasAny(texts, [
+      'Goedemorgen',
+      'Good morning',
+      'Good afternoon',
+      'Goedemiddag',
+      'Actieve projecten',
+      'Active projects',
+    ])
+  ) {
     return 'customer';
   }
   if (hasAny(texts, ['Sign in', 'Inloggen'])) return 'public';
@@ -236,11 +265,14 @@ function classifyShell(texts) {
 
 function detectArea(xml, texts) {
   if (xml.includes('admin-dashboard-screen') || xml.includes('tab-admin-home')) return 'admin';
-  if (xml.includes('partner-dashboard-screen') || xml.includes('tab-partner-home')) return 'partner';
-  if (xml.includes('customer-dashboard-screen') || xml.includes('tab-customer-home')) return 'customer';
+  if (xml.includes('partner-dashboard-screen') || xml.includes('tab-partner-home'))
+    return 'partner';
+  if (xml.includes('customer-dashboard-screen') || xml.includes('tab-customer-home'))
+    return 'customer';
   if (hasAny(texts, ['Sign in', 'Inloggen', 'Create account'])) return 'public';
   // pending partners often stay in customer area
-  if (hasAny(texts, ['Partner worden', 'Become a partner', 'pending', 'in behandeling'])) return 'customer_pending_hint';
+  if (hasAny(texts, ['Partner worden', 'Become a partner', 'pending', 'in behandeling']))
+    return 'customer_pending_hint';
   return classifyShell(texts);
 }
 
@@ -321,7 +353,13 @@ function main() {
   function runAccount(alias, expectations) {
     const creds = accounts[alias];
     if (!creds?.email || !creds?.password) {
-      record(results, { alias, flow: 'vault_creds', expected: 'present', result: 'FAIL', detail: 'missing' });
+      record(results, {
+        alias,
+        flow: 'vault_creds',
+        expected: 'present',
+        result: 'FAIL',
+        detail: 'missing',
+      });
       return;
     }
     const out = ensureLoggedOut();
@@ -330,7 +368,11 @@ function main() {
       flow: 'logout_before_login',
       expected: 'public shell',
       result: out.ok ? 'PASS' : 'FAIL',
-      detail: out.cleared ? 'pm_clear_fallback' : out.alreadyPublic ? 'already_public' : 'signed_out',
+      detail: out.cleared
+        ? 'pm_clear_fallback'
+        : out.alreadyPublic
+          ? 'already_public'
+          : 'signed_out',
     });
     const loginRes = login(creds.email, creds.password, alias);
     const xml = loginRes.xml || dumpUi(`${alias}-post-login`);
@@ -340,7 +382,10 @@ function main() {
       alias,
       flow: 'login_routing',
       expected: expectations.area,
-      result: area === expectations.area || (expectations.areaAlt && expectations.areaAlt.includes(area)) ? 'PASS' : 'FAIL',
+      result:
+        area === expectations.area || (expectations.areaAlt && expectations.areaAlt.includes(area))
+          ? 'PASS'
+          : 'FAIL',
       detail: `area=${area}`,
     });
 
@@ -351,8 +396,7 @@ function main() {
         sleep(1500);
         let x2 = dumpUi(`${alias}-projects`);
         let t2 = textsFromXml(x2);
-        const emptyOk =
-          hasAny(t2, ['Nog geen', 'Geen ', 'No ', 'Empty']) || t2.length > 0;
+        const emptyOk = hasAny(t2, ['Nog geen', 'Geen ', 'No ', 'Empty']) || t2.length > 0;
         const leakA = hasAny(t2, [FIXTURE.projectId]);
         record(results, {
           alias,
@@ -362,7 +406,8 @@ function main() {
           detail: emptyOk ? 'list_ok' : 'unexpected',
         });
 
-        tapResource(x2, 'tab-customer-messages') || tapResource(dumpUi(`${alias}-tmp`), 'tab-customer-messages');
+        tapResource(x2, 'tab-customer-messages') ||
+          tapResource(dumpUi(`${alias}-tmp`), 'tab-customer-messages');
         sleep(1500);
         x2 = dumpUi(`${alias}-messages`);
         t2 = textsFromXml(x2);
@@ -370,7 +415,10 @@ function main() {
           alias,
           flow: 'messages_surface',
           expected: 'empty or own; not unavailable preview',
-          result: !hasAny(t2, ['Nog niet beschikbaar in deze preview', 'Not available in this preview'])
+          result: !hasAny(t2, [
+            'Nog niet beschikbaar in deze preview',
+            'Not available in this preview',
+          ])
             ? 'PASS'
             : 'FAIL',
           detail: hasAny(t2, ['Nog geen gesprekken', 'No conversations', 'gesprekken'])
@@ -386,8 +434,16 @@ function main() {
       const x3 = dumpUi(`${alias}-deny-project-a`);
       const t3 = textsFromXml(x3);
       const denied =
-        hasAny(t3, ['niet gevonden', 'not found', 'geen toegang', 'permission', 'forbidden', 'kon niet', 'Error', 'Fout']) ||
-        !hasAny(t3, [FIXTURE.projectId]);
+        hasAny(t3, [
+          'niet gevonden',
+          'not found',
+          'geen toegang',
+          'permission',
+          'forbidden',
+          'kon niet',
+          'Error',
+          'Fout',
+        ]) || !hasAny(t3, [FIXTURE.projectId]);
       record(results, {
         alias,
         flow: 'cross_id_deny_project_a',
@@ -401,8 +457,15 @@ function main() {
       const x4 = dumpUi(`${alias}-deny-conv-a`);
       const t4 = textsFromXml(x4);
       const deniedMsg =
-        hasAny(t4, ['niet gevonden', 'not found', 'geen toegang', 'permission', 'forbidden', 'Error', 'Fout']) ||
-        !hasAny(t4, [FIXTURE.conversationIdCustA]);
+        hasAny(t4, [
+          'niet gevonden',
+          'not found',
+          'geen toegang',
+          'permission',
+          'forbidden',
+          'Error',
+          'Fout',
+        ]) || !hasAny(t4, [FIXTURE.conversationIdCustA]);
       record(results, {
         alias,
         flow: 'cross_id_deny_conversation_a',

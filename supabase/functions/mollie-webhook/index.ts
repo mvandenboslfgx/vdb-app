@@ -35,7 +35,8 @@ serve(async (req) => {
     {
       error: 'FEATURE_NOT_CONFIGURED',
       feature: 'mollie_webhook_wiring',
-      message: 'Webhook reducer is unit-tested in-app; Edge wiring awaits owner secrets + deploy approval',
+      message:
+        'Webhook reducer is unit-tested in-app; Edge wiring awaits owner secrets + deploy approval',
     },
     503,
   );

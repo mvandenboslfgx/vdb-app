@@ -4,13 +4,19 @@ import { fireEvent, renderWithProviders, screen, waitFor } from '../test-utils';
 import { useLocalSearchParams } from '../../__mocks__/expo-router';
 
 import DocumentDetailScreen from '../../app/(customer)/documents/[id]';
-import { getDocument, getDocumentDownloadLink, reviewDocument } from '@/api/repositories/documentsRepository';
+import {
+  getDocument,
+  getDocumentDownloadLink,
+  reviewDocument,
+} from '@/api/repositories/documentsRepository';
 import type { Document } from '@/types/domain';
 
 jest.mock('@/api/repositories/documentsRepository');
 
 const mockGetDocument = getDocument as jest.MockedFunction<typeof getDocument>;
-const mockGetDownloadLink = getDocumentDownloadLink as jest.MockedFunction<typeof getDocumentDownloadLink>;
+const mockGetDownloadLink = getDocumentDownloadLink as jest.MockedFunction<
+  typeof getDocumentDownloadLink
+>;
 const mockReviewDocument = reviewDocument as jest.MockedFunction<typeof reviewDocument>;
 
 function makeDocument(overrides: Partial<Document> = {}): Document {
@@ -60,7 +66,10 @@ describe('DocumentDetailScreen', () => {
     await renderWithProviders(<DocumentDetailScreen />);
     await waitFor(() => expect(screen.getByTestId('screen-document-detail')).toBeTruthy());
 
-    await fireEvent.changeText(screen.getByTestId('input-document-comment'), 'Please fix the address on page 2');
+    await fireEvent.changeText(
+      screen.getByTestId('input-document-comment'),
+      'Please fix the address on page 2',
+    );
     await fireEvent.press(screen.getByTestId('btn-document-request-changes'));
 
     await waitFor(() =>
@@ -96,7 +105,9 @@ describe('DocumentDetailScreen', () => {
 
     await waitFor(() => expect(mockGetDownloadLink).toHaveBeenCalledWith('doc-1'));
     await waitFor(() =>
-      expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith('https://mock.local/documents/doc-1/download'),
+      expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(
+        'https://mock.local/documents/doc-1/download',
+      ),
     );
   });
 

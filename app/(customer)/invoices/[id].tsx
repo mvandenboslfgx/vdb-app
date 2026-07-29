@@ -6,14 +6,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 import { getInvoice } from '@/api/repositories/invoicesRepository';
 import { createCheckout } from '@/api/repositories/paymentsRepository';
-import {
-  Button,
-  ErrorState,
-  LoadingState,
-  Screen,
-  StatusPill,
-  Text,
-} from '@/design-system';
+import { Button, ErrorState, LoadingState, Screen, StatusPill, Text } from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import { formatCurrency, formatDate } from '@/lib/format';
 import type { Invoice } from '@/types/domain';
@@ -105,9 +98,7 @@ export default function InvoiceDetailScreen() {
   }
 
   // Domain maps DB `issued` → `sent`. Keep both names so fixtures/UI stay aligned.
-  const canPay = ['issued', 'sent', 'viewed', 'partially_paid', 'overdue'].includes(
-    invoice.status,
-  );
+  const canPay = ['issued', 'sent', 'viewed', 'partially_paid', 'overdue'].includes(invoice.status);
 
   return (
     <Screen scroll testID="screen-invoice-detail">

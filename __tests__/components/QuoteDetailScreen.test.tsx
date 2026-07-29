@@ -24,7 +24,9 @@ function makeQuote(overrides: Partial<Quote> = {}): Quote {
     subtotalCents: 100000,
     vatCents: 21000,
     totalCents: 121000,
-    items: [{ id: 'item-1', description: 'Design', quantity: 1, unitPriceCents: 100000, vatPercent: 21 }],
+    items: [
+      { id: 'item-1', description: 'Design', quantity: 1, unitPriceCents: 100000, vatPercent: 21 },
+    ],
     projectId: null,
     termsVersion: '1.2',
     createdAt: '2026-01-01T00:00:00.000Z',

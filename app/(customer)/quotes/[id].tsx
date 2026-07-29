@@ -191,7 +191,12 @@ export default function QuoteDetailScreen() {
           />
         </View>
       ) : (
-        <Text variant="caption" color="textMuted" testID="quote-readonly-notice" style={styles.message}>
+        <Text
+          variant="caption"
+          color="textMuted"
+          testID="quote-readonly-notice"
+          style={styles.message}
+        >
           {t('readOnlyNotice')}
         </Text>
       )}

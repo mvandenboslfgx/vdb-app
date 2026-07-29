@@ -10,8 +10,8 @@ appId: nl.vdbdigital.app
       EMAIL: customer.a@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "customer-dashboard-screen"
+      id: 'customer-dashboard-screen'
     timeout: 60000
 - assertVisible:
-    id: "customer-dashboard-screen"
-- takeScreenshot: "01-customer-auth"
+    id: 'customer-dashboard-screen'
+- takeScreenshot: '01-customer-auth'

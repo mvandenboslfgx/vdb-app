@@ -57,7 +57,11 @@ describe('CustomerDashboard', () => {
 
   it('lists active projects and navigates to project detail on press', async () => {
     mockGetDashboard.mockResolvedValueOnce(
-      makeDashboard({ activeProjects: [makeProject()], unreadMessages: 3, documentsPendingReview: 1 }),
+      makeDashboard({
+        activeProjects: [makeProject()],
+        unreadMessages: 3,
+        documentsPendingReview: 1,
+      }),
     );
     await renderWithProviders(<CustomerHomeScreen />);
 
@@ -77,9 +81,7 @@ describe('CustomerDashboard', () => {
 
     await waitFor(() => expect(screen.getByTestId('dashboard-greeting')).toBeTruthy());
     expect(screen.getByText(/Jane/)).toBeTruthy();
-    expect(
-      screen.getByText("Here’s what’s happening across your projects."),
-    ).toBeTruthy();
+    expect(screen.getByText('Here’s what’s happening across your projects.')).toBeTruthy();
   });
 
   it('exposes quick actions that navigate to real screens', async () => {

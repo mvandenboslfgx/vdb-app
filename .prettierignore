@@ -1,0 +1,71 @@
+# Dependencies / package manager
+node_modules/
+package-lock.json
+
+# Generated database types — canonical output from scripts/gen-db-types.mjs
+src/types/database.generated.ts
+
+# Immutable contract release bundles (checksums / published artifacts)
+contracts/releases/
+
+# Historical evidence / readiness artifacts (not runtime source)
+artifacts/
+
+# Device / Maestro / build evidence docs that must stay as recorded
+docs/*evidence*
+docs/*results*
+docs/maestro-*
+docs/samsung-s25-device-results.md
+docs/accessibility-results.md
+docs/android-apk-evidence.md
+docs/android-build-evidence.md
+docs/android-environment-verification.md
+docs/device-performance-results.md
+docs/device-security-results.md
+docs/local-pre-staging-remediation-evidence.md
+docs/local-shared-contract-convergence-evidence.md
+docs/maestro-device-results.md
+docs/maestro-root-cause-audit.md
+docs/maestro-suite-manifest.md
+
+# Native / Expo / build outputs (not tracked or not source-of-truth for format)
+android/
+ios/
+.expo/
+dist/
+web-build/
+coverage/
+.jest/
+*.tsbuildinfo
+
+# Local scratch / temp
+.tmp/
+tmp-maestro-apks/
+tmp-maestro-src/
+supabase/.temp/
+supabase/.branches/
+
+# Binary / media
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.ttf
+*.otf
+*.woff
+*.woff2
+*.apk
+*.aab
+*.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+
+# Logs / dumps
+*.log
+docs/_maestro*
+docs/_m-*.log
+docs/_device-*.log

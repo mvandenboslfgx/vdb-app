@@ -10,25 +10,25 @@ appId: nl.vdbdigital.app
 - waitForAnimationToEnd
 - extendedWaitUntil:
     visible:
-      id: "btn-public-login"
+      id: 'btn-public-login'
     timeout: 90000
 - tapOn:
-    id: "btn-public-login"
+    id: 'btn-public-login'
 - extendedWaitUntil:
     visible:
-      id: "auth-login-screen"
+      id: 'auth-login-screen'
     timeout: 30000
 - tapOn:
-    id: "auth-email-input"
+    id: 'auth-email-input'
 - eraseText
 - inputText: ${EMAIL}
 - tapOn:
-    id: "auth-password-input"
+    id: 'auth-password-input'
 - eraseText
-- inputText: "LocalTestVdb2026"
+- inputText: 'LocalTestVdb2026'
 - hideKeyboard
 - tapOn:
-    id: "auth-login-submit"
+    id: 'auth-login-submit'
 - runFlow:
     file: dismiss-overlays.yaml
 - waitForAnimationToEnd
@@ -37,5 +37,5 @@ appId: nl.vdbdigital.app
 # Leave auth screen or fail here (do not pretend login succeeded).
 - extendedWaitUntil:
     notVisible:
-      id: "auth-login-screen"
+      id: 'auth-login-screen'
     timeout: 60000

@@ -69,7 +69,10 @@ function portPattern(port) {
 /** Report sibling stacks without touching them (architecture freeze). */
 function reportSiblingStacks() {
   const all = runQuiet('docker', ['ps', '-a', '--format', '{{.Names}}']);
-  const names = (all.stdout ?? '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  const names = (all.stdout ?? '')
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
   const siblings = names.filter((n) => SIBLING_STACKS.some((s) => n.includes(s)));
   if (siblings.length > 0) {
     console.log(
@@ -163,7 +166,9 @@ function ensureAppApkInstalled() {
   }
   const sha = sha256File(APP_APK);
   fs.mkdirSync(path.dirname(APP_APK_SHA_FILE), { recursive: true });
-  const prev = fs.existsSync(APP_APK_SHA_FILE) ? fs.readFileSync(APP_APK_SHA_FILE, 'utf8').trim() : '';
+  const prev = fs.existsSync(APP_APK_SHA_FILE)
+    ? fs.readFileSync(APP_APK_SHA_FILE, 'utf8').trim()
+    : '';
   if (prev && prev !== sha) {
     console.error(
       `INFRASTRUCTURE BLOCKED: APK SHA-256 changed (expected ${prev}, got ${sha}). Rebuild or restore artifact.`,
@@ -189,10 +194,14 @@ function ensureAppApkInstalled() {
   }
   for (let i = 0; i < 20; i += 1) {
     if (assertAppPackageInstalled()) break;
-    spawnSync(process.platform === 'win32' ? 'timeout' : 'sleep', process.platform === 'win32' ? ['/t', '1', '/nobreak'] : ['1'], {
-      shell: true,
-      stdio: 'ignore',
-    });
+    spawnSync(
+      process.platform === 'win32' ? 'timeout' : 'sleep',
+      process.platform === 'win32' ? ['/t', '1', '/nobreak'] : ['1'],
+      {
+        shell: true,
+        stdio: 'ignore',
+      },
+    );
   }
   if (!assertAppPackageInstalled()) {
     console.error(`INFRASTRUCTURE BLOCKED: package ${APP_PACKAGE} not visible after install`);
@@ -249,7 +258,9 @@ export function assertDeviceHealthGate({ requireMetro = true, requireApp = true 
   const reverse = runQuiet('adb', ['reverse', '--list']);
   const revOut = reverse.stdout ?? '';
   if (!revOut.includes(`tcp:${API_PORT}`) || !revOut.includes(`tcp:${METRO_PORT}`)) {
-    console.error(`INFRASTRUCTURE BLOCKED: adb reverse missing for ${API_PORT} and/or ${METRO_PORT}`);
+    console.error(
+      `INFRASTRUCTURE BLOCKED: adb reverse missing for ${API_PORT} and/or ${METRO_PORT}`,
+    );
     console.error(revOut || '(empty)');
     process.exit(2);
   }
@@ -257,7 +268,9 @@ export function assertDeviceHealthGate({ requireMetro = true, requireApp = true 
   if (requireMetro) {
     const metro = httpCode(METRO_URL);
     if (metro !== '200') {
-      console.error(`INFRASTRUCTURE BLOCKED: Metro not reachable on :${METRO_PORT} (HTTP ${metro || 'none'})`);
+      console.error(
+        `INFRASTRUCTURE BLOCKED: Metro not reachable on :${METRO_PORT} (HTTP ${metro || 'none'})`,
+      );
       process.exit(2);
     }
   }
@@ -288,7 +301,9 @@ function ensureExpectedStackRunning() {
     .filter((l) => portPattern(API_PORT).test(l));
   const ok = lines.length === 1 && lines[0].includes(EXPECTED_PROJECT);
   if (ok) return;
-  console.log(`Starting ${EXPECTED_PROJECT} (current kong on :${API_PORT}: ${lines.join(' | ') || 'none'})…`);
+  console.log(
+    `Starting ${EXPECTED_PROJECT} (current kong on :${API_PORT}: ${lines.join(' | ') || 'none'})…`,
+  );
   run('npx', ['supabase', 'start']);
   waitForAuthHealthy(180_000);
   const again = runQuiet('docker', [

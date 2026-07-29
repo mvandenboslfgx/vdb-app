@@ -9,19 +9,19 @@ appId: nl.vdbdigital.app
       EMAIL: admin@local.vdb
 - extendedWaitUntil:
     visible:
-      id: "admin-dashboard-screen"
+      id: 'admin-dashboard-screen'
     timeout: 60000
 - tapOn:
-    id: "tab-admin-approvals"
+    id: 'tab-admin-approvals'
 - assertVisible:
-    id: "screen-admin-approvals"
+    id: 'screen-admin-approvals'
 - scrollUntilVisible:
     element:
-      id: "admin-partner-approve"
+      id: 'admin-partner-approve'
     direction: DOWN
     timeout: 20000
 - assertVisible:
-    id: "admin-partner-approve"
+    id: 'admin-partner-approve'
 - tapOn:
-    id: "admin-partner-approve"
-- takeScreenshot: "09-admin-partner-approval"
+    id: 'admin-partner-approve'
+- takeScreenshot: '09-admin-partner-approval'

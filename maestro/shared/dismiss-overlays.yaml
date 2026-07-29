@@ -3,14 +3,14 @@
 appId: nl.vdbdigital.app
 ---
 - tapOn:
-    id: "android:id/autofill_save_no"
+    id: 'android:id/autofill_save_no'
     optional: true
 - tapOn:
-    id: "android:id/autofill_save_never_allow"
+    id: 'android:id/autofill_save_never_allow'
     optional: true
 - tapOn:
-    text: "Nee"
+    text: 'Nee'
     optional: true
 - tapOn:
-    text: "No"
+    text: 'No'
     optional: true

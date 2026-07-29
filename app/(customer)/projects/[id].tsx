@@ -3,19 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import {
-  getProject,
-  listMilestones,
-  listUpdates,
-} from '@/api/repositories/projectsRepository';
-import {
-  Button,
-  ErrorState,
-  LoadingState,
-  Screen,
-  StatusPill,
-  Text,
-} from '@/design-system';
+import { getProject, listMilestones, listUpdates } from '@/api/repositories/projectsRepository';
+import { Button, ErrorState, LoadingState, Screen, StatusPill, Text } from '@/design-system';
 import type { Project, ProjectMilestone, ProjectUpdate } from '@/types/domain';
 import { spacing } from '@/theme';
 
@@ -36,11 +25,7 @@ export default function ProjectDetailScreen() {
     setLoading(true);
     setError(false);
     try {
-      const [p, m, u] = await Promise.all([
-        getProject(id),
-        listMilestones(id),
-        listUpdates(id),
-      ]);
+      const [p, m, u] = await Promise.all([getProject(id), listMilestones(id), listUpdates(id)]);
       setProject(p);
       setMilestones(m);
       setUpdates(u);

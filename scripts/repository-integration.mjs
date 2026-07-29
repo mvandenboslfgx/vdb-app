@@ -381,10 +381,7 @@ async function main() {
   // --- partner commissions ---
   try {
     const { sb } = await asUser(apiUrl, anonKey, 'partner.active.a@local.vdb');
-    const commissions = await sb
-      .from('commissions')
-      .select('id,commission_amount_cents')
-      .limit(10);
+    const commissions = await sb.from('commissions').select('id,commission_amount_cents').limit(10);
     if (commissions.error) throw commissions.error;
     pass('commissions_partner_a_list');
     await sb.auth.signOut();
@@ -463,7 +460,8 @@ async function main() {
         p_commission_ids: [fixture.commissionId],
       });
       if (error) throw error;
-      if (!data?.id || data.status !== 'submitted') throw new Error('unexpected payout_requests result');
+      if (!data?.id || data.status !== 'submitted')
+        throw new Error('unexpected payout_requests result');
       payoutRequestId = data.id;
 
       const after = await sb
@@ -532,7 +530,8 @@ async function main() {
       p_client_message_id: clientMessageId,
     });
     if (dup.error) throw dup.error;
-    if (dup.data.id !== reply.id) throw new Error('expected idempotent replay on client_message_id');
+    if (dup.data.id !== reply.id)
+      throw new Error('expected idempotent replay on client_message_id');
 
     const { data: ticketAfter, error: afterErr } = await staffSb
       .from('support_tickets')

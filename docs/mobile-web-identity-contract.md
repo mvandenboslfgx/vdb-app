@@ -6,14 +6,14 @@ Website and Android app share **one Supabase Auth identity**.
 
 ## Guarantees
 
-| Concern | Contract |
-|---|---|
-| Account | Same `auth.users` / `profiles` row |
-| Session | JWT from Supabase Auth; app stores via SecureStore + PKCE |
-| Roles | Elevated: `admin_roles` (server-managed). App roles: `user_roles` (customer / partner_pending / partner / staff…) |
-| Registration | Public signup → `customer` only (or partner_application pending). Never client-assigned admin |
-| Email verification | Required before privileged actions where product rules demand it |
-| Password reset | Shared deep links under `https://vdbdigital.nl/app/...` + custom scheme `vdbdigital://` |
+| Concern            | Contract                                                                                                          |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Account            | Same `auth.users` / `profiles` row                                                                                |
+| Session            | JWT from Supabase Auth; app stores via SecureStore + PKCE                                                         |
+| Roles              | Elevated: `admin_roles` (server-managed). App roles: `user_roles` (customer / partner_pending / partner / staff…) |
+| Registration       | Public signup → `customer` only (or partner_application pending). Never client-assigned admin                     |
+| Email verification | Required before privileged actions where product rules demand it                                                  |
+| Password reset     | Shared deep links under `https://vdbdigital.nl/app/...` + custom scheme `vdbdigital://`                           |
 
 ## Client may never
 

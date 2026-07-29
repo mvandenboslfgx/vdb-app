@@ -33,8 +33,12 @@ function loadNamespace(lang, file) {
   return JSON.parse(raw);
 }
 
-const nlFiles = readdirSync(join(localesRoot, 'nl')).filter((f) => f.endsWith('.json')).sort();
-const enFiles = readdirSync(join(localesRoot, 'en')).filter((f) => f.endsWith('.json')).sort();
+const nlFiles = readdirSync(join(localesRoot, 'nl'))
+  .filter((f) => f.endsWith('.json'))
+  .sort();
+const enFiles = readdirSync(join(localesRoot, 'en'))
+  .filter((f) => f.endsWith('.json'))
+  .sort();
 
 let failed = false;
 

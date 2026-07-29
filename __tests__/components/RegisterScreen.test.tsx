@@ -34,7 +34,10 @@ describe('RegisterScreen', () => {
     await fireEvent.changeText(screen.getByTestId('input-register-full-name'), 'Jane Doe');
     await fireEvent.changeText(screen.getByTestId('input-register-email'), 'jane@example.com');
     await fireEvent.changeText(screen.getByTestId('input-register-password'), 'supersecret');
-    await fireEvent.changeText(screen.getByTestId('input-register-confirm-password'), 'supersecret');
+    await fireEvent.changeText(
+      screen.getByTestId('input-register-confirm-password'),
+      'supersecret',
+    );
     await fireEvent.press(screen.getByTestId('auth-register-submit'));
 
     await waitFor(() => expect(screen.getByTestId('register-error')).toBeTruthy());
