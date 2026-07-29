@@ -18,6 +18,7 @@ export default function NewSupportTicketScreen() {
   const [validationError, setValidationError] = useState(false);
 
   async function onSubmit() {
+    if (loading) return;
     if (!subject.trim() || !description.trim()) {
       setValidationError(true);
       return;
@@ -54,8 +55,18 @@ export default function NewSupportTicketScreen() {
         </Text>
       ) : null}
       <View style={styles.form}>
-        <TextInput testID="input-support-subject" label={t('subject')} value={subject} onChangeText={setSubject} />
-        <TextInput testID="input-support-category" label={t('category')} value={category} onChangeText={setCategory} />
+        <TextInput
+          testID="input-support-subject"
+          label={t('subject')}
+          value={subject}
+          onChangeText={setSubject}
+        />
+        <TextInput
+          testID="input-support-category"
+          label={t('category')}
+          value={category}
+          onChangeText={setCategory}
+        />
         <TextInput
           testID="input-support-description"
           label={t('description')}
@@ -71,6 +82,7 @@ export default function NewSupportTicketScreen() {
           variant="gold"
           fullWidth
           loading={loading}
+          disabled={loading || !subject.trim() || !description.trim()}
           onPress={() => void onSubmit()}
         />
       </View>
