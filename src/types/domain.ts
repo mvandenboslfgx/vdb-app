@@ -77,7 +77,7 @@ export type PartnerApplicationStatus =
   'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'suspended';
 
 export type AppointmentStatus =
-  'requested' | 'confirmed' | 'rescheduled' | 'cancelled' | 'completed' | 'no_show';
+  'scheduled' | 'requested' | 'confirmed' | 'rescheduled' | 'cancelled' | 'completed' | 'no_show';
 
 export type MessageDeliveryStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
 

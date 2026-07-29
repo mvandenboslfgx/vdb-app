@@ -79,6 +79,11 @@ export default function AdminMoreScreen() {
         title={t('more.settings')}
         onPress={() => openSurface('settings')}
       />
+      <ListRow
+        testID="admin-more-diagnostics"
+        title={t('more.diagnostics')}
+        onPress={() => router.push('/(admin)/more/diagnostics')}
+      />
       {whatsapp.enabled ? (
         <ListRow
           testID="admin-more-whatsapp"

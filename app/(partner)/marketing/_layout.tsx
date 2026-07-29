@@ -1,16 +1,14 @@
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
-import { colors } from '@/theme';
+import { premiumStackScreenOptions, stackIndexHiddenHeader } from '@/navigation/premiumStack';
 
 export default function MarketingLayout() {
+  const { t } = useTranslation('partners');
+
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.backgroundPrimary },
-        headerTintColor: colors.champagneGold,
-        headerTitleStyle: { color: colors.textPrimary },
-        contentStyle: { backgroundColor: colors.backgroundPrimary },
-      }}
-    />
+    <Stack screenOptions={premiumStackScreenOptions}>
+      <Stack.Screen name="index" options={{ ...stackIndexHiddenHeader, title: t('link') }} />
+    </Stack>
   );
 }

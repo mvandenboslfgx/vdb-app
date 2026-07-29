@@ -1,15 +1,15 @@
 import { Stack } from 'expo-router';
-import { colors } from '@/theme';
+import { useTranslation } from 'react-i18next';
+
+import { premiumStackScreenOptions, stackIndexHiddenHeader } from '@/navigation/premiumStack';
 
 export default function InvoicesLayout() {
+  const { t } = useTranslation('invoices');
+
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.backgroundPrimary },
-        headerTintColor: colors.textPrimary,
-        headerShadowVisible: false,
-        contentStyle: { backgroundColor: colors.backgroundPrimary },
-      }}
-    />
+    <Stack screenOptions={premiumStackScreenOptions}>
+      <Stack.Screen name="index" options={{ ...stackIndexHiddenHeader, title: t('title') }} />
+      <Stack.Screen name="[id]" options={{ title: t('title') }} />
+    </Stack>
   );
 }

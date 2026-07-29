@@ -1,15 +1,15 @@
 import { Stack } from 'expo-router';
-import { colors } from '@/theme';
+import { useTranslation } from 'react-i18next';
+
+import { premiumStackScreenOptions, stackIndexHiddenHeader } from '@/navigation/premiumStack';
 
 export default function LeadsLayout() {
+  const { t } = useTranslation('partners');
+
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.backgroundPrimary },
-        headerTintColor: colors.textPrimary,
-        headerShadowVisible: false,
-        contentStyle: { backgroundColor: colors.backgroundPrimary },
-      }}
-    />
+    <Stack screenOptions={premiumStackScreenOptions}>
+      <Stack.Screen name="index" options={{ ...stackIndexHiddenHeader, title: t('leads') }} />
+      <Stack.Screen name="new" options={{ title: t('submitLead') }} />
+    </Stack>
   );
 }

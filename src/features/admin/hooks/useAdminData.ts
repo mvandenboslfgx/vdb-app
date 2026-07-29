@@ -36,10 +36,11 @@ export function useAdminFinance() {
   });
 }
 
-export function useAdminPayoutRequests() {
+export function useAdminPayoutRequests(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['admin', 'payoutRequests'],
     queryFn: adminRepository.listPayoutRequests,
+    enabled: options?.enabled ?? true,
   });
 }
 

@@ -90,7 +90,11 @@ describe('PayoutsIndexScreen', () => {
       payoutRequest: makePayoutRequest(),
     });
     // useRequestPayout invalidates all three queries on success — queue their refetch.
-    mockGetPayableBalance.mockResolvedValueOnce({ amountCents: 0, currency: 'EUR', commissionIds: [] });
+    mockGetPayableBalance.mockResolvedValueOnce({
+      amountCents: 0,
+      currency: 'EUR',
+      commissionIds: [],
+    });
     mockListCommissions.mockResolvedValueOnce([]);
     mockListPayoutRequests.mockResolvedValueOnce([makePayoutRequest()]);
 
@@ -104,7 +108,7 @@ describe('PayoutsIndexScreen', () => {
     expect(screen.queryByTestId('text-payout-error')).toBeNull();
   });
 
-  it('shows a disabled-feature error without calling the RPC when the flag is off', async () => {
+  it('shows a disabled-feature state without calling the RPC when the flag is off', async () => {
     setFeatureFlags({ partnerPayouts: false });
     mockGetPayableBalance.mockResolvedValueOnce({
       amountCents: 3000,
@@ -115,12 +119,9 @@ describe('PayoutsIndexScreen', () => {
     mockListPayoutRequests.mockResolvedValueOnce([]);
 
     await renderWithProviders(<PayoutsIndexScreen />);
-    await waitFor(() => expect(screen.getByTestId('btn-payout-request')).toBeTruthy());
-
-    await fireEvent.press(screen.getByTestId('btn-payout-request'));
-
-    await waitFor(() => expect(screen.getByTestId('text-payout-error')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('state-payouts-disabled')).toBeTruthy());
     expect(screen.getByText('Payouts are currently disabled.')).toBeTruthy();
+    expect(screen.queryByTestId('btn-payout-request')).toBeNull();
     expect(mockRequestPayout).not.toHaveBeenCalled();
   });
 
@@ -154,8 +155,6 @@ describe('PayoutsIndexScreen', () => {
     await fireEvent.press(screen.getByTestId('btn-payout-request'));
 
     await waitFor(() => expect(screen.getByTestId('text-payout-error')).toBeTruthy());
-    expect(
-      screen.getByText('The requested amount exceeds your payable balance.'),
-    ).toBeTruthy();
+    expect(screen.getByText('The requested amount exceeds your payable balance.')).toBeTruthy();
   });
 });

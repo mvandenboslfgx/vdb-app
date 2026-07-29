@@ -31,7 +31,16 @@
   "link": "Partnerlink",
   "leads": "Leads",
   "leadsEmpty": "Nog geen leads.",
+  "leadsLoading": "Leads laden…",
+  "leadsError": "Leads konden niet worden geladen.",
+  "submitLead": "Nieuwe lead indienen",
   "copyLink": "Link kopiëren",
+  "copyLinkFailed": "De partnerlink kon niet worden gekopieerd. Probeer het opnieuw.",
+  "openLink": "Link openen",
+  "shareLink": "Delen",
+  "linkUnavailable": "Partnerlink is nog niet beschikbaar.",
+  "linkInvalid": "Partnerlink is ongeldig.",
+  "referralCode": "Verwijzingscode",
   "status": {
     "draft": "Concept",
     "submitted": "Ingediend",
@@ -48,7 +57,7 @@
     "new": "Nieuw",
     "contacted": "Benaderd",
     "qualified": "Gekwalificeerd",
-    "converted": "Geconverteerd",
+    "converted": "Omgezet naar verkoop",
     "rejected": "Afgewezen",
     "invalid": "Ongeldig"
   }

@@ -31,6 +31,7 @@ import {
 } from '@/api/repositories/supportRepository';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
 import { mapCommission, mapLead, mapPayoutRequest } from '@/lib/mappers';
+import { toOwnerTicketStatus } from '@/lib/ticketTransitions';
 import type {
   AdminDashboardStats,
   Commission,
@@ -448,11 +449,11 @@ export async function qualifyPartnerLead(
   const supabase = requireLiveSupabase();
   const { data, error } = await rpcOwner(supabase, 'admin_qualify_lead', {
     p_lead_id: leadId,
-    p_status: status,
+    p_status: status.toUpperCase(),
     p_reason: reason || undefined,
   });
   if (error) throw fromSupabaseError(error);
-  return mapLead(data as Parameters<typeof mapLead>[0]);
+  return mapLead((data ?? {}) as Record<string, unknown>);
 }
 
 /**
@@ -642,7 +643,7 @@ export async function updateTicketStatus(
   const supabase = requireLiveSupabase();
   const { data, error } = await rpcOwner(supabase, 'admin_update_ticket_status', {
     p_ticket_id: ticketId,
-    p_status: status,
+    p_status: toOwnerTicketStatus(status),
     ...(reason?.trim() ? { p_reason: reason.trim() } : {}),
     ...(assignee ? { p_assignee: assignee } : {}),
   });
@@ -693,7 +694,7 @@ const DIRECTORY_TITLE_KEYS = {
   projects: ['title', 'name', 'id'],
   quotes: ['quote_number', 'title', 'id'],
   invoices: ['invoice_number', 'title', 'id'],
-  appointments: ['title', 'starts_at', 'id'],
+  appointments: ['title', 'id'],
 } as const;
 
 function titleKeysFor(surface: keyof typeof DIRECTORY_TITLE_KEYS): string[] {

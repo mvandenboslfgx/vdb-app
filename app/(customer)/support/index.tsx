@@ -14,6 +14,7 @@ import {
   StatusPill,
   Text,
 } from '@/design-system';
+import { translateEnum } from '@/i18n/translateEnum';
 import type { SupportTicket } from '@/types/domain';
 import { spacing } from '@/theme';
 
@@ -68,8 +69,8 @@ export default function SupportScreen() {
           <ListRow
             key={ticket.id}
             title={ticket.subject}
-            subtitle={t(`categories.${ticket.category}` as 'categories.other')}
-            right={<StatusPill label={t(`status.${ticket.status}`)} tone="gold" />}
+            subtitle={translateEnum(t, 'categories', ticket.category)}
+            right={<StatusPill label={translateEnum(t, 'status', ticket.status)} tone="gold" />}
             onPress={() => router.push(`/(customer)/support/${ticket.id}`)}
           />
         ))

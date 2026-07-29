@@ -307,7 +307,7 @@ describe('rc.3 portal mappers', () => {
 
   it('mapPortalAppointment: maps all rc.3 statuses', () => {
     const statuses: Array<[string, string]> = [
-      ['SCHEDULED', 'requested'],
+      ['SCHEDULED', 'scheduled'],
       ['CONFIRMED', 'confirmed'],
       ['RESCHEDULED', 'rescheduled'],
       ['CANCELLED', 'cancelled'],
@@ -477,7 +477,7 @@ describe('appointmentsRepository rc.3 behaviour', () => {
       'book_portal_appointment',
       expect.objectContaining({ p_organization_id: 'org-1', p_title: 'Kickoff' }),
     );
-    expect(appointment.status).toBe('requested');
+    expect(appointment.status).toBe('scheduled');
   });
 
   it('requestAppointment surfaces FEATURE_DISABLED cleanly when the flag is off', async () => {

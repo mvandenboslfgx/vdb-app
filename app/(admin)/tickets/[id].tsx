@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -19,17 +19,11 @@ import {
   Text,
   TextInput,
 } from '@/design-system';
+import { translateEnum } from '@/i18n/translateEnum';
 import { DomainError } from '@/lib/errors';
+import { nextPrimaryTicketActions, secondaryTicketActions } from '@/lib/ticketTransitions';
 import type { SupportTicket, SupportTicketMessage } from '@/types/domain';
 import { colors, radii, spacing } from '@/theme';
-
-const STATUS_ACTIONS: AdminTicketStatus[] = [
-  'open',
-  'in_progress',
-  'waiting_on_customer',
-  'resolved',
-  'closed',
-];
 
 const REASON_REQUIRED: AdminTicketStatus[] = ['resolved', 'closed'];
 
@@ -139,8 +133,16 @@ export default function AdminTicketDetailScreen() {
     return <ErrorState title={t('error')} retryLabel={tc('retry')} onRetry={() => void load()} />;
   }
 
+  const primaryActions = nextPrimaryTicketActions(ticket.status);
+  const primaryAction = primaryActions[0] ?? null;
+  const secondaryActions = [
+    ...primaryActions.slice(1),
+    ...secondaryTicketActions(ticket.status, primaryActions),
+  ];
+
   return (
     <Screen padded={false} style={styles.screen} testID="screen-admin-ticket-detail">
+      <Stack.Screen options={{ title: ticket.subject || t('detail.title') }} />
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id}
@@ -148,28 +150,41 @@ export default function AdminTicketDetailScreen() {
         ListHeaderComponent={
           <View style={styles.header}>
             <Text variant="title">{ticket.subject}</Text>
-            <StatusPill label={t(`status.${ticket.status}`)} tone="gold" />
+            <StatusPill label={translateEnum(t, 'status', ticket.status)} tone="gold" />
             <Text variant="caption" color="textMuted" style={styles.meta}>
-              {t(`categories.${ticket.category}` as 'categories.other')} ·{' '}
-              {t(`priorities.${ticket.priority}`)}
+              {translateEnum(t, 'categories', ticket.category)} ·{' '}
+              {translateEnum(t, 'priorities', ticket.priority)}
             </Text>
             <Text variant="body" color="textSecondary">
               {ticket.description}
             </Text>
 
-            <View style={styles.statusRow}>
-              {STATUS_ACTIONS.map((status) => (
-                <Button
-                  key={status}
-                  testID={`btn-ticket-status-${status}`}
-                  title={t(`detail.actions.${status}`)}
-                  variant={ticket.status === status ? 'gold' : 'secondary'}
-                  size="sm"
-                  disabled={statusBusy}
-                  onPress={() => onPressStatus(status)}
-                />
-              ))}
-            </View>
+            {primaryAction ? (
+              <Button
+                testID={`btn-ticket-status-${primaryAction}`}
+                title={t(`detail.actions.${primaryAction}`)}
+                variant="gold"
+                disabled={statusBusy}
+                onPress={() => onPressStatus(primaryAction)}
+                style={styles.primaryAction}
+              />
+            ) : null}
+
+            {secondaryActions.length > 0 ? (
+              <View style={styles.statusRow}>
+                {secondaryActions.map((status) => (
+                  <Button
+                    key={status}
+                    testID={`btn-ticket-status-${status}`}
+                    title={t(`detail.actions.${status}`)}
+                    variant="secondary"
+                    size="sm"
+                    disabled={statusBusy}
+                    onPress={() => onPressStatus(status)}
+                  />
+                ))}
+              </View>
+            ) : null}
 
             {pendingStatus ? (
               <View style={styles.reasonBox}>
@@ -235,14 +250,14 @@ export default function AdminTicketDetailScreen() {
         <View style={styles.toggleRow}>
           <Button
             testID="toggle-ticket-reply-public"
-            title={t('detail.sendReply')}
+            title={t('detail.composerPublic')}
             variant={isInternal ? 'secondary' : 'gold'}
             size="sm"
             onPress={() => setIsInternal(false)}
           />
           <Button
             testID="toggle-ticket-reply-internal"
-            title={t('detail.internalNote')}
+            title={t('detail.composerInternal')}
             variant={isInternal ? 'gold' : 'secondary'}
             size="sm"
             onPress={() => setIsInternal(true)}
@@ -279,6 +294,7 @@ const styles = StyleSheet.create({
   list: { padding: spacing.lg, gap: spacing.sm },
   header: { gap: spacing.sm, marginBottom: spacing.lg },
   meta: { marginTop: spacing.xs },
+  primaryAction: { marginTop: spacing.sm },
   statusRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
   reasonBox: { gap: spacing.sm, marginTop: spacing.sm },
   threadTitle: { marginTop: spacing.lg },

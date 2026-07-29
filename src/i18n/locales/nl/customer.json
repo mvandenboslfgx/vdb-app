@@ -63,6 +63,7 @@
     "cancelError": "Deze afspraak kon niet worden geannuleerd.",
     "timezoneLabel": "Tijden weergegeven in Europe/Amsterdam",
     "status": {
+      "scheduled": "Gepland",
       "requested": "Aangevraagd",
       "confirmed": "Bevestigd",
       "rescheduled": "Verzet",

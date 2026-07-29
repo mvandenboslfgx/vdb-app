@@ -95,10 +95,7 @@ export function mapProjectMilestone(row: ProjectMilestoneRow): ProjectMilestone 
   };
 }
 
-export function mapProjectUpdate(
-  row: ProjectUpdateRow,
-  authorName = '',
-): ProjectUpdate {
+export function mapProjectUpdate(row: ProjectUpdateRow, authorName = ''): ProjectUpdate {
   return {
     id: row.id,
     projectId: row.project_id,
@@ -130,8 +127,7 @@ export function mapMessage(
   row: MessageRow,
   extra: { senderName?: string; currentUserId?: string } = {},
 ): Message {
-  const senderName =
-    extra.senderName ?? (row.sender_id === extra.currentUserId ? 'You' : '');
+  const senderName = extra.senderName ?? (row.sender_id === extra.currentUserId ? 'You' : '');
   return {
     id: row.id,
     conversationId: row.conversation_id,
@@ -178,7 +174,9 @@ const TICKET_STATUS_TO_DOMAIN: Record<SupportTicketRow['status'], SupportTicket[
   closed: 'closed',
 };
 
-export function mapSupportTicketStatus(status: SupportTicketRow['status']): SupportTicket['status'] {
+export function mapSupportTicketStatus(
+  status: SupportTicketRow['status'],
+): SupportTicket['status'] {
   return TICKET_STATUS_TO_DOMAIN[status];
 }
 
@@ -317,17 +315,38 @@ export function mapAvailabilitySlot(row: AvailabilitySlotRow): AppointmentSlot {
   };
 }
 
-export function mapCommission(row: CommissionRow, saleLabel = ''): Commission {
+export function mapCommission(
+  row: CommissionRow | Record<string, unknown>,
+  saleLabel = '',
+): Commission {
+  const r = row as Record<string, unknown>;
+  const id = String(r.id ?? '');
+  const partnerId = String(r.partner_id ?? '');
+  const saleId = typeof r.sale_id === 'string' ? r.sale_id : '';
+  const amountRaw =
+    typeof r.commission_amount_cents === 'number'
+      ? r.commission_amount_cents
+      : typeof r.amount_cents === 'number'
+        ? r.amount_cents
+        : 0;
+  const statusRaw = String(r.status ?? 'pending').toLowerCase();
+  const labelFromRow =
+    typeof r.sale_label === 'string' ? r.sale_label : typeof r.label === 'string' ? r.label : '';
   return {
-    id: row.id,
-    partnerId: row.partner_id,
-    saleLabel: saleLabel || `Sale ${row.sale_id.slice(0, 8)}`,
-    amountCents: row.commission_amount_cents,
+    id,
+    partnerId,
+    saleLabel: saleLabel || labelFromRow || (saleId ? `Sale ${saleId.slice(0, 8)}` : 'Commissie'),
+    amountCents: amountRaw,
     currency: 'EUR',
-    status: row.status,
-    expectedReleaseAt: row.hold_until,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    status: statusRaw as Commission['status'],
+    expectedReleaseAt:
+      typeof r.hold_until === 'string'
+        ? r.hold_until
+        : typeof r.expected_release_at === 'string'
+          ? r.expected_release_at
+          : null,
+    createdAt: String(r.created_at ?? ''),
+    updatedAt: String(r.updated_at ?? r.created_at ?? ''),
   };
 }
 
@@ -376,24 +395,53 @@ export function mapSupportTicketMessage(row: SupportTicketMessageRow): SupportTi
   };
 }
 
-/** Maps a `partner_leads` row (see 20260720101600_business_flow_completion.sql) to the domain shape. */
-export function mapLead(row: PartnerLeadRow): Lead {
+/** Maps a partner lead row — supports local `name`/`email` and owner `customer_*` aliases. */
+export function mapLead(row: PartnerLeadRow | Record<string, unknown>): Lead {
+  const r = row as Record<string, unknown>;
+  const name = String(r.name ?? r.customer_name ?? r.contact_name ?? '').trim();
+  const email = String(r.email ?? r.customer_email ?? '').trim();
+  const statusRaw = String(r.status ?? 'new')
+    .trim()
+    .toLowerCase()
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .replace(/[\s-]+/g, '_');
+  const status = (
+    ['new', 'contacted', 'qualified', 'converted', 'rejected', 'invalid'].includes(statusRaw)
+      ? statusRaw
+      : 'new'
+  ) as Lead['status'];
+
   return {
-    id: row.id,
-    partnerId: row.partner_id,
-    campaignCode: row.campaign_code,
-    name: row.name,
-    email: row.email,
-    phone: row.phone,
-    interest: row.interest,
-    status: row.status,
-    notes: row.notes,
-    consentGiven: row.consent_given,
-    consentAt: row.consent_at,
-    saleId: row.sale_id,
-    convertedAt: row.converted_at,
-    rejectedReason: row.rejected_reason,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    id: String(r.id ?? ''),
+    partnerId: String(r.partner_id ?? ''),
+    campaignCode:
+      typeof r.campaign_code === 'string'
+        ? r.campaign_code
+        : typeof r.campaign === 'string'
+          ? r.campaign
+          : null,
+    name: name || email || 'Lead',
+    email,
+    phone:
+      typeof r.phone === 'string'
+        ? r.phone
+        : typeof r.customer_phone === 'string'
+          ? r.customer_phone
+          : null,
+    interest:
+      typeof r.interest === 'string'
+        ? r.interest
+        : typeof r.product_interest === 'string'
+          ? r.product_interest
+          : null,
+    status,
+    notes: typeof r.notes === 'string' ? r.notes : null,
+    consentGiven: Boolean(r.consent_given ?? r.consentGiven ?? false),
+    consentAt: typeof r.consent_at === 'string' ? r.consent_at : null,
+    saleId: typeof r.sale_id === 'string' ? r.sale_id : null,
+    convertedAt: typeof r.converted_at === 'string' ? r.converted_at : null,
+    rejectedReason: typeof r.rejected_reason === 'string' ? r.rejected_reason : null,
+    createdAt: String(r.created_at ?? ''),
+    updatedAt: String(r.updated_at ?? r.created_at ?? ''),
   };
 }

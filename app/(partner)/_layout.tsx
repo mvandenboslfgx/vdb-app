@@ -9,6 +9,7 @@ import { canAccessPartnerArea } from '@/security/roles';
 
 export default function PartnerLayout() {
   const { t } = useTranslation('common');
+  const { t: tcom } = useTranslation('commissions');
   const { loading, roles, session, profile } = useAuth();
   const insets = useSafeAreaInsets();
 
@@ -53,10 +54,7 @@ export default function PartnerLayout() {
           headerShown: false,
           tabBarButtonTestID: 'tab-partner-commissions',
           tabBarIcon: ({ focused }) => (
-            <PremiumTabIcon
-              name={focused ? 'cash-multiple' : 'cash'}
-              focused={focused}
-            />
+            <PremiumTabIcon name={focused ? 'cash-multiple' : 'cash'} focused={focused} />
           ),
         }}
       />
@@ -67,10 +65,7 @@ export default function PartnerLayout() {
           headerShown: false,
           tabBarButtonTestID: 'tab-partner-marketing',
           tabBarIcon: ({ focused }) => (
-            <PremiumTabIcon
-              name={focused ? 'bullhorn' : 'bullhorn-outline'}
-              focused={focused}
-            />
+            <PremiumTabIcon name={focused ? 'bullhorn' : 'bullhorn-outline'} focused={focused} />
           ),
         }}
       />
@@ -88,7 +83,10 @@ export default function PartnerLayout() {
           ),
         }}
       />
-      <Tabs.Screen name="payouts" options={{ href: null }} />
+      <Tabs.Screen
+        name="payouts"
+        options={{ href: null, headerShown: false, title: tcom('payouts.title') }}
+      />
     </Tabs>
   );
 }

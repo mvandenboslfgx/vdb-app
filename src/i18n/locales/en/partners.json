@@ -31,7 +31,16 @@
   "link": "Partner link",
   "leads": "Leads",
   "leadsEmpty": "No leads yet.",
+  "leadsLoading": "Loading leads…",
+  "leadsError": "Could not load leads.",
+  "submitLead": "Submit new lead",
   "copyLink": "Copy link",
+  "copyLinkFailed": "The partner link could not be copied. Please try again.",
+  "openLink": "Open link",
+  "shareLink": "Share",
+  "linkUnavailable": "Partner link is not available yet.",
+  "linkInvalid": "Partner link is invalid.",
+  "referralCode": "Referral code",
   "status": {
     "draft": "Draft",
     "submitted": "Submitted",
@@ -48,7 +57,7 @@
     "new": "New",
     "contacted": "Contacted",
     "qualified": "Qualified",
-    "converted": "Converted",
+    "converted": "Converted to sale",
     "rejected": "Rejected",
     "invalid": "Invalid"
   }

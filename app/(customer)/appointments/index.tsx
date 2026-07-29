@@ -15,13 +15,16 @@ import {
   StatusPill,
   Text,
 } from '@/design-system';
+import { getAppLocale } from '@/i18n';
+import { translateEnum } from '@/i18n/translateEnum';
+import { presentAppointmentListItem } from '@/lib/appointmentPresentation';
 import { DomainError } from '@/lib/errors';
-import { formatDateTime } from '@/lib/format';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import type { Appointment } from '@/types/domain';
 import { spacing } from '@/theme';
 
 const CANCELLABLE_STATUSES = new Set<Appointment['status']>([
+  'scheduled',
   'requested',
   'confirmed',
   'rescheduled',
@@ -39,6 +42,11 @@ export default function AppointmentsScreen() {
   const [unavailable, setUnavailable] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  const appointmentsEnabled = enabled('appointments');
+  // Booking remains fail-closed server-side; treat list as read-only when unavailable.
+  const canBook = appointmentsEnabled && !unavailable;
+  const canCancel = appointmentsEnabled && !unavailable;
 
   const load = useCallback(async () => {
     if (!enabled('appointments')) {
@@ -97,11 +105,13 @@ export default function AppointmentsScreen() {
     );
   }
 
+  const locale = getAppLocale();
+
   return (
     <Screen scroll testID="screen-appointments">
       <View style={styles.header}>
         <Text variant="title">{t('appointments.title')}</Text>
-        {enabled('appointments') && !unavailable ? (
+        {canBook ? (
           <Button
             testID="btn-appointments-book"
             title={t('appointments.bookCta')}
@@ -123,30 +133,41 @@ export default function AppointmentsScreen() {
 
       {unavailable ? (
         <EmptyState title={t('appointments.unavailable')} />
-      ) : !enabled('appointments') || items.length === 0 ? (
+      ) : !appointmentsEnabled || items.length === 0 ? (
         <EmptyState title={t('appointments.empty')} />
       ) : (
-        items.map((a) => (
-          <View key={a.id} testID={`appointment-row-${a.id}`}>
-            <ListRow
-              title={a.title}
-              subtitle={formatDateTime(a.startsAt)}
-              right={<StatusPill label={t(`appointments.status.${a.status}`)} tone="gold" />}
-            />
-            {CANCELLABLE_STATUSES.has(a.status) ? (
-              <Button
-                testID={`btn-appointment-cancel-${a.id}`}
-                title={t('appointments.cancel')}
-                variant="danger"
-                size="sm"
-                loading={busyId === a.id}
-                disabled={busyId === a.id}
-                style={styles.cancelBtn}
-                onPress={() => onCancelPress(a.id)}
+        items.map((a) => {
+          const presented = presentAppointmentListItem(a, locale);
+          const subtitle = presented.locationLabel
+            ? `${presented.dateLabel} · ${presented.timeRangeLabel} · ${presented.locationLabel}`
+            : `${presented.dateLabel} · ${presented.timeRangeLabel}`;
+          return (
+            <View key={a.id} testID={`appointment-row-${a.id}`}>
+              <ListRow
+                title={presented.title}
+                subtitle={subtitle}
+                right={
+                  <StatusPill
+                    label={translateEnum(t, 'appointments.status', presented.statusKey)}
+                    tone="gold"
+                  />
+                }
               />
-            ) : null}
-          </View>
-        ))
+              {canCancel && CANCELLABLE_STATUSES.has(a.status) ? (
+                <Button
+                  testID={`btn-appointment-cancel-${a.id}`}
+                  title={t('appointments.cancel')}
+                  variant="danger"
+                  size="sm"
+                  loading={busyId === a.id}
+                  disabled={busyId === a.id}
+                  style={styles.cancelBtn}
+                  onPress={() => onCancelPress(a.id)}
+                />
+              ) : null}
+            </View>
+          );
+        })
       )}
     </Screen>
   );

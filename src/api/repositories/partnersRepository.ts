@@ -9,6 +9,7 @@ import { fromOwnerTable, rpcOwner } from '@/api/contract/ownerClient';
 import { delay, requireLiveSupabase, shouldUseMockApi } from '@/api/repositories/_utils';
 import { DomainError, fromSupabaseError } from '@/lib/errors';
 import { mapLead } from '@/lib/mappers';
+import { buildPartnerReferralUrl } from '@/lib/partnerLink';
 import type { Lead, PartnerProfile } from '@/types/domain';
 import {
   normalizeOptionalPartnerBusinessFields,
@@ -28,6 +29,21 @@ async function requireCurrentPartnerProfile(supabase: ReturnType<typeof requireL
   return data;
 }
 
+async function resolveActivePartnerCode(
+  supabase: ReturnType<typeof requireLiveSupabase>,
+  partnerId: string,
+): Promise<string> {
+  const { data, error } = await fromOwnerTable(supabase, 'partner_codes')
+    .select('code,is_active,created_at')
+    .eq('partner_id', partnerId)
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw fromSupabaseError(error);
+  return typeof data?.code === 'string' ? data.code : '';
+}
+
 export async function getPartnerProfile(): Promise<PartnerProfile | null> {
   if (shouldUseMockApi()) {
     await delay();
@@ -38,13 +54,16 @@ export async function getPartnerProfile(): Promise<PartnerProfile | null> {
   if (!profile) return null;
 
   const row = profile as Record<string, unknown>;
+  const partnerId = String(row.id ?? '');
+  const code = await resolveActivePartnerCode(supabase, partnerId);
+  const built = buildPartnerReferralUrl(code);
   const statusRaw = String(row.status ?? (row.is_active ? 'ACTIVE' : 'SUSPENDED')).toUpperCase();
   return {
-    id: String(row.id ?? ''),
+    id: partnerId,
     userId: String(row.user_id ?? ''),
     companyName: typeof row.company_name === 'string' ? row.company_name : null,
-    code: typeof row.code === 'string' ? row.code : '',
-    linkUrl: '',
+    code,
+    linkUrl: built.ok ? built.url : '',
     status: statusRaw === 'ACTIVE' || statusRaw === 'APPROVED' ? 'active' : 'suspended',
     createdAt: String(row.created_at ?? ''),
     updatedAt: String(row.updated_at ?? row.created_at ?? ''),
@@ -115,17 +134,36 @@ export async function createLead(input: CreateLeadInput): Promise<Lead> {
   }
 
   const supabase = requireLiveSupabase();
+  // Owner create_partner_lead expects customer_* args (staging evidence); keep legacy aliases for local.
   const { data, error } = await rpcOwner(supabase, 'register_partner_lead', {
+    p_customer_name: input.name,
+    p_customer_email: input.email,
     p_name: input.name,
     p_email: input.email,
     p_consent_given: input.consentConfirmed,
     p_campaign_code: input.campaignCode || undefined,
+    p_dedupe_key: input.campaignCode || undefined,
     p_phone: input.phone || undefined,
     p_interest: input.interest || undefined,
     p_notes: input.notes || undefined,
   });
   if (error) throw fromSupabaseError(error);
-  return mapLead(data as unknown as Parameters<typeof mapLead>[0]);
+  if (data && typeof data === 'object') {
+    return mapLead(data as Record<string, unknown>);
+  }
+  // Some owner RPCs return only an id — reload owned list head as fallback is avoided; return minimal.
+  return mapLead({
+    id: typeof data === 'string' ? data : '',
+    name: input.name,
+    email: input.email,
+    phone: input.phone ?? null,
+    interest: input.interest ?? null,
+    notes: input.notes ?? null,
+    status: 'new',
+    consent_given: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
 }
 
 export interface UpdateLeadContactInput {
@@ -166,7 +204,24 @@ export async function updateLeadContact(
 
 export async function getPartnerLink(): Promise<string> {
   const profile = await getPartnerProfile();
-  return profile?.linkUrl ?? '';
+  if (profile?.linkUrl && /^https:\/\//i.test(profile.linkUrl)) {
+    return profile.linkUrl;
+  }
+  const built = buildPartnerReferralUrl(profile?.code);
+  return built.ok ? built.url : '';
+}
+
+export async function getPartnerLinkDetails(): Promise<{
+  url: string;
+  code: string;
+  available: boolean;
+}> {
+  const profile = await getPartnerProfile();
+  const built = buildPartnerReferralUrl(profile?.code);
+  if (!built.ok) {
+    return { url: '', code: profile?.code ?? '', available: false };
+  }
+  return { url: built.url, code: built.code, available: true };
 }
 
 export async function submitPartnerApplication(
@@ -244,6 +299,7 @@ export const partnersRepository = {
   createLead,
   updateLeadContact,
   getPartnerLink,
+  getPartnerLinkDetails,
   partnerLink: getPartnerLink,
   listCommissions,
   requestPayout,

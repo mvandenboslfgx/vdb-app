@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getTicket } from '@/api/repositories/supportRepository';
 import { ErrorState, LoadingState, Screen, StatusPill, Text } from '@/design-system';
+import { translateEnum } from '@/i18n/translateEnum';
 import type { SupportTicket } from '@/types/domain';
 import { spacing } from '@/theme';
 
@@ -41,10 +42,10 @@ export default function SupportTicketDetailScreen() {
   return (
     <Screen scroll testID="screen-support-detail">
       <Text variant="title">{ticket.subject}</Text>
-      <StatusPill label={t(`status.${ticket.status}`)} tone="gold" />
+      <StatusPill label={translateEnum(t, 'status', ticket.status)} tone="gold" />
       <Text variant="caption" color="textMuted" style={styles.meta}>
-        {t(`categories.${ticket.category}` as 'categories.other')} ·{' '}
-        {t(`priorities.${ticket.priority}`)}
+        {translateEnum(t, 'categories', ticket.category)} ·{' '}
+        {translateEnum(t, 'priorities', ticket.priority)}
       </Text>
       <Text variant="body" color="textSecondary">
         {ticket.description}

@@ -23,6 +23,11 @@ export default function PartnerMoreScreen() {
   return (
     <Screen scroll testID="screen-partner-more">
       <Text variant="title">{t('title')}</Text>
+      <ListRow
+        testID="partner-more-settings"
+        title={tc('settings.title')}
+        onPress={() => router.push('/(partner)/more/settings')}
+      />
       {whatsapp.enabled ? (
         <ListRow
           testID="partner-more-whatsapp"

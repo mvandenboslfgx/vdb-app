@@ -1,4 +1,6 @@
 import { BACKEND_CONTRACT } from '@/config/backendContract';
+import { normalizeEnumKey } from '@/i18n/translateEnum';
+import { formatDateTime } from '@/lib/format';
 import type { AdminQueueItem } from '@/api/mockData';
 import type { AdminDashboardStats } from '@/types/domain';
 
@@ -135,12 +137,15 @@ export function mapAdminDirectoryPage(raw: unknown, titleKeys: string[]): AdminD
       }
     }
     if (!title) title = id;
-    const status = asString(r.status) || undefined;
+    const statusRaw = asString(r.status);
+    const status = statusRaw ? normalizeEnumKey(statusRaw) : undefined;
+    const startsAt = asString(r.starts_at);
     const subtitle =
       asString(r.subtitle) ||
       asString(r.company_name) ||
       asString(r.organization_name) ||
       asString(r.slug) ||
+      (startsAt ? formatDateTime(startsAt) : undefined) ||
       undefined;
     const meta = asString(r.updated_at) || asString(r.created_at) || undefined;
     return { id, title, subtitle, status, meta };

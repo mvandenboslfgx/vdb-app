@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Divider, ListRow, Screen, Text } from '@/design-system';
 import { isDevelopment } from '@/config/env';
+import { DEVICE_PREF_KEYS, serializeLanguage } from '@/features/settings/devicePreferences';
 import { useWhatsAppContact } from '@/features/support/useWhatsAppContact';
-import { getCurrentLanguage, i18n } from '@/i18n';
+import { getCurrentLanguage, setAppLanguage } from '@/i18n';
 import { useAuth } from '@/providers/AuthProvider';
 import { canAccessAdminArea, canAccessPartnerArea } from '@/security/roles';
 import { spacing } from '@/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CustomerMoreScreen() {
   const { t } = useTranslation('customer');
@@ -21,13 +23,20 @@ export default function CustomerMoreScreen() {
   const whatsapp = useWhatsAppContact();
 
   async function toggleLanguage() {
-    await i18n.changeLanguage(lang === 'nl' ? 'en' : 'nl');
+    const next = lang === 'nl' ? 'en' : 'nl';
+    await setAppLanguage(next);
+    await AsyncStorage.setItem(DEVICE_PREF_KEYS.language, serializeLanguage(next));
   }
 
   return (
     <Screen scroll>
       <Text variant="title">{t('profile.title')}</Text>
 
+      <ListRow
+        testID="nav-settings"
+        title={tc('settings.title')}
+        onPress={() => router.push('/(customer)/more/settings')}
+      />
       <ListRow
         testID="nav-language-toggle"
         title={tc('language')}

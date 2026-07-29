@@ -3,6 +3,10 @@
  * Assert schema_version == BACKEND_CONTRACT.schemaVersion on every payload.
  */
 import { BACKEND_CONTRACT } from '@/config/backendContract';
+import {
+  mapPortalAppointmentStatus,
+  presentAppointmentDetailMeta,
+} from '@/lib/appointmentPresentation';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -233,15 +237,16 @@ export function mapAdminInvoiceDetail(raw: unknown): AdminDirectoryDetail {
 export function mapAdminAppointmentDetail(raw: unknown): AdminDirectoryDetail {
   const row = asRecord(raw);
   assertSchemaVersion(row, 'admin_get_appointment');
+  const statusRaw = asStringOrNull(row.status);
+  const status = statusRaw ? mapPortalAppointmentStatus(statusRaw) : undefined;
+  const starts = asStringOrNull(row.starts_at);
+  const ends = asStringOrNull(row.ends_at);
+  const location = asStringOrNull(row.location);
   return {
     id: asString(row.id),
     title: asString(row.title, 'Afspraak'),
-    status: asStringOrNull(row.status) ?? undefined,
-    metaLines: [
-      `Start: ${asString(row.starts_at, '—')}`,
-      `Einde: ${asString(row.ends_at, '—')}`,
-      `Locatie: ${asString(row.location, '—')}`,
-    ],
+    status,
+    metaLines: presentAppointmentDetailMeta(starts, ends, location, 'nl'),
     rawKind: 'appointment',
   };
 }

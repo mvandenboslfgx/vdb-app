@@ -42,6 +42,8 @@
     "threadTitle": "Berichten",
     "threadEmpty": "Nog geen berichten.",
     "internalNote": "Interne notitie",
+    "composerPublic": "Reactie aan klant",
+    "composerInternal": "Interne notitie",
     "replyPlaceholder": "Schrijf een reactie die de klant ziet…",
     "notePlaceholder": "Schrijf een notitie die alleen medewerkers zien…",
     "sendReply": "Reactie versturen",

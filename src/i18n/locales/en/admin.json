@@ -45,6 +45,7 @@
     "invoices": "Invoices",
     "appointments": "Appointments",
     "settings": "Settings",
+    "diagnostics": "Diagnostics",
     "security": "Security"
   },
   "unavailable": {

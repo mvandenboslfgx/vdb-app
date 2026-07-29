@@ -14,13 +14,16 @@ import {
   StatusPill,
   Text,
 } from '@/design-system';
+import { translateEnum } from '@/i18n/translateEnum';
 import { formatCurrency, formatDate } from '@/lib/format';
+import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import type { Commission } from '@/types/domain';
 import { spacing } from '@/theme';
 
 export default function CommissionsScreen() {
   const { t } = useTranslation('commissions');
   const { t: tc } = useTranslation('common');
+  const { enabled } = useFeatureFlags();
   const router = useRouter();
   const [items, setItems] = useState<Commission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,14 +51,16 @@ export default function CommissionsScreen() {
   }
 
   return (
-    <Screen scroll>
+    <Screen scroll testID="screen-partner-commissions">
       <Text variant="title">{t('title')}</Text>
-      <Button
-        title={t('requestPayout')}
-        variant="secondary"
-        style={styles.cta}
-        onPress={() => router.push('/(partner)/payouts')}
-      />
+      {enabled('partnerPayouts') ? (
+        <Button
+          title={t('requestPayout')}
+          variant="secondary"
+          style={styles.cta}
+          onPress={() => router.push('/(partner)/payouts')}
+        />
+      ) : null}
       {items.length === 0 ? (
         <EmptyState title={t('empty')} description={t('emptyHint')} />
       ) : (
@@ -69,7 +74,7 @@ export default function CommissionsScreen() {
                 : undefined
             }
             meta={formatCurrency(c.amountCents)}
-            right={<StatusPill label={t(`status.${c.status}`)} tone="gold" />}
+            right={<StatusPill label={translateEnum(t, 'status', c.status)} tone="gold" />}
           />
         ))
       )}

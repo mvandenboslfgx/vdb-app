@@ -5,6 +5,7 @@ export { Screen } from './Screen';
 export { Card } from './Card';
 export { Badge } from './Badge';
 export { EmptyState } from './EmptyState';
+export { FeatureUnavailableState } from './FeatureUnavailableState';
 export { LoadingState } from './LoadingState';
 export { ErrorState } from './ErrorState';
 export { OfflineBanner } from './OfflineBanner';

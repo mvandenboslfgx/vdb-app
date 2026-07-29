@@ -1,15 +1,25 @@
+import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Button, EmptyState, ListRow, LoadingState, Screen, StatusPill, Text } from '@/design-system';
+import {
+  Button,
+  EmptyState,
+  FeatureUnavailableState,
+  ListRow,
+  LoadingState,
+  Screen,
+  StatusPill,
+  Text,
+} from '@/design-system';
 import {
   useCommissions,
   usePayableBalance,
   usePayoutRequests,
   useRequestPayout,
 } from '@/features/partner/hooks/usePartnerData';
-import { formatCurrency } from '@/lib/format';
+import { formatCurrency, formatDate } from '@/lib/format';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import type { RequestPayoutFailureReason } from '@/api/repositories/commissionsRepository';
 import { spacing } from '@/theme';
@@ -17,17 +27,17 @@ import { spacing } from '@/theme';
 export default function PayoutsIndexScreen() {
   const { t } = useTranslation('commissions');
   const { enabled } = useFeatureFlags();
-  const balance = usePayableBalance();
+  const router = useRouter();
+  const payoutsEnabled = enabled('partnerPayouts');
+  const balance = usePayableBalance({ enabled: payoutsEnabled });
   const commissions = useCommissions();
-  const payoutRequests = usePayoutRequests();
+  const payoutRequests = usePayoutRequests({ enabled: payoutsEnabled });
   const request = useRequestPayout();
   const [errorReason, setErrorReason] = useState<RequestPayoutFailureReason | null>(null);
 
-  const payableCommissions = (commissions.data ?? []).filter((c) => c.status === 'payable');
-
   const onRequest = useCallback(async () => {
     setErrorReason(null);
-    if (!enabled('partnerPayouts')) {
+    if (!payoutsEnabled) {
       setErrorReason('partner_payouts_disabled');
       return;
     }
@@ -39,7 +49,30 @@ export default function PayoutsIndexScreen() {
     } catch {
       setErrorReason('unknown');
     }
-  }, [enabled, request]);
+  }, [payoutsEnabled, request]);
+
+  // Payouts disabled: never hang on payout queries — show deliberate unavailable.
+  if (!payoutsEnabled) {
+    return (
+      <Screen scroll testID="screen-partner-payouts">
+        <Text variant="title">{t('payouts.title')}</Text>
+        <FeatureUnavailableState
+          testID="state-payouts-disabled"
+          title={t('payouts.error.partner_payouts_disabled')}
+          description={t('payouts.disabledHint', {
+            defaultValue:
+              'Uitbetalingen zijn momenteel niet beschikbaar. Commissies kun je wel inzien.',
+          })}
+        />
+        <Button
+          title={t('title')}
+          variant="secondary"
+          style={styles.cta}
+          onPress={() => router.push('/(partner)/commissions')}
+        />
+      </Screen>
+    );
+  }
 
   if (balance.isLoading || commissions.isLoading) {
     return (
@@ -58,6 +91,7 @@ export default function PayoutsIndexScreen() {
   }
 
   const amountCents = balance.data?.amountCents ?? 0;
+  const payableCommissions = (commissions.data ?? []).filter((c) => c.status === 'payable');
 
   return (
     <Screen scroll testID="screen-partner-payouts">
@@ -116,7 +150,7 @@ export default function PayoutsIndexScreen() {
             key={p.id}
             testID={`row-payout-request-${p.id}`}
             title={formatCurrency(p.amountCents)}
-            subtitle={p.submittedAt ?? undefined}
+            subtitle={p.submittedAt ? formatDate(p.submittedAt) : undefined}
             right={<StatusPill label={t(`payouts.status.${p.status}`)} tone="gold" />}
           />
         ))

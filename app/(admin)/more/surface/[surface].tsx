@@ -13,12 +13,8 @@ import {
   reactivatePartner,
   suspendPartner,
   getAdminSecurityStatus,
-  getAdminSettingsSummary,
 } from '@/api/repositories/adminRepository';
 import type { AdminDirectoryPage } from '@/api/contract/adminRc4Mappers';
-import { getWhatsAppConfig } from '@/config/whatsapp';
-import { BACKEND_CONTRACT } from '@/config/backendContract';
-import { clientEnv } from '@/config/env';
 import {
   Button,
   EmptyState,
@@ -37,6 +33,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { newIdempotencyKey } from '@/api/contract/adminRc4Mappers';
 import { Aal2StepUpModal } from '@/features/auth/aal2/Aal2StepUpModal';
 import { useAal2StepUp } from '@/features/auth/aal2/useAal2StepUp';
+import { SettingsScreen } from '@/features/settings/SettingsScreen';
 
 const SURFACE_KEYS = [
   'products',
@@ -95,37 +92,17 @@ export default function AdminSurfaceScreen() {
   const [page, setPage] = useState<AdminDirectoryPage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [settingsText, setSettingsText] = useState<string | null>(null);
   const [securityText, setSecurityText] = useState<string | null>(null);
   const [partnerId, setPartnerId] = useState('');
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    if (!key) return;
+    if (!key || key === 'settings') return;
     setLoading(true);
     setError(null);
     try {
-      if (key === 'settings') {
-        const summary = await getAdminSettingsSummary();
-        const wa = getWhatsAppConfig();
-        setSettingsText(
-          [
-            `Environment: ${clientEnv.appEnv}`,
-            `Contract: ${BACKEND_CONTRACT.packageId}`,
-            `Schema: ${BACKEND_CONTRACT.schemaVersion}`,
-            `Owner report contract: ${summary.contractVersion}`,
-            `Owner report schema: ${summary.schemaVersion}`,
-            `WhatsApp configured (app): ${wa.enabled ? 'yes' : 'no'}`,
-            `Checkout: ${summary.checkoutEnabled ? 'on' : 'off'}`,
-            `Mollie: ${summary.mollieEnabled ? 'on' : 'off'}`,
-            `Payouts: ${summary.payoutsEnabled ? 'on' : 'off'}`,
-            `Realtime messaging: ${summary.messagingRealtime ? 'on' : 'off'}`,
-            `Appointments booking: ${summary.appointmentsBooking ? 'on' : 'off'}`,
-          ].join('\n'),
-        );
-        setPage(null);
-      } else if (key === 'security') {
+      if (key === 'security') {
         const status = await getAdminSecurityStatus();
         setSecurityText(
           [
@@ -228,6 +205,15 @@ export default function AdminSurfaceScreen() {
     );
   }
 
+  if (key === 'settings') {
+    return (
+      <>
+        <Stack.Screen options={{ title }} />
+        <SettingsScreen />
+      </>
+    );
+  }
+
   if (loading) return <LoadingState label={t('loading')} />;
   if (error) {
     return (
@@ -244,12 +230,6 @@ export default function AdminSurfaceScreen() {
       <Aal2StepUpModal visible={aal2.visible} status={aal2.status} onComplete={aal2.onComplete} />
       <Stack.Screen options={{ title }} />
       <Text variant="title">{title}</Text>
-
-      {key === 'settings' && settingsText ? (
-        <Text variant="body" color="textSecondary" style={styles.block}>
-          {settingsText}
-        </Text>
-      ) : null}
 
       {key === 'security' && securityText ? (
         <Text variant="body" color="textSecondary" style={styles.block}>

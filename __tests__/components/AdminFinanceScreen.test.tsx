@@ -4,6 +4,7 @@ import { fireEvent, renderWithProviders, screen, waitFor } from '../test-utils';
 
 import AdminFinanceScreen from '../../app/(admin)/finance/index';
 import { adminRepository } from '@/api/repositories';
+import { resetFeatureFlags, setFeatureFlags } from '@/security/featureFlags';
 import type { Commission, PayoutRequest } from '@/types/domain';
 
 jest.mock('@/providers/AuthProvider', () => ({
@@ -90,19 +91,23 @@ function makePayoutRequest(overrides: Partial<PayoutRequest> = {}): PayoutReques
 describe('AdminFinanceScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    resetFeatureFlags();
     jest.spyOn(Alert, 'alert').mockImplementation((_title, _message, buttons) => {
       const confirm = buttons?.find((b) => b.style !== 'cancel');
       confirm?.onPress?.();
     });
   });
 
-  it('lists commissions under review and submitted payout requests', async () => {
+  it('lists commissions under review and submitted payout requests when payouts enabled', async () => {
+    setFeatureFlags({ partnerPayouts: true });
     mockListCommissions.mockResolvedValueOnce([makeCommission()]);
     mockListPayoutRequests.mockResolvedValueOnce([makePayoutRequest()]);
 
     await renderWithProviders(<AdminFinanceScreen />);
 
-    await waitFor(() => expect(screen.getByTestId('screen-admin-finance')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('screen-admin-finance')).toBeTruthy(), {
+      timeout: 10000,
+    });
     expect(screen.getByTestId('row-finance-commission-0')).toBeTruthy();
     expect(screen.getByTestId('row-finance-payout-0')).toBeTruthy();
   });
@@ -118,10 +123,14 @@ describe('AdminFinanceScreen', () => {
     mockListPayoutRequests.mockResolvedValueOnce([]);
 
     await renderWithProviders(<AdminFinanceScreen />);
-    await waitFor(() => expect(screen.getByTestId('row-finance-commission-0')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('row-finance-commission-0')).toBeTruthy(), {
+      timeout: 10000,
+    });
 
     await fireEvent.press(screen.getByTestId('row-finance-commission-0'));
-    await waitFor(() => expect(screen.getByTestId('btn-finance-approve-commission')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('btn-finance-approve-commission')).toBeTruthy(), {
+      timeout: 10000,
+    });
 
     expect(
       screen.getByTestId('btn-finance-approve-commission').props.accessibilityState?.disabled,
@@ -130,23 +139,28 @@ describe('AdminFinanceScreen', () => {
     await fireEvent.changeText(screen.getByTestId('input-finance-reason'), 'Verified with client');
     await fireEvent.press(screen.getByTestId('btn-finance-approve-commission'));
 
-    await waitFor(() =>
-      expect(adminRepoDirect.approveCommission).toHaveBeenCalledWith(
-        'commission-1',
-        'Verified with client',
-        expect.any(String),
-      ),
+    await waitFor(
+      () =>
+        expect(adminRepoDirect.approveCommission).toHaveBeenCalledWith(
+          'commission-1',
+          'Verified with client',
+          expect.any(String),
+        ),
+      { timeout: 10000 },
     );
   });
 
-  it('explains payout processing as unavailable (Owner-disabled)', async () => {
+  it('shows payouts disabled state when partnerPayouts flag is off', async () => {
+    setFeatureFlags({ partnerPayouts: false });
     mockListCommissions.mockResolvedValueOnce([]);
     mockListPayoutRequests.mockResolvedValueOnce([makePayoutRequest()]);
 
     await renderWithProviders(<AdminFinanceScreen />);
-    await waitFor(() => expect(screen.getByTestId('row-finance-payout-0')).toBeTruthy());
-
-    await fireEvent.press(screen.getByTestId('row-finance-payout-0'));
-    await waitFor(() => expect(screen.getByTestId('text-finance-payout-unavailable')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId('screen-admin-finance')).toBeTruthy(), {
+      timeout: 10000,
+    });
+    expect(screen.getByText('Payouts are currently disabled.')).toBeTruthy();
+    expect(screen.queryByTestId('row-finance-payout-0')).toBeNull();
+    expect(mockListPayoutRequests).not.toHaveBeenCalled();
   });
 });

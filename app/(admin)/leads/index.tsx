@@ -12,6 +12,7 @@ import {
   StatusPill,
   Text,
 } from '@/design-system';
+import { translateEnum } from '@/i18n/translateEnum';
 import type { Lead } from '@/types/domain';
 
 const STATUS_TONE: Record<Lead['status'], 'neutral' | 'gold' | 'success' | 'error'> = {
@@ -64,7 +65,12 @@ export default function AdminLeadsScreen() {
             key={lead.id}
             title={lead.name}
             subtitle={lead.email}
-            right={<StatusPill label={tp(`leadStatus.${lead.status}`)} tone={STATUS_TONE[lead.status]} />}
+            right={
+              <StatusPill
+                label={translateEnum(tp, 'leadStatus', lead.status)}
+                tone={STATUS_TONE[lead.status]}
+              />
+            }
             onPress={() => router.push(`/(admin)/leads/${lead.id}`)}
           />
         ))

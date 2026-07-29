@@ -63,6 +63,7 @@
     "cancelError": "Could not cancel this appointment.",
     "timezoneLabel": "Times shown in Europe/Amsterdam",
     "status": {
+      "scheduled": "Scheduled",
       "requested": "Requested",
       "confirmed": "Confirmed",
       "rescheduled": "Rescheduled",

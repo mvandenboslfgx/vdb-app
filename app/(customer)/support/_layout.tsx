@@ -1,15 +1,16 @@
 import { Stack } from 'expo-router';
-import { colors } from '@/theme';
+import { useTranslation } from 'react-i18next';
+
+import { premiumStackScreenOptions, stackIndexHiddenHeader } from '@/navigation/premiumStack';
 
 export default function SupportLayout() {
+  const { t } = useTranslation('support');
+
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.backgroundPrimary },
-        headerTintColor: colors.textPrimary,
-        headerShadowVisible: false,
-        contentStyle: { backgroundColor: colors.backgroundPrimary },
-      }}
-    />
+    <Stack screenOptions={premiumStackScreenOptions}>
+      <Stack.Screen name="index" options={{ ...stackIndexHiddenHeader, title: t('tickets') }} />
+      <Stack.Screen name="new" options={{ title: t('newTicket') }} />
+      <Stack.Screen name="[id]" options={{ title: t('detail.title') }} />
+    </Stack>
   );
 }

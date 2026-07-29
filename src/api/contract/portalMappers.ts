@@ -92,13 +92,26 @@ const SUPPORT_TICKET_STATUS: Record<PortalSupportTicketStatus, SupportTicketStat
 };
 
 const APPOINTMENT_STATUS: Record<PortalAppointmentStatus, AppointmentStatus> = {
-  SCHEDULED: 'requested',
+  SCHEDULED: 'scheduled',
   CONFIRMED: 'confirmed',
   RESCHEDULED: 'rescheduled',
   CANCELLED: 'cancelled',
   COMPLETED: 'completed',
   NO_SHOW: 'no_show',
 };
+
+const SUPPORT_TICKET_CATEGORIES: ReadonlySet<string> = new Set([
+  'billing',
+  'project',
+  'technical',
+  'account',
+  'other',
+]);
+
+function mapSupportTicketCategory(value: unknown): string {
+  const normalized = str(value, 'other').toLowerCase();
+  return SUPPORT_TICKET_CATEGORIES.has(normalized) ? normalized : 'other';
+}
 
 const SUPPORT_TICKET_PRIORITIES: ReadonlySet<SupportTicket['priority']> = new Set([
   'low',
@@ -303,7 +316,7 @@ export function mapPortalSupportTicket(
   return {
     id: str(r.id),
     subject: str(r.subject),
-    category: str(r.category, 'other'),
+    category: mapSupportTicketCategory(r.category),
     priority: mapSupportTicketPriority(r.priority),
     status: SUPPORT_TICKET_STATUS[status] ?? 'new',
     description: str(r.description),

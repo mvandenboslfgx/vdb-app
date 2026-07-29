@@ -21,6 +21,7 @@ import {
 import { DomainError } from '@/lib/errors';
 import { formatCurrency } from '@/lib/format';
 import { useAuth } from '@/providers/AuthProvider';
+import { isFeatureEnabled } from '@/security/featureFlags';
 import { isAdmin } from '@/security/roles';
 import { spacing } from '@/theme';
 
@@ -35,18 +36,21 @@ export default function AdminFinanceScreen() {
   const aal2 = useAal2StepUp();
 
   const finance = useAdminFinance();
-  const payouts = useAdminPayoutRequests();
+  const payoutsEnabled = isFeatureEnabled('partnerPayouts');
+  const payouts = useAdminPayoutRequests({ enabled: payoutsEnabled });
   const [selection, setSelection] = useState<Selection>(null);
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
 
-  const loading = finance.isLoading || payouts.isLoading;
-  const error = finance.isError || payouts.isError;
+  // Commissions are independent of payouts. Never fail the whole screen on payout query.
+  const loading = finance.isLoading || (payoutsEnabled && payouts.isLoading);
+  const error = finance.isError;
 
   async function reload() {
-    await Promise.all([finance.refetch(), payouts.refetch()]);
+    await finance.refetch();
+    if (payoutsEnabled) await payouts.refetch();
   }
 
   function selectCommission(id: string) {
@@ -125,7 +129,9 @@ export default function AdminFinanceScreen() {
   const commissionsUnderReview = (finance.data ?? []).filter(
     (c) => c.status === 'under_review' || c.status === 'pending',
   );
-  const submittedPayouts = (payouts.data ?? []).filter((p) => p.status === 'submitted');
+  const submittedPayouts = payoutsEnabled
+    ? (payouts.data ?? []).filter((p) => p.status === 'submitted')
+    : [];
 
   return (
     <Screen scroll testID="screen-admin-finance">
@@ -196,7 +202,15 @@ export default function AdminFinanceScreen() {
       <Text variant="title" style={styles.sectionTitle}>
         {ta('stats.payoutRequests')}
       </Text>
-      {submittedPayouts.length === 0 ? (
+      {!payoutsEnabled ? (
+        <EmptyState
+          title={t('payouts.error.partner_payouts_disabled', {
+            defaultValue: 'Uitbetalingen zijn uitgeschakeld',
+          })}
+        />
+      ) : payouts.isError ? (
+        <EmptyState title={t('payouts.historyEmpty')} />
+      ) : submittedPayouts.length === 0 ? (
         <EmptyState title={t('payouts.historyEmpty')} />
       ) : (
         submittedPayouts.map((p, index) => (

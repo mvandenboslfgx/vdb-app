@@ -42,6 +42,8 @@
     "threadTitle": "Messages",
     "threadEmpty": "No messages yet.",
     "internalNote": "Internal note",
+    "composerPublic": "Reply to customer",
+    "composerInternal": "Internal note",
     "replyPlaceholder": "Write a reply the customer will see…",
     "notePlaceholder": "Write a note only staff can see…",
     "sendReply": "Send reply",
