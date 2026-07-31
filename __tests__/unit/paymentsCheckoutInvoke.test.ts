@@ -3,8 +3,13 @@
  */
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-const mockInvoke = jest.fn();
-const mockMaybeSingle = jest.fn();
+const mockInvoke = jest.fn<
+  (
+    name: string,
+    opts?: { body: Record<string, unknown> },
+  ) => Promise<{ data: unknown; error: unknown }>
+>();
+const mockMaybeSingle = jest.fn<() => Promise<{ data: unknown; error: unknown }>>();
 
 jest.mock('@/api/repositories/_utils', () => ({
   shouldUseMockApi: () => false,
@@ -69,7 +74,10 @@ describe('createCheckout live invoke', () => {
 
     expect(result.ok).toBe(true);
     expect(mockInvoke).toHaveBeenCalledTimes(1);
-    const [fnName, opts] = mockInvoke.mock.calls[0] as [string, { body: Record<string, unknown> }];
+    const [fnName, opts] = mockInvoke.mock.calls[0] as unknown as [
+      string,
+      { body: Record<string, unknown> },
+    ];
     expect(fnName).toBe('create-checkout');
     expect(opts.body).not.toHaveProperty('amountCents');
     expect(opts.body.invoiceId).toBe('inv-1');
