@@ -126,30 +126,31 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<Create
 
   const supabase = requireLiveSupabase();
 
-  let amountCents = input.amountCents;
-  if (!amountCents) {
-    const { data: invoice, error: invoiceError } = await fromOwnerTable(supabase, 'invoices')
-      .select('total_cents, amount_paid_cents')
-      .eq('id', input.invoiceId)
-      .maybeSingle();
-    if (invoiceError) throw fromSupabaseError(invoiceError);
-    amountCents =
-      invoice &&
-      typeof invoice.total_cents === 'number' &&
-      typeof invoice.amount_paid_cents === 'number'
-        ? invoice.total_cents - invoice.amount_paid_cents
-        : undefined;
-  }
-  if (!amountCents || amountCents <= 0) {
+  // Server is amount authority: never trust client amountCents on the live path.
+  // Eligibility / due balance is re-validated by the Edge Function from the DB.
+  const { data: invoice, error: invoiceError } = await fromOwnerTable(supabase, 'invoices')
+    .select('total_cents, amount_paid_cents, status')
+    .eq('id', input.invoiceId)
+    .maybeSingle();
+  if (invoiceError) throw fromSupabaseError(invoiceError);
+  const dueCents =
+    invoice &&
+    typeof invoice.total_cents === 'number' &&
+    typeof invoice.amount_paid_cents === 'number'
+      ? invoice.total_cents - invoice.amount_paid_cents
+      : undefined;
+  if (!dueCents || dueCents <= 0) {
     return blocked('invalid_amount', 'payments.policy.checkoutDisabled');
   }
+  if (typeof input.amountCents === 'number' && input.amountCents !== dueCents) {
+    return blocked('amount_mismatch', 'payments.policy.checkoutDisabled');
+  }
 
-  const { data, error } = await supabase.functions.invoke('create-mollie-checkout', {
+  const { data, error } = await supabase.functions.invoke('create-checkout', {
     body: {
       invoiceId: input.invoiceId,
       productCategory,
       platform,
-      amountCents,
       idempotencyKey,
     },
   });
