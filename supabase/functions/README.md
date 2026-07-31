@@ -1,17 +1,21 @@
-# Edge Functions (stubs)
+# Edge Functions
 
-> **STATUS: NOT DEPLOYED / NOT APPLIED to remote.**
+| Function                   | Purpose                                            | Status                                                |
+| -------------------------- | -------------------------------------------------- | ----------------------------------------------------- |
+| `create-checkout`          | Mollie Hosted Checkout (staging test-mode invoice) | Implemented in-repo; deploy only with staging secrets |
+| `mollie-webhook`           | Prefer Owner `/api/webhooks/mollie`                | Stub — Owner webhook is canonical                     |
+| `payment-policy-gate`      | Play Store / category policy check                 | Stub                                                  |
+| `send-notification`        | Push + delivery logging                            | Stub                                                  |
+| `approve-commission`       | Staff commission release                           | Stub                                                  |
+| `book-appointment`         | Transactional slot booking                         | Stub                                                  |
+| `request-account-deletion` | Deletion request intake                            | Stub                                                  |
 
-Local stubs only. Implement and deploy after owner approval.
+## create-checkout requirements (staging only)
 
-| Function                   | Purpose                            |
-| -------------------------- | ---------------------------------- |
-| `create-checkout`          | Mollie Hosted Checkout session     |
-| `mollie-webhook`           | Idempotent payment confirmation    |
-| `payment-policy-gate`      | Play Store / category policy check |
-| `send-notification`        | Push + delivery logging            |
-| `approve-commission`       | Staff commission release           |
-| `book-appointment`         | Transactional slot booking         |
-| `request-account-deletion` | Deletion request intake            |
-
-Never put Mollie or service-role secrets in the mobile app.
+- `APP_ENV=staging`
+- `MOLLIE_TEST_CHECKOUT_ENABLED=true`
+- `CHECKOUT_ENABLED` unset/false
+- `MOLLIE_API_KEY` test_-shaped
+- Supabase ref `qzekuvmgfekzsowdecyk`
+- `MOLLIE_WEBHOOK_TOKEN` + Owner webhook base URL
+- Never put Mollie or service-role secrets in the mobile app

@@ -163,7 +163,26 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<Create
     payment?: Payment;
     checkoutUrl?: string;
     error?: string;
+    feature?: string;
   };
+
+  if (payload?.error) {
+    const code = payload.error;
+    if (
+      code === 'FEATURE_NOT_CONFIGURED' ||
+      code === 'FORBIDDEN' ||
+      code === 'NOT_FOUND' ||
+      code === 'ALREADY_PAID' ||
+      code === 'AMOUNT_MISMATCH' ||
+      code === 'CURRENCY_MISMATCH' ||
+      code === 'TEST_MODE_REQUIRED' ||
+      code === 'PROVIDER_UNAVAILABLE' ||
+      code === 'RATE_LIMITED'
+    ) {
+      return blocked(code, 'payments.policy.checkoutDisabled');
+    }
+    return blocked(code, 'payments.policy.checkoutDisabled');
+  }
 
   if (!payload?.checkoutUrl || !payload.payment) {
     return blocked(payload?.error ?? 'checkout_failed', 'payments.policy.checkoutDisabled');
