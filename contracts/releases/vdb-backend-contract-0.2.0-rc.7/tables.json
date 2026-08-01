@@ -1,0 +1,126 @@
+{
+  "partnerTables": [
+    "partner_profiles",
+    "partner_applications",
+    "partner_codes",
+    "partner_leads",
+    "partner_sales",
+    "partner_commissions",
+    "partner_payout_requests",
+    "partner_payouts",
+    "partner_ledger_transactions",
+    "partner_ledger_entries",
+    "partner_cash_receipts",
+    "partner_adjustments",
+    "partner_agreement_versions",
+    "partner_agreement_acceptances"
+  ],
+  "rc5NewTables": {
+    "partner_agreement_versions": {
+      "purpose": "Partner agreement catalogue, one current version per agreement family.",
+      "rls": "RLS on. anon denied. authenticated may SELECT. Staff may write. No client INSERT/UPDATE grant.",
+      "legalWarning": "body_placeholder values are placeholders and legal_review_status is REQUIRED until legal signs off. Nothing here is a binding legal text and it must not be presented as final terms."
+    },
+    "partner_agreement_acceptances": {
+      "purpose": "Immutable record that a partner accepted one agreement version.",
+      "writer": "accept_partner_agreement only (SECURITY DEFINER). No client INSERT grant.",
+      "rls": "RLS on. anon denied. Partner may SELECT own rows; staff may SELECT all.",
+      "uniqueness": "UNIQUE (partner_id, agreement_version_id) — acceptance is idempotent."
+    }
+  },
+  "rc5NewColumns": {
+    "partner_applications": [
+      "partner_type (partner_type, nullable — NULL means the applicant predates typed intake; never inferred from kvk_number)",
+      "staff_approved_at (timestamptz)",
+      "staff_approved_by (uuid -> profiles.id)"
+    ],
+    "partner_profiles": [
+      "partner_type (partner_type, nullable)",
+      "type_classification_status (partner_type_classification_status, NOT NULL DEFAULT 'UNKNOWN')",
+      "age_verification_status (partner_verification_status, NOT NULL DEFAULT 'NOT_STARTED')",
+      "age_verified_at (timestamptz)",
+      "age_verification_source (text — provenance label only, never document data)",
+      "age_verification_expires_at (timestamptz)",
+      "identity_verification_status (partner_verification_status, NOT NULL DEFAULT 'NOT_STARTED')",
+      "identity_verified_at (timestamptz)",
+      "identity_verification_provider_ref (text — opaque provider reference, never document contents or numbers)",
+      "business_verification_status (partner_verification_status, NOT NULL DEFAULT 'NOT_STARTED')",
+      "business_verified_at (timestamptz)",
+      "business_verification_provider_ref (text)",
+      "payout_profile_status (partner_payout_profile_status, NOT NULL DEFAULT 'NOT_STARTED')",
+      "payout_profile_updated_at (timestamptz)",
+      "staff_approved_at (timestamptz)",
+      "staff_approved_by (uuid -> profiles.id)",
+      "legacy_activation_grandfathered (boolean, NOT NULL DEFAULT false — true for partners already ACTIVE before rc.5)",
+      "activation_block_codes (text[], NOT NULL DEFAULT '{}' — diagnostic only, never an authorization source)",
+      "required_agreement_type (partner_agreement_type)",
+      "required_agreement_version (text)"
+    ]
+  },
+  "customerPortalTables": [
+    "profiles",
+    "organizations",
+    "organization_members",
+    "portal_projects",
+    "portal_quotes",
+    "portal_quote_items",
+    "portal_quote_versions",
+    "portal_quote_acceptances",
+    "portal_invoices",
+    "portal_invoice_items",
+    "portal_files",
+    "feature_flags",
+    "portal_conversations",
+    "portal_conversation_participants",
+    "portal_messages",
+    "portal_message_attachments",
+    "portal_support_tickets",
+    "portal_support_replies",
+    "portal_appointments",
+    "portal_appointment_participants"
+  ],
+  "marketingLeadsUntouched": true,
+  "mobileClientTableMapping": {
+    "projects": "portal_projects",
+    "quotes": "portal_quotes",
+    "quote_items": "portal_quote_items",
+    "invoices": "portal_invoices",
+    "invoice_items": "portal_invoice_items",
+    "documents": "portal_files",
+    "commissions": "partner_commissions",
+    "payout_requests": "partner_payout_requests",
+    "sales": "partner_sales",
+    "leads": "DO_NOT_USE_marketing_leads_use_partner_leads",
+    "app_profiles": "profiles",
+    "profiles": "profiles",
+    "conversations": "portal_conversations",
+    "conversation_participants": "portal_conversation_participants",
+    "messages": "portal_messages",
+    "message_attachments": "portal_message_attachments",
+    "support_tickets": "portal_support_tickets",
+    "tickets": "portal_support_tickets",
+    "support_messages": "portal_support_replies",
+    "support_replies": "portal_support_replies",
+    "appointments": "portal_appointments",
+    "appointment_participants": "portal_appointment_participants",
+    "partner_agreements": "partner_agreement_versions",
+    "partner_agreement_signatures": "partner_agreement_acceptances"
+  },
+  "forbiddenParallelBaseTables": [
+    "projects",
+    "quotes",
+    "invoices",
+    "documents",
+    "commissions",
+    "payout_requests",
+    "conversations",
+    "messages",
+    "support_messages",
+    "tickets",
+    "appointments"
+  ],
+  "rc7Semantics": {
+    "identity_verification_status": "v1: administrative partner review status. VERIFIED = administrative partnercontrole afgerond by authorized staff. Not document/biometric/external IDV. Gate IDENTITY_NOT_VERIFIED retained.",
+    "identity_verification_provider_ref": "Must remain null for administrative review path. Future optional IDV only. Never document contents."
+  }
+}

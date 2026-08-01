@@ -65,7 +65,9 @@
     "activationReady": "Alle gates zijn groen — activatie gebeurt alleen via Owner/admin AAL2.",
     "activationBlocked": "Nog niet activeerbaar. Ontbrekende stappen:",
     "noSelfActivation": "Mobile activeert nooit zelf. Staffgoedkeuring alleen is onvoldoende.",
-    "kycUnavailable": "Identiteitsverificatie is nog niet beschikbaar (geen KYC-provider gekoppeld)."
+    "kycUnavailable": "Partnergegevens worden administratief beoordeeld. Er is geen automatische ID-check of documentupload.",
+    "adminReviewTitle": "Administratieve partnercontrole",
+    "adminReviewReadOnly": "Status is read-only op mobile in deze fase wanneer staffactie niet veilig is. Mutaties: Partners web / Owner met AAL2."
   },
   "aal2": {
     "title": "Extra verificatie vereist",

@@ -79,11 +79,11 @@ function makeClient() {
 
 describe('rc.6 contract pin', () => {
   it('pins the JSON bundle and the TS pin module to the same rc.6 identity', () => {
-    expect(backendContract.version).toBe('0.2.0-rc.6');
+    expect(backendContract.version).toBe('0.2.0-rc.7');
     expect(backendContract.schemaVersion).toBe('2026.07.29.partner-approval-aal2-rc6');
-    expect(backendContract.packageId).toBe('vdb-backend-contract@0.2.0-rc.6');
-    expect(backendContract.status).toBe('CONSUMER_PIN_OWNER_RC6');
-    expect(backendContract.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.6');
+    expect(backendContract.packageId).toBe('vdb-backend-contract@0.2.0-rc.7');
+    expect(backendContract.status).toBe('CONSUMER_PIN_OWNER_RC7');
+    expect(backendContract.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.7');
     expect(backendContract.version).toBe(BACKEND_CONTRACT.version);
     expect(backendContract.schemaVersion).toBe(BACKEND_CONTRACT.schemaVersion);
   });

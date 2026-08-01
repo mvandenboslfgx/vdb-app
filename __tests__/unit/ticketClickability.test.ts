@@ -36,7 +36,7 @@ describe('ticket clickability - role surfaces', () => {
   });
 
   it('keeps support_internal_notes_rpc fail-closed in the consumer contract pin', () => {
-    expect(BACKEND_CONTRACT.version).toBe('0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.version).toBe('0.2.0-rc.7');
     expect(backendContract.featureFlags.support_internal_notes_rpc).toBe(false);
     expect(isFeatureEnabled('mollieCheckout')).toBe(false);
   });

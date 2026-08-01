@@ -25,7 +25,7 @@
     "partnerTypeHint": "Choose Individual or Business explicitly. Type is never inferred from KVK or company name.",
     "typeIndividual": "Individual",
     "typeBusiness": "Business",
-    "kycUnavailable": "Identity verification is not available yet (no KYC provider)."
+    "kycUnavailable": "Your partner details are reviewed administratively by VDB. There is no automatic ID check, camera capture, document upload, or selfie check."
   },
   "code": "Partner code",
   "link": "Partner link",

@@ -1,0 +1,18 @@
+{
+  "sharedRoles": [
+    "customer",
+    "partner_pending",
+    "partner",
+    "staff",
+    "admin",
+    "owner"
+  ],
+  "encoding": {
+    "customer": "organization_members",
+    "partner_pending": "partner_profiles.status=PENDING",
+    "partner": "partner_profiles.status=ACTIVE",
+    "staff": "admin_roles + is_staff_admin()",
+    "admin": "admin_roles.role=ADMIN",
+    "owner": "admin_roles.role=OWNER"
+  }
+}

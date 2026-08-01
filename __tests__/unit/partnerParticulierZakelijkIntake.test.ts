@@ -23,7 +23,7 @@ function validBase(overrides: Record<string, unknown> = {}) {
 }
 
 describe('temporary PARTICULIER/ZAKELIJK intake compatibility', () => {
-  it('keeps S6 status string until full Owner KYC/legal path ships', () => {
+  it('keeps S6 status string until Owner legal/admin-review path ships', () => {
     expect(PARTNER_TYPE_MODEL_STATUS).toContain('DEPENDENCY RECORDED');
   });
 

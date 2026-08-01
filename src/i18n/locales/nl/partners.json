@@ -25,7 +25,7 @@
     "partnerTypeHint": "Kies expliciet Particulier of Zakelijk. Type wordt nooit afgeleid uit KvK of bedrijfsnaam.",
     "typeIndividual": "Particulier",
     "typeBusiness": "Zakelijk",
-    "kycUnavailable": "Identiteitsverificatie is nog niet beschikbaar (geen KYC-provider)."
+    "kycUnavailable": "Uw partnergegevens worden administratief beoordeeld door VDB. Er is geen automatische ID-check, camera-opname, documentupload of selfiecontrole."
   },
   "code": "Partnercode",
   "link": "Partnerlink",

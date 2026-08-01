@@ -9,7 +9,7 @@ import { mapLegacyPartnerTypeLabel, partnerApplicationSchema } from '@/validatio
 
 describe('RC5 contract surfaces', () => {
   it('pins rc.6 schema', () => {
-    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.7');
     expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.29.partner-approval-aal2-rc6');
   });
 

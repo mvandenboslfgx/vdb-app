@@ -1,0 +1,63 @@
+{
+  "CHECKOUT_ENABLED": {
+    "default": false,
+    "scope": "website-env",
+    "notes": "Fail-closed web checkout. Owner website authority."
+  },
+  "P05_MIGRATION_APPLIED": {
+    "default": "unset",
+    "scope": "website-env",
+    "notes": "Operator hint only"
+  },
+  "mollie_checkout": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "FAIL-CLOSED — Mobile/shared Mollie checkout"
+  },
+  "digital_product_checkout": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "FAIL-CLOSED — digital goods / Play gate"
+  },
+  "partner_payouts": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "FAIL-CLOSED — partner payout requests; gates request_partner_payout"
+  },
+  "push_notifications": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "Remote push off until provider"
+  },
+  "documents_virus_scan": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "AV provider off until configured"
+  },
+  "messaging_realtime": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "FAIL-CLOSED — realtime messaging until owner enable"
+  },
+  "support_internal_notes_rpc": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "FAIL-CLOSED — gates add_portal_support_internal_note. Staging may enable after ACL prove. Reading internal notes is not flag-gated: list_portal_support_ticket_replies always hides is_internal rows from non-staff callers."
+  },
+  "partner_compliance_fixtures": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "FAIL-CLOSED — STAGING ONLY. Gates staff_set_partner_compliance_fixture, which writes synthetic partner verification statuses. Must never be enabled in production."
+  },
+  "appointments_booking": {
+    "default": false,
+    "scope": "db.feature_flags",
+    "notes": "FAIL-CLOSED — gates book/reschedule/cancel portal appointment RPCs. Staff appointment reads (admin_get_appointment, admin_list_appointments) are not gated by this flag."
+  },
+  "featureFlagKeyAliases": {
+    "payments.mollie_checkout": "mollie_checkout",
+    "payments.digital_goods_checkout": "digital_product_checkout",
+    "partner.payouts": "partner_payouts",
+    "CHECKOUT_ENABLED": "mollie_checkout"
+  }
+}

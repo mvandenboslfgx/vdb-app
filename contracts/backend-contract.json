@@ -1,30 +1,33 @@
 {
   "name": "vdb-backend-contract",
-  "version": "0.2.0-rc.6",
+  "version": "0.2.0-rc.7",
   "schemaVersion": "2026.07.29.partner-approval-aal2-rc6",
-  "packageId": "vdb-backend-contract@0.2.0-rc.6",
+  "packageId": "vdb-backend-contract@0.2.0-rc.7",
   "repositoryRole": "MOBILE_CLIENT",
   "canonicalBackendOwner": "VDB Digital 2.0",
   "canonicalRepoHint": "vdbdigital2.0",
-  "status": "CONSUMER_PIN_OWNER_RC6",
-  "minimumCompatibleClientVersion": ">=0.2.0-rc.6",
+  "status": "CONSUMER_PIN_OWNER_RC7",
+  "minimumCompatibleClientVersion": ">=0.2.0-rc.7",
   "partnerSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.1",
   "messagingSupportCompatibleWith": "vdb-backend-contract@0.2.0-rc.3",
   "adminControlSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.4",
   "partnerIdentityDirectoryCompatibleWith": "vdb-backend-contract@0.2.0-rc.5",
   "notes": [
-    "Exact pin of owner-published local bundle 0.2.0-rc.6 — VDB Digital 2.0 remains CANONICAL_BACKEND_OWNER.",
-    "schemaVersion 2026.07.29.partner-approval-aal2-rc6: review_partner_application requires server-side AAL2 before approve/reject mutation.",
-    "RC5 identity/directory surfaces remain compatible; RC5/RC4 are superseded — not live fallback. Fail-closed on schema drift.",
-    "Canonical ticket transition remains transition_portal_support_ticket_status.",
-    "Payout mutations remain fail-closed — do not wire payout execution; payout UI stays disabled.",
-    "support_internal_notes_rpc: staging may be true; production remains false — handle FEATURE_DISABLED as hidden feature.",
-    "Partner type is INDIVIDUAL|BUSINESS only — never infer from KVK/companyName.",
-    "ACTIVE only via Owner partner_try_activate when checklist green — staff approval alone never activates.",
-    "Owner bundle vendored at contracts/releases/vdb-backend-contract-0.2.0-rc.6/ (baseline ccdeb8455696bf4381f2e6805e57e41aa3e51ca4).",
-    "Local supabase/migrations in this repo remain NON-CANONICAL proposal SQL."
+    "Exact pin of owner-published local bundle 0.2.0-rc.7 — administrative partner review (B1).",
+    "schemaVersion stamps remain 2026.07.29.partner-approval-aal2-rc6 (no mass stamp bump).",
+    "New RPC staff_attest_partner_admin_review — VERIFIED means administrative partnercontrole, not IDV.",
+    "Mobile admin attestation mutation deferred to Partners web/Owner when AAL2 path is incomplete; status is read-only on detail.",
+    "Payout mutations remain fail-closed.",
+    "Owner bundle vendored at contracts/releases/vdb-backend-contract-0.2.0-rc.7/."
   ],
-  "roles": ["customer", "partner_pending", "partner", "staff", "admin", "owner"],
+  "roles": [
+    "customer",
+    "partner_pending",
+    "partner",
+    "staff",
+    "admin",
+    "owner"
+  ],
   "sharedDomains": {
     "websiteAndMobile": [
       "profiles",
@@ -144,7 +147,8 @@
       "activate_partner_profile",
       "partner_try_activate",
       "verify_partner_identity_directory_rc5_contracts",
-      "verify_partner_approval_aal2_rc6_contracts"
+      "verify_partner_approval_aal2_rc6_contracts",
+      "staff_attest_partner_admin_review"
     ],
     "mobileClientRpcMapping": {
       "accept_quote": "accept_portal_quote",
@@ -233,8 +237,10 @@
     "ACTIVATION_DENIED",
     "PARTNER_LEAD_ALREADY_CONVERTED",
     "PRODUCT_NOT_FOUND",
-    "PRODUCT_NOT_PARTNER_ELIGIBLE"
+    "PRODUCT_NOT_PARTNER_ELIGIBLE",
+    "RATE_LIMITED"
   ],
   "ownerBundlePath": "contracts/releases/vdb-backend-contract-0.2.0-rc.6",
-  "ownerBaselineCommit": "ccdeb8455696bf4381f2e6805e57e41aa3e51ca4"
+  "ownerBaselineCommit": "ccdeb8455696bf4381f2e6805e57e41aa3e51ca4",
+  "partnerApprovalAal2CompatibleWith": "vdb-backend-contract@0.2.0-rc.6"
 }

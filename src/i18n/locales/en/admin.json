@@ -65,7 +65,9 @@
     "activationReady": "All gates are green — activation only via Owner/admin AAL2.",
     "activationBlocked": "Not activatable yet. Missing steps:",
     "noSelfActivation": "Mobile never self-activates. Staff approval alone is not enough.",
-    "kycUnavailable": "Identity verification is not available yet (no KYC provider linked)."
+    "kycUnavailable": "Partner details are reviewed administratively. There is no automatic ID check or document upload.",
+    "adminReviewTitle": "Administrative partner review",
+    "adminReviewReadOnly": "Status is read-only on mobile in this phase when staff mutation is not safely wired. Mutations: Partners web / Owner with AAL2."
   },
   "aal2": {
     "title": "Additional verification required",

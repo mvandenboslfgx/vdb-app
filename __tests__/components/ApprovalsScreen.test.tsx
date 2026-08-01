@@ -148,7 +148,7 @@ describe('ApprovalsScreen partner approval wiring', () => {
     await waitFor(() => expect(screen.getByTestId('input-approvals-reject-reason')).toBeTruthy());
     await fireEvent.changeText(
       screen.getByTestId('input-approvals-reject-reason'),
-      'Incomplete KYC package',
+      'Incomplete partner application package',
     );
     await waitFor(() =>
       expect(
@@ -157,7 +157,12 @@ describe('ApprovalsScreen partner approval wiring', () => {
     );
     await fireEvent.press(screen.getByTestId('admin-partner-reject'));
 
-    await waitFor(() => expect(mockReject).toHaveBeenCalledWith('app-1', 'Incomplete KYC package'));
+    await waitFor(() =>
+      expect(mockReject).toHaveBeenCalledWith(
+        'app-1',
+        'Incomplete partner application package',
+      ),
+    );
   });
 
   it('staff without admin capability sees read-only state, no active approve CTA', async () => {

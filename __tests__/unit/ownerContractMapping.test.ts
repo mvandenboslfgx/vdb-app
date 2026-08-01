@@ -9,12 +9,12 @@ import {
 } from '@/api/contract/ownerMapping';
 import { BACKEND_CONTRACT } from '@/config/backendContract';
 
-describe('owner contract pin 0.2.0-rc.6', () => {
+describe('owner contract pin 0.2.0-rc.7', () => {
   it('pins owner rc.6 and keeps rc.5/rc.4/rc.3 as superseded', () => {
-    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.packageId).toBe('vdb-backend-contract@0.2.0-rc.7');
     expect(BACKEND_CONTRACT.schemaVersion).toBe('2026.07.29.partner-approval-aal2-rc6');
-    expect(BACKEND_CONTRACT.status).toBe('CONSUMER_PIN_OWNER_RC6');
-    expect(BACKEND_CONTRACT.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.status).toBe('CONSUMER_PIN_OWNER_RC7');
+    expect(BACKEND_CONTRACT.minimumCompatibleClientVersion).toBe('>=0.2.0-rc.7');
     expect(BACKEND_CONTRACT.partnerIdentityDirectoryCompatibleWith).toBe(
       'vdb-backend-contract@0.2.0-rc.5',
     );

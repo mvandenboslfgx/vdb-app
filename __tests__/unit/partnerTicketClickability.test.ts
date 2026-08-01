@@ -61,7 +61,7 @@ describe('partner ticket clickability inventory', () => {
   it('WhatsApp is additional — tickets remain the primary Owner support route', () => {
     expect(PARTNER_TICKET_INTERACTIONS).toContain('partner-more-support');
     expect(PARTNER_TICKET_INTERACTIONS).toContain('partner-more-whatsapp');
-    expect(BACKEND_CONTRACT.version).toBe('0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.version).toBe('0.2.0-rc.7');
   });
 });
 

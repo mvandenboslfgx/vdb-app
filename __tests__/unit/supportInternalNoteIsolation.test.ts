@@ -68,6 +68,6 @@ describe('support internal-note isolation', () => {
   });
 
   it('pins support_internal_notes_rpc fail-closed on the RC6 consumer contract', () => {
-    expect(BACKEND_CONTRACT.version).toBe('0.2.0-rc.6');
+    expect(BACKEND_CONTRACT.version).toBe('0.2.0-rc.7');
   });
 });

@@ -1,0 +1,25 @@
+{
+  "contractVersion": "vdb-backend-contract@0.2.0-rc.7",
+  "schemaVersion": "2026.07.29.partner-approval-aal2-rc6",
+  "minimumCompatibleClientVersion": ">=0.2.0-rc.7",
+  "partnerSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.1",
+  "mobileCompatCompatibleWith": "vdb-backend-contract@0.2.0-rc.2",
+  "messagingSupportCompatibleWith": "vdb-backend-contract@0.2.0-rc.3",
+  "adminControlSurfaceCompatibleWith": "vdb-backend-contract@0.2.0-rc.4",
+  "partnerIdentityDirectoryCompatibleWith": "vdb-backend-contract@0.2.0-rc.5",
+  "generatedAt": "2026-08-01",
+  "sourceHeadHint": "partner-admin-review-rc7",
+  "canonicalBackendOwner": "VDB Digital 2.0",
+  "unpublished": true,
+  "notes": [
+    "RC7 additive: staff_attest_partner_admin_review for Partners v1 administrative partnercontrole (B1).",
+    "identity_verification_status=VERIFIED means administrative partner review completed by authorized staff — NOT document/biometric/external IDV.",
+    "Does not change AGE/BUSINESS/AGREEMENT/PAYOUT/STAFF_APPROVAL checklist gates.",
+    "Does not rewrite existing rows, ACTIVE partners, or grandfathering.",
+    "Does not enable partner_compliance_fixtures; staging fixture RPC remains staging-only.",
+    "schemaVersion stamps on admin/directory/checklist read RPCs remain 2026.07.29.partner-approval-aal2-rc6 (no mass stamp bump).",
+    "Pre-existing rc.5/rc.6 checksum drift is intentionally NOT repaired in those bundles.",
+    "Does not authorize production apply. Payouts remain fail-closed."
+  ],
+  "partnerApprovalAal2CompatibleWith": "vdb-backend-contract@0.2.0-rc.6"
+}

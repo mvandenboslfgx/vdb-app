@@ -1,0 +1,153 @@
+{
+  "partner_type": [
+    "INDIVIDUAL",
+    "BUSINESS"
+  ],
+  "partner_type_classification_status": [
+    "UNKNOWN",
+    "KNOWN",
+    "REVIEW_REQUIRED"
+  ],
+  "partner_verification_status": [
+    "NOT_STARTED",
+    "PENDING",
+    "VERIFIED",
+    "REJECTED",
+    "MANUAL_REVIEW",
+    "EXPIRED"
+  ],
+  "partner_payout_profile_status": [
+    "NOT_STARTED",
+    "PENDING",
+    "APPROVED",
+    "REJECTED",
+    "SUSPENDED",
+    "REVIEW_REQUIRED"
+  ],
+  "partner_agreement_type": [
+    "INDIVIDUAL_PARTNER",
+    "BUSINESS_PARTNER"
+  ],
+  "partner_application_status": [
+    "DRAFT",
+    "SUBMITTED",
+    "IN_REVIEW",
+    "APPROVED",
+    "REJECTED",
+    "WITHDRAWN"
+  ],
+  "partner_profile_status": [
+    "PENDING",
+    "ACTIVE",
+    "SUSPENDED",
+    "REVOKED"
+  ],
+  "partner_code_status": [
+    "ACTIVE",
+    "REVOKED",
+    "EXPIRED"
+  ],
+  "partner_lead_status": [
+    "NEW",
+    "IN_REVIEW",
+    "ASSIGNED",
+    "CONVERTED",
+    "REJECTED",
+    "CLOSED"
+  ],
+  "partner_sale_status": [
+    "PENDING",
+    "CONFIRMED",
+    "SETTLED",
+    "CANCELLED",
+    "REVERSED"
+  ],
+  "partner_commission_status": [
+    "PENDING",
+    "ELIGIBLE",
+    "APPROVED",
+    "PAID",
+    "REVERSED",
+    "ADJUSTED",
+    "REJECTED"
+  ],
+  "partner_payout_request_status": [
+    "REQUESTED",
+    "APPROVED",
+    "REJECTED",
+    "CANCELLED"
+  ],
+  "partner_payout_status": [
+    "PENDING",
+    "PAID",
+    "FAILED",
+    "CANCELLED"
+  ],
+  "partner_ledger_account": [
+    "COMMISSION_LIABILITY",
+    "PAYOUT_CLEARING",
+    "CASH",
+    "ADJUSTMENT",
+    "REVENUE_CLEARING"
+  ],
+  "portal_conversation_type": [
+    "PROJECT",
+    "SUPPORT",
+    "PARTNER",
+    "INTERNAL"
+  ],
+  "portal_moderation_status": [
+    "NONE",
+    "FLAGGED",
+    "HIDDEN",
+    "REMOVED"
+  ],
+  "portal_ticket_status": [
+    "NEW",
+    "OPEN",
+    "IN_PROGRESS",
+    "WAITING_FOR_CUSTOMER",
+    "WAITING_FOR_VDB",
+    "RESOLVED",
+    "CLOSED"
+  ],
+  "portal_ticket_status_mobile_aliases": {
+    "new": "NEW",
+    "open": "OPEN",
+    "in_progress": "IN_PROGRESS",
+    "waiting": "WAITING_FOR_CUSTOMER",
+    "waiting_customer": "WAITING_FOR_CUSTOMER",
+    "waiting_vdb": "WAITING_FOR_VDB",
+    "resolved": "RESOLVED",
+    "closed": "CLOSED"
+  },
+  "portal_appointment_type": [
+    "INTAKE",
+    "KICKOFF",
+    "REVIEW",
+    "SUPPORT",
+    "HANDOVER",
+    "OTHER"
+  ],
+  "portal_appointment_status": [
+    "SCHEDULED",
+    "CONFIRMED",
+    "RESCHEDULED",
+    "CANCELLED",
+    "COMPLETED",
+    "NO_SHOW"
+  ],
+  "portal_appointment_response": [
+    "PENDING",
+    "ACCEPTED",
+    "DECLINED",
+    "TENTATIVE"
+  ],
+  "rc5EnumNotes": {
+    "partner_type": "Explicit and never inferred. NULL on partner_profiles/partner_applications means the row predates typed intake.",
+    "partner_type_classification_status": "UNKNOWN = never classified, KNOWN = typed intake or staff classification, REVIEW_REQUIRED = legacy row awaiting staff classification. Only KNOWN satisfies the activation checklist.",
+    "partner_verification_status": "Used by age, identity and business verification. Only VERIFIED (and, for age, not expired) satisfies the activation checklist.",
+    "partner_payout_profile_status": "payout_eligible may only become true while this is APPROVED.",
+    "partner_agreement_type": "INDIVIDUAL -> INDIVIDUAL_PARTNER, BUSINESS -> BUSINESS_PARTNER."
+  }
+}

@@ -15,7 +15,7 @@
 | Item | Status |
 |---|---|
 | `reject_partner_commission` full E2E | DEFERRED — no safe synthetic target |
-| KYC / payout / Mollie / checkout | DISABLED / fail-closed |
+| External IDV / payout / Mollie / checkout | DISABLED / fail-closed (IDV de-scoped v1) |
 | AAB / Play Store | NOT AUTHORIZED |
 | Owner RC5 production promotion | PENDING |
 

@@ -1,0 +1,440 @@
+{
+  "count": 60,
+  "partnerRpcs": [
+    {
+      "name": "submit_partner_application",
+      "signature": "(p_partner_type text, p_legal_name text, p_trade_name text, p_contact_email text, p_kvk text DEFAULT NULL, p_vat text DEFAULT NULL, p_phone text DEFAULT NULL)",
+      "note": "rc.5 SIGNATURE CHANGE — p_partner_type ('INDIVIDUAL' | 'BUSINESS') is now the FIRST argument and the untyped 6-argument overload is dropped. INDIVIDUAL must not supply p_kvk; BUSINESS requires a company name and an 8-digit p_kvk. Leaves the profile PENDING and never sets ACTIVE."
+    },
+    {
+      "name": "review_partner_application",
+      "note": "rc.6 — OWNER/ADMIN staff via is_staff_admin() + require_aal2() before approve/reject mutation. Approval records staff_approved_at/by and then attempts activation; partner stays PENDING when checklist incomplete. Approval alone never writes ACTIVE."
+    },
+    {
+      "name": "create_partner_lead"
+    },
+    {
+      "name": "review_partner_lead"
+    },
+    {
+      "name": "confirm_partner_sale"
+    },
+    {
+      "name": "request_partner_payout"
+    },
+    {
+      "name": "approve_partner_payout_request"
+    },
+    {
+      "name": "record_partner_payout_paid"
+    },
+    {
+      "name": "record_partner_cash_receipt"
+    },
+    {
+      "name": "process_partner_refund_adjustment"
+    },
+    {
+      "name": "partner_financial_summary"
+    },
+    {
+      "name": "partner_available_liability_cents"
+    },
+    {
+      "name": "verify_partner_admin_contracts",
+      "note": "rc.5 — retargeted to submit_partner_application(text,text,text,text,text,text,text)."
+    },
+    {
+      "name": "approve_partner_commission"
+    },
+    {
+      "name": "reject_partner_commission"
+    },
+    {
+      "name": "suspend_partner"
+    },
+    {
+      "name": "reactivate_partner",
+      "note": "rc.5 — grandfathered pre-rc.5 partners keep the rc.4 restore; every other partner must pass partner_activation_checklist or the call raises ACTIVATION_DENIED."
+    },
+    {
+      "name": "activate_partner_profile",
+      "signature": "(p_partner_id uuid, p_reason text, p_idempotency_key text, p_partner_code text DEFAULT NULL)",
+      "note": "rc.5 NEW — OWNER/ADMIN + AAL2 + reason + idempotency. Delegates to partner_try_activate; an incomplete checklist raises ACTIVATION_DENIED:<code> and nothing is written."
+    },
+    {
+      "name": "accept_partner_agreement",
+      "signature": "(p_agreement_version_id uuid)",
+      "note": "rc.5 NEW — the calling partner accepts one current agreement version. Idempotent per (partner, version). Bodies are placeholders pending legal review."
+    },
+    {
+      "name": "partner_activation_checklist",
+      "signature": "(p_partner_id uuid)",
+      "note": "rc.5 NEW — fixed-shape activation readiness report. Readable by staff or by the partner for their own profile. Diagnostic only: never an authorization source."
+    },
+    {
+      "name": "partner_try_activate",
+      "signature": "(p_partner_id uuid, p_partner_code text DEFAULT NULL)",
+      "note": "rc.5 NEW — staff-gated; the only writer of an ACTIVE partner profile. Not exposed to partners."
+    },
+    {
+      "name": "partner_is_valid_kvk",
+      "signature": "(p_kvk text)",
+      "note": "rc.5 NEW — format-only helper: TRUE iff the trimmed value is exactly 8 digits. Never used to infer partner type."
+    },
+    {
+      "name": "staff_set_partner_compliance_fixture",
+      "signature": "(p_partner_id uuid, p_age_status text DEFAULT NULL, p_identity_status text DEFAULT NULL, p_business_status text DEFAULT NULL, p_payout_status text DEFAULT NULL)",
+      "note": "rc.5 NEW — STAGING ONLY synthetic verification fixtures. Raises FEATURE_DISABLED unless partner_compliance_fixtures is enabled. Never changes status or payout_eligible. Must stay disabled in production."
+    },
+    {
+      "name": "verify_partner_identity_directory_rc5_contracts",
+      "note": "rc.5 NEW — presence, hardening, activation-boundary and flag checks for the partner identity + admin directory detail surface."
+    },
+    {
+      "name": "verify_partner_approval_aal2_rc6_contracts",
+      "note": "rc.6 NEW — AAL2 presence/order checks for review_partner_application plus sibling privileged RPC AAL2 audit."
+    },
+    {
+      "name": "verify_admin_rpc_schema_stamps_rc6",
+      "note": "rc.6 — proves admin/directory/checklist schema_version stamps equal 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "staff_attest_partner_admin_review",
+      "signature": "(p_partner_id uuid, p_outcome text, p_reason_code text)",
+      "note": "rc.7 NEW — staff + AAL2 administrative partner review. Outcomes: VERIFIED|REJECTED|MANUAL_REVIEW|NOT_STARTED. Reason codes allowlist only. Sets identity_verification_status only; never provider_ref; never activates; never touches age/business/agreement/payout. Idempotent audit on change only. VERIFIED = administrative partnercontrole afgerond (not IDV)."
+    },
+    {
+      "name": "verify_partner_admin_review_rc7_contracts",
+      "note": "rc.7 NEW — presence/hardening verifier for staff_attest_partner_admin_review; proves IDENTITY and AGE gates retained."
+    }
+  ],
+  "customerPortalRpcs": [
+    {
+      "name": "accept_portal_quote"
+    },
+    {
+      "name": "decline_portal_quote"
+    },
+    {
+      "name": "create_portal_conversation"
+    },
+    {
+      "name": "manage_portal_conversation_participant"
+    },
+    {
+      "name": "send_portal_message"
+    },
+    {
+      "name": "mark_portal_conversation_read"
+    },
+    {
+      "name": "assign_portal_support_ticket"
+    },
+    {
+      "name": "reply_portal_support_ticket"
+    },
+    {
+      "name": "add_portal_support_internal_note"
+    },
+    {
+      "name": "transition_portal_support_ticket_status"
+    },
+    {
+      "name": "list_portal_support_ticket_replies",
+      "signature": "(p_ticket_id uuid, p_limit int DEFAULT 50, p_cursor timestamptz DEFAULT NULL)",
+      "note": "rc.5 NEW — replies for one ticket. Staff see internal notes; active members of the ticket's organization see public replies only; everyone else is FORBIDDEN. Keyset paging on created_at DESC, id DESC."
+    },
+    {
+      "name": "book_portal_appointment"
+    },
+    {
+      "name": "reschedule_portal_appointment"
+    },
+    {
+      "name": "cancel_portal_appointment"
+    },
+    {
+      "name": "verify_messaging_support_appointments_contracts"
+    }
+  ],
+  "adminControlSurfaceRpcs": [
+    {
+      "name": "admin_dashboard_stats",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_work_queue",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_list_products",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_list_partners",
+      "note": "rc.5 — additive keys: partner_type, type_classification_status, verification and payout-profile statuses, legacy_activation_grandfathered. Still no contact details and no balances. rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_list_customers",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_list_projects",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_list_quotes",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_list_invoices",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_list_appointments",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_settings_summary",
+      "note": "rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_security_status",
+      "note": "rc.6 — unchanged rc.4/rc.5 shape with schema_version bumped to 2026.07.29.partner-approval-aal2-rc6. rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_product",
+      "signature": "(p_product_id uuid)",
+      "note": "rc.5 NEW — staff product detail. cost_cents, margins and supplier data are never returned. rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_partner",
+      "signature": "(p_partner_id uuid)",
+      "note": "rc.5 NEW — staff partner detail including the live activation_checklist. No email address and no balances. rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_customer",
+      "signature": "(p_organization_id uuid)",
+      "note": "rc.5 NEW — staff customer detail with counters only. No email, phone, VAT/KvK or address. rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_project",
+      "signature": "(p_project_id uuid)",
+      "note": "rc.5 NEW — staff project detail. Related records are exposed as counts only. rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_quote",
+      "signature": "(p_quote_id uuid)",
+      "note": "rc.5 NEW — staff quote detail with at most 50 line items. customer_note is never returned. rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_invoice",
+      "signature": "(p_invoice_id uuid)",
+      "note": "rc.5 NEW — staff invoice detail. Read-only; no payment or provider fields are exposed or mutated. rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "admin_get_appointment",
+      "signature": "(p_appointment_id uuid)",
+      "note": "rc.5 NEW — staff appointment detail. Never returns meeting_link, attendee identities or internal notes. Reads are not gated by appointments_booking (that flag gates mutations). rc.6 stamp: schema_version 2026.07.29.partner-approval-aal2-rc6."
+    },
+    {
+      "name": "verify_admin_control_surface_contracts"
+    }
+  ],
+  "compatRpcs": [
+    {
+      "name": "feature_flag_enabled"
+    },
+    {
+      "name": "verify_mobile_compat_contracts"
+    }
+  ],
+  "deprecatedAliases": [
+    {
+      "name": "transition_portal_support_ticket",
+      "canonical": "transition_portal_support_ticket_status",
+      "status": "deprecated-alias",
+      "note": "Temporary contract-drift alias for Mobile backend-contract.json short name. Prefer canonical _status."
+    }
+  ],
+  "mobileClientRpcMapping": {
+    "accept_quote": {
+      "canonical": "accept_portal_quote",
+      "status": "client-adapter-required",
+      "note": "Signatures differ; Mobile must call accept_portal_quote(p_quote_id, p_expected_version, p_selected_optional_item_ids)."
+    },
+    "reject_quote": {
+      "canonical": "decline_portal_quote",
+      "status": "client-adapter-required"
+    },
+    "register_partner_lead": {
+      "canonical": "create_partner_lead",
+      "status": "client-adapter-required",
+      "note": "Param names differ (dedupe_key vs campaign); map in Mobile client. Always pass all eight arguments: the 7-argument compat wrapper is ambiguous with the 8-argument form."
+    },
+    "submit_partner_application": {
+      "canonical": "submit_partner_application",
+      "status": "client-adapter-required",
+      "note": "rc.5 BREAKING — p_partner_type is now the first argument. Mobile must collect INDIVIDUAL vs BUSINESS explicitly, must not send a KvK for INDIVIDUAL, and must send an 8-digit KvK for BUSINESS. Expect VALIDATION_FAILED otherwise."
+    },
+    "approve_partner_application": {
+      "canonical": "review_partner_application",
+      "status": "client-adapter-required",
+      "note": "Owner uses review_partner_application(id, approve, reason, notes). rc.6: requires AAL2. Approval no longer activates the partner — read partner_activation_checklist to explain the remaining blockers."
+    },
+    "reject_partner_application": {
+      "canonical": "review_partner_application",
+      "status": "client-adapter-required",
+      "note": "rc.6 — maps to review_partner_application(..., false, ...). Requires AAL2."
+    },
+    "request_commission_payout": {
+      "canonical": "request_partner_payout",
+      "status": "client-adapter-required",
+      "note": "Owner model is amount_cents + idempotency_key (ledger liability), not commission uuid[]. Payout mutations remain policy-gated."
+    },
+    "admin_qualify_lead": {
+      "canonical": "review_partner_lead",
+      "status": "client-adapter-required"
+    },
+    "admin_convert_lead": {
+      "canonical": "confirm_partner_sale",
+      "status": "client-adapter-required",
+      "note": "Sale creates PENDING commission; approve_partner_commission posts liability."
+    },
+    "book_appointment_slot": {
+      "canonical": "book_portal_appointment",
+      "status": "implemented-owner",
+      "note": "Gated by appointments_booking feature flag (fail-closed)."
+    },
+    "cancel_appointment": {
+      "canonical": "cancel_portal_appointment",
+      "status": "implemented-owner"
+    },
+    "admin_reply_support_ticket": {
+      "canonical": "reply_portal_support_ticket",
+      "status": "implemented-owner",
+      "note": "Public replies. Internal notes use add_portal_support_internal_note (staff + support_internal_notes_rpc flag)."
+    },
+    "admin_list_support_replies": {
+      "canonical": "list_portal_support_ticket_replies",
+      "status": "implemented-owner",
+      "note": "rc.5 — staff calls see is_internal = true rows; customer sessions never do. Do not build a client-side internal/public filter."
+    },
+    "list_ticket_messages": {
+      "canonical": "list_portal_support_ticket_replies",
+      "status": "implemented-owner",
+      "note": "rc.5 — customer-facing paging over the same RPC. Server enforces the internal-note exclusion."
+    },
+    "admin_assign_ticket": {
+      "canonical": "assign_portal_support_ticket",
+      "status": "implemented-owner"
+    },
+    "admin_update_ticket_status": {
+      "canonical": "transition_portal_support_ticket_status",
+      "status": "implemented-owner"
+    },
+    "approve_commission": {
+      "canonical": "approve_partner_commission",
+      "status": "implemented-owner",
+      "note": "OWNER/ADMIN + AAL2 + reason + idempotency_key."
+    },
+    "reject_commission": {
+      "canonical": "reject_partner_commission",
+      "status": "implemented-owner",
+      "note": "OWNER/ADMIN + AAL2 + reason + idempotency_key."
+    },
+    "suspend_partner": {
+      "canonical": "suspend_partner",
+      "status": "implemented-owner"
+    },
+    "reactivate_partner": {
+      "canonical": "reactivate_partner",
+      "status": "implemented-owner",
+      "note": "rc.5 — may raise ACTIVATION_DENIED for partners that are not grandfathered."
+    },
+    "activate_partner": {
+      "canonical": "activate_partner_profile",
+      "status": "implemented-owner",
+      "note": "rc.5 — OWNER/ADMIN + AAL2 only. Partners cannot activate themselves; expect FORBIDDEN. Surface ACTIVATION_DENIED:<code> as the remaining onboarding step."
+    },
+    "partner_onboarding_status": {
+      "canonical": "partner_activation_checklist",
+      "status": "implemented-owner",
+      "note": "rc.5 — a partner may read their own checklist. Render missing[] as the onboarding to-do list; never treat can_activate as an authorization decision."
+    },
+    "accept_partner_terms": {
+      "canonical": "accept_partner_agreement",
+      "status": "implemented-owner",
+      "note": "rc.5 — resolve the current version from partner_agreement_versions for the partner's required_agreement_type. Bodies carry legal_review_status = REQUIRED and must not be presented as final terms."
+    },
+    "admin_dashboard_stats": {
+      "canonical": "admin_dashboard_stats",
+      "status": "implemented-owner"
+    },
+    "admin_work_queue": {
+      "canonical": "admin_work_queue",
+      "status": "implemented-owner"
+    },
+    "admin_get_product": {
+      "canonical": "admin_get_product",
+      "status": "implemented-owner",
+      "note": "rc.5 — staff only. cost_cents and supplier data are absent by design; do not expect them."
+    },
+    "admin_get_partner": {
+      "canonical": "admin_get_partner",
+      "status": "implemented-owner",
+      "note": "rc.5 — staff only. Includes activation_checklist for the partner detail screen."
+    },
+    "admin_get_customer": {
+      "canonical": "admin_get_customer",
+      "status": "implemented-owner",
+      "note": "rc.5 — staff only. Counters only; no contact details."
+    },
+    "admin_get_project": {
+      "canonical": "admin_get_project",
+      "status": "implemented-owner",
+      "note": "rc.5 — staff only. Related records are counts; fetch detail through the dedicated RPCs."
+    },
+    "admin_get_quote": {
+      "canonical": "admin_get_quote",
+      "status": "implemented-owner",
+      "note": "rc.5 — staff only. items is capped at 50; honour items_truncated."
+    },
+    "admin_get_invoice": {
+      "canonical": "admin_get_invoice",
+      "status": "implemented-owner",
+      "note": "rc.5 — staff only, read-only."
+    },
+    "admin_get_appointment": {
+      "canonical": "admin_get_appointment",
+      "status": "implemented-owner",
+      "note": "rc.5 — staff only. meeting_link and attendee identities are never returned; notes_customer_safe is always null until a visibility column exists."
+    },
+    "attest_partner_admin_review": {
+      "canonical": "staff_attest_partner_admin_review",
+      "note": "Optional mobile admin surface. AAL2 required. Prefer Partners web admin for Fase 2 if mobile AAL2 mutation UX is incomplete."
+    }
+  },
+  "deferredMobileOnlyRpcs": [
+    "register_document_upload",
+    "mark_document_scan_clean",
+    "create_project_from_request"
+  ],
+  "payoutMutationsMobilePolicy": {
+    "status": "disabled",
+    "reason": "Payout execution/governance not separately authorized for Mobile day-1.",
+    "blocked": [
+      "approve_partner_payout_request",
+      "record_partner_payout_paid",
+      "request_partner_payout (partner-side remains flag-gated)"
+    ]
+  },
+  "stagingOnlyRpcs": [
+    {
+      "name": "staff_set_partner_compliance_fixture",
+      "flag": "partner_compliance_fixtures",
+      "note": "Fail-closed. Never enable in production; synthetic verification data only."
+    }
+  ]
+}

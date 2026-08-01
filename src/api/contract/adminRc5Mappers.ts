@@ -293,7 +293,7 @@ export const ACTIVATION_BLOCK_COPY: Record<string, string> = {
   PARTNER_SUSPENDED: 'Partner is geschorst',
   STAFF_APPROVAL_MISSING: 'Staffgoedkeuring ontbreekt',
   AGE_NOT_VERIFIED: 'Leeftijdsverificatie ontbreekt',
-  IDENTITY_NOT_VERIFIED: 'Identiteitsverificatie ontbreekt',
+  IDENTITY_NOT_VERIFIED: 'Administratieve partnercontrole open',
   BUSINESS_NOT_VERIFIED: 'Zakelijke verificatie ontbreekt',
   COMPANY_DETAILS_MISSING: 'Bedrijfsgegevens/KVK ontbreken',
   AGREEMENT_NOT_ACCEPTED: 'Overeenkomst niet geaccepteerd',

@@ -15,7 +15,7 @@
 
 | Item | Status | Reason |
 |---|---|---|
-| KYC provider | BLOCKED | Commercial/legal — fail-closed is correct behaviour |
+| External IDV/KYC provider | DE-SCOPED v1 | Administrative partner review only; no camera/document IDV |
 | Public partner onboarding live | BLOCKED | Marketing/legal decision |
 | Mollie / checkout | BLOCKED | Commercial — fail-closed is correct behaviour |
 | Payout execution | DISABLED | Feature flag — intentional for staging APK |
