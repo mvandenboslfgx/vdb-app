@@ -10,7 +10,7 @@
  * - demo mode is enabled outside development/test
  * - required public vars missing for non-development profiles (when provided via env)
  * - production candidate URL is not nhsrdnjfsxfikfbdmdfj
- * - preview candidate URL is not qzekuvmgfekzsowdecyk (or is production)
+ * - preview candidate URL is not kjricvicakvsreuytvra (or is production)
  *
  * Does not read secrets from EAS cloud. Safe for CI / local gates.
  */
@@ -26,7 +26,8 @@ const easPath = path.join(root, 'eas.json');
 const eas = JSON.parse(fs.readFileSync(easPath, 'utf8'));
 
 const PRODUCTION_REF = 'nhsrdnjfsxfikfbdmdfj';
-const PREVIEW_REF = 'qzekuvmgfekzsowdecyk';
+const PREVIEW_REF = 'kjricvicakvsreuytvra';
+const LEGACY_STAGING_REF = 'qzekuvmgfekzsowdecyk';
 
 const profileArg = process.argv.find((a) => a.startsWith('--env='));
 const profileName = profileArg ? profileArg.slice('--env='.length) : '';
@@ -96,6 +97,10 @@ function checkProfile(name, profile) {
     if (appEnv === 'preview') {
       if (ref === PRODUCTION_REF) {
         errors.push(`${name}: preview candidate URL must not use production ref ${PRODUCTION_REF}`);
+      } else if (ref === LEGACY_STAGING_REF) {
+        errors.push(
+          `${name}: preview candidate URL must not use legacy staging ref ${LEGACY_STAGING_REF}`,
+        );
       } else if (ref !== PREVIEW_REF) {
         errors.push(
           `${name}: preview candidate URL ref must be ${PREVIEW_REF} (got ${ref || 'unparsed'})`,

@@ -29,7 +29,7 @@ export type ClientEnv = z.infer<typeof clientEnvSchema>;
 /** Canonical Supabase project refs — cross-env leakage is a hard configuration error. */
 export const SUPABASE_PROJECT_REFS = {
   production: 'nhsrdnjfsxfikfbdmdfj',
-  preview: 'qzekuvmgfekzsowdecyk',
+  preview: 'kjricvicakvsreuytvra',
 } as const;
 
 const PLACEHOLDER_URL = 'https://placeholder.supabase.local';

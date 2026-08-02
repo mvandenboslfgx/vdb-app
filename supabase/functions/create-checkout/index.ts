@@ -10,7 +10,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
 
 type Json = Record<string, unknown>;
 
-const STAGING_REF = 'qzekuvmgfekzsowdecyk';
+const STAGING_REF = 'kjricvicakvsreuytvra';
 const PROD_REF = 'nhsrdnjfsxfikfbdmdfj';
 const PAYABLE = new Set(['OPEN', 'ISSUED', 'PARTIALLY_PAID', 'OVERDUE']);
 

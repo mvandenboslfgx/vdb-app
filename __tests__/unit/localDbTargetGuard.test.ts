@@ -52,6 +52,11 @@ describe('Mobile local DB target guard', () => {
   it('rejects staging project ref inside URL parse', () => {
     expect(() =>
       parsePostgresTarget(
+        'postgresql://postgres:x@db.kjricvicakvsreuytvra.supabase.co:5432/postgres',
+      ),
+    ).toThrow(/Denied project ref|Remote hostname/);
+    expect(() =>
+      parsePostgresTarget(
         'postgresql://postgres:x@db.qzekuvmgfekzsowdecyk.supabase.co:5432/postgres',
       ),
     ).toThrow(/Denied project ref|Remote hostname/);

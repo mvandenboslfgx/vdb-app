@@ -40,7 +40,7 @@ const FIXTURE = {
   fingerprint: '099764f54e18',
   status: 'SUSPENDED',
   payoutEligible: false,
-  stagingRef: 'qzekuvmgfekzsowdecyk',
+  stagingRef: 'kjricvicakvsreuytvra',
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -71,8 +71,9 @@ describe('suspended fixture — role gating contract', () => {
   });
 
   it('staging ref is staging-only (not production)', () => {
-    expect(FIXTURE.stagingRef).toBe('qzekuvmgfekzsowdecyk');
+    expect(FIXTURE.stagingRef).toBe('kjricvicakvsreuytvra');
     expect(FIXTURE.stagingRef).not.toBe('nhsrdnjfsxfikfbdmdfj');
+    expect(FIXTURE.stagingRef).not.toBe('qzekuvmgfekzsowdecyk');
   });
 
   it('suspended effective roles do not grant partner access', () => {

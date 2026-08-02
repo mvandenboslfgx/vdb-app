@@ -15,7 +15,8 @@ const MOBILE_LOCAL_API_PORT = 54521;
 
 const DENIED_DB_PORTS = Object.freeze([5432, 54322, 54422]);
 const DENIED_PROJECT_REFS = Object.freeze([
-  'qzekuvmgfekzsowdecyk', // staging
+  'kjricvicakvsreuytvra', // clean staging RC7
+  'qzekuvmgfekzsowdecyk', // legacy staging (denied)
   'nhsrdnjfsxfikfbdmdfj', // production
 ]);
 
