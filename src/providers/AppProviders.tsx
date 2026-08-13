@@ -13,6 +13,7 @@ import { DeepLinkHandler } from '@/navigation/DeepLinkHandler';
 import { AuthProvider } from '@/providers/AuthProvider';
 import { FeatureFlagsProvider } from '@/providers/FeatureFlagsProvider';
 import { NetworkProvider } from '@/providers/NetworkProvider';
+import { PushNotificationsProvider } from '@/providers/PushNotificationsProvider';
 import { colors } from '@/theme';
 
 initObservability();
@@ -29,9 +30,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
             <NetworkProvider>
               <AuthProvider>
                 <FeatureFlagsProvider>
-                  <DeepLinkHandler />
-                  <StatusBar style="light" />
-                  {children}
+                  <PushNotificationsProvider>
+                    <DeepLinkHandler />
+                    <StatusBar style="light" />
+                    {children}
+                  </PushNotificationsProvider>
                 </FeatureFlagsProvider>
               </AuthProvider>
             </NetworkProvider>
