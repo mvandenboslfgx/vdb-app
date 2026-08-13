@@ -59,15 +59,8 @@ serve(async (req) => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  const { data: flag, error: flagError } = await admin
-    .from('feature_flags')
-    .select('enabled')
-    .eq('key', 'push_notifications')
-    .maybeSingle();
-  if (flagError || flag?.enabled !== true) {
-    return json({ error: 'FEATURE_NOT_CONFIGURED', feature: 'push_notifications' }, 503);
-  }
-
+  // Revocation must remain available even after push delivery is disabled.
+  // Identity is still proven by the user's bearer JWT and the update is scoped to that user.
   if (!active) {
     const { error } = await admin
       .from('push_tokens')
@@ -76,6 +69,15 @@ serve(async (req) => {
       .eq('user_id', user.id);
     if (error) return json({ error: 'PERSISTENCE_UNAVAILABLE' }, 503);
     return json({ ok: true, active: false });
+  }
+
+  const { data: flag, error: flagError } = await admin
+    .from('feature_flags')
+    .select('enabled')
+    .eq('key', 'push_notifications')
+    .maybeSingle();
+  if (flagError || flag?.enabled !== true) {
+    return json({ error: 'FEATURE_NOT_CONFIGURED', feature: 'push_notifications' }, 503);
   }
 
   // Service-side claim intentionally supports account changes on one installation.
