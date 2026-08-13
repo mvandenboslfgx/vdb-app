@@ -11,6 +11,7 @@ import React, {
 import { fromOwnerTable } from '@/api/contract/ownerClient';
 import { captureException } from '@/lib/observability';
 import { getSupabase } from '@/lib/supabase';
+import { useAuth } from '@/providers/AuthProvider';
 import {
   getFeatureFlags,
   isFeatureEnabled,
@@ -38,14 +39,20 @@ const SERVER_FLAG_MAP = {
   maintenance_mode: 'maintenanceMode',
 } as const satisfies Record<string, FeatureFlagKey>;
 
+const SAFE_SERVER_DEFAULTS: Pick<
+  FeatureFlagMap,
+  'mollieCheckout' | 'digitalProductCheckout' | 'partnerPayouts' | 'pushNotifications' | 'maintenanceMode'
+> = {
+  mollieCheckout: false,
+  digitalProductCheckout: false,
+  partnerPayouts: false,
+  pushNotifications: false,
+  maintenanceMode: false,
+};
+
 async function loadServerAuthoritativeFlags(): Promise<Partial<FeatureFlagMap>> {
   const supabase = getSupabase();
   if (!supabase) return {};
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) return {};
 
   const keys = Object.keys(SERVER_FLAG_MAP);
   const { data, error } = await fromOwnerTable(supabase, 'feature_flags')
@@ -64,23 +71,38 @@ async function loadServerAuthoritativeFlags(): Promise<Partial<FeatureFlagMap>> 
 }
 
 export function FeatureFlagsProvider({ children }: { children: ReactNode }) {
+  const { isAuthenticated, isDemoMode, user } = useAuth();
   const [flags, setFlags] = useState<FeatureFlagMap>(() => getFeatureFlags());
 
   useEffect(() => {
     let cancelled = false;
+
+    // Never carry server-authoritative state across logout/account changes.
+    setFlags(setFeatureFlags(SAFE_SERVER_DEFAULTS));
+
+    if (!isAuthenticated || isDemoMode || !user?.id) {
+      return () => {
+        cancelled = true;
+      };
+    }
+
     void loadServerAuthoritativeFlags()
       .then((remote) => {
-        if (cancelled || Object.keys(remote).length === 0) return;
-        setFlags(setFeatureFlags(remote));
+        if (cancelled) return;
+        // Missing rows remain fail-closed instead of inheriting a previous user's values.
+        setFlags(setFeatureFlags({ ...SAFE_SERVER_DEFAULTS, ...remote }));
       })
       .catch((error) => {
-        // Keep local defaults on failure. Sensitive flags already default OFF.
+        if (cancelled) return;
+        // Keep safe defaults on failure.
+        setFlags(setFeatureFlags(SAFE_SERVER_DEFAULTS));
         captureException(error, { feature: 'feature_flags', phase: 'remote_sync' });
       });
+
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isAuthenticated, isDemoMode, user?.id]);
 
   const isEnabled = useCallback((key: FeatureFlagKey) => isFeatureEnabled(key), []);
 
