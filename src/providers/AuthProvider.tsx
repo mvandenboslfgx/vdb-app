@@ -21,7 +21,11 @@ import React, {
 import { useQueryClient } from '@tanstack/react-query';
 
 import { clientEnv } from '@/config/env';
-import { fromOwnerTable } from '@/api/contract/ownerClient';
+import { fetchRolesForUser } from '@/lib/auth/fetchRoles';
+import {
+  classifyBootstrapError,
+  classifySupabaseAuthError,
+} from '@/lib/auth/signInErrors';
 import { shouldClearQueryCacheOnSessionChange } from '@/lib/auth/sessionCache';
 import { getSupabase } from '@/lib/supabase';
 import { isPubliclyAssignableRole } from '@/security/roles';
@@ -93,78 +97,6 @@ function sanitizePublicRoles(roles: readonly AppRole[]): AppRole[] {
   return allowed.length > 0 ? [...allowed] : ['customer'];
 }
 
-async function fetchRoles(userId: string): Promise<AppRole[]> {
-  const supabase = getSupabase();
-  if (!supabase) {
-    return ['customer'];
-  }
-
-  const roles = new Set<AppRole>(['customer']);
-
-  try {
-    const { data: adminRow, error: adminError } = await fromOwnerTable(supabase, 'admin_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .maybeSingle();
-    if (!adminError && adminRow && typeof adminRow.role === 'string') {
-      const adminRole = adminRow.role.toUpperCase();
-      // Any admin_roles row implies staff access (owner encoding: staff = admin_roles).
-      roles.add('staff');
-      if (adminRole === 'ADMIN') {
-        roles.add('admin');
-      }
-      if (adminRole === 'OWNER') {
-        roles.add('admin');
-        roles.add('owner');
-      }
-    }
-  } catch {
-    // admin_roles is optional for pure customers; fail closed to customer/partner path.
-  }
-
-  try {
-    const { data, error } = await fromOwnerTable(supabase, 'partner_profiles')
-      .select('status')
-      .eq('user_id', userId)
-      .maybeSingle();
-    if (!error && data) {
-      const status = typeof data.status === 'string' ? data.status.toLowerCase() : '';
-      if (['active', 'approved'].includes(status)) {
-        roles.add('partner');
-      } else if (['pending', 'submitted', 'under_review'].includes(status)) {
-        roles.add('partner_pending');
-      }
-    }
-  } catch {
-    // Partner profile is optional; customer remains safe.
-  }
-
-  return [...roles];
-}
-
-function getSignInErrorKey(
-  error: unknown,
-): 'errors.auth.invalidCredentials' | 'errors.auth.network' {
-  const message = error instanceof Error ? error.message.toLowerCase() : '';
-  if (
-    message.includes('invalid credentials') ||
-    message.includes('invalid login') ||
-    message.includes('invalid email or password')
-  ) {
-    return 'errors.auth.invalidCredentials';
-  }
-  if (
-    error instanceof TypeError ||
-    message.includes('network') ||
-    message.includes('fetch') ||
-    message.includes('failed to connect') ||
-    message.includes('connection')
-  ) {
-    return 'errors.auth.network';
-  }
-  return 'errors.auth.invalidCredentials';
-}
-
 const DEMO_PROFILES: Record<
   'customer' | 'partner' | 'admin',
   { profile: Profile; roles: AppRole[] }
@@ -221,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoles([]);
         return;
       }
-      const nextRoles = await fetchRoles(next.user.id);
+      const nextRoles = await fetchRolesForUser(next.user.id);
       setRoles(nextRoles);
       setProfile(mapProfileFromUser(next.user, nextRoles));
     },
@@ -285,11 +217,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        throw new Error(getSignInErrorKey(error));
+        throw new Error(classifySupabaseAuthError(error));
+      }
+      if (!data.session) {
+        throw new Error('errors.auth.emailNotConfirmed');
       }
       // Apply session + roles before callers navigate — otherwise resolveHomeRoute([])
       // treats an empty role list as customer and skips admin/partner areas.
-      await applySession(data.session);
+      try {
+        await applySession(data.session);
+      } catch (bootstrapError) {
+        await supabase.auth.signOut({ scope: 'local' });
+        throw new Error(classifyBootstrapError(bootstrapError));
+      }
     },
     [applySession, isDemoMode, queryClient],
   );

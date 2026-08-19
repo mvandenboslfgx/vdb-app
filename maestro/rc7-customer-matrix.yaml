@@ -1,0 +1,57 @@
+﻿appId: nl.vdbdigital.app
+---
+- tapOn:
+    id: 'tab-customer-projects'
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-projects'
+- assertVisible:
+    id: 'customer-projects-screen'
+    optional: true
+- tapOn:
+    id: 'tab-customer-messages'
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-messages'
+- assertVisible:
+    id: 'customer-messages-screen'
+    optional: true
+- tapOn:
+    id: 'tab-customer-more'
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-more'
+- assertVisible:
+    id: 'customer-more-screen'
+    optional: true
+- tapOn:
+    id: 'tab-customer-home'
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-home-return'
+- tapOn:
+    id: 'metric-messages'
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-metric-messages'
+- back
+- tapOn:
+    id: 'metric-quotes'
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-metric-quotes'
+- back
+- tapOn:
+    id: 'quick-support'
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-quick-support'
+- back
+- tapOn:
+    id: 'quick-upload'
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-quick-upload'
+- back
+- tapOn:
+    id: 'quick-new-project'
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 'cust-quick-project'
+- back

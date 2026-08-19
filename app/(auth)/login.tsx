@@ -1,9 +1,11 @@
 import { Link, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Screen, Text, TextInput } from '@/design-system';
+import { resolveSignInErrorMessage } from '@/lib/auth/resolveSignInErrorMessage';
+import { syncControlledFieldValue } from '@/lib/auth/syncControlledFieldValue';
 import { useAuth } from '@/providers/AuthProvider';
 import { spacing } from '@/theme';
 import { loginSchema } from '@/validation/auth';
@@ -17,10 +19,26 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const emailDraftRef = useRef('');
+  const passwordDraftRef = useRef('');
+
+  const syncEmail = useCallback((value: string) => {
+    const next = syncControlledFieldValue('', value);
+    emailDraftRef.current = next;
+    setEmail(next);
+  }, []);
+
+  const syncPassword = useCallback((value: string) => {
+    const next = syncControlledFieldValue('', value);
+    passwordDraftRef.current = next;
+    setPassword(next);
+  }, []);
 
   async function onSubmit() {
     setError(null);
-    const parsed = loginSchema.safeParse({ email, password });
+    const emailValue = (emailDraftRef.current || email).trim();
+    const passwordValue = passwordDraftRef.current || password;
+    const parsed = loginSchema.safeParse({ email: emailValue, password: passwordValue });
     if (!parsed.success) {
       setError(te('auth.invalidCredentials'));
       return;
@@ -30,12 +48,7 @@ export default function LoginScreen() {
       await signIn(parsed.data.email, parsed.data.password);
       router.replace('/');
     } catch (err) {
-      const key = err instanceof Error ? err.message : 'errors.auth.invalidCredentials';
-      setError(
-        key === 'errors.auth.network' || key === 'errors.network'
-          ? te('auth.network')
-          : te('auth.invalidCredentials'),
-      );
+      setError(resolveSignInErrorMessage(err, te));
     } finally {
       setLoading(false);
     }
@@ -60,7 +73,7 @@ export default function LoginScreen() {
           textContentType="none"
           importantForAutofill="no"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={syncEmail}
         />
         <TextInput
           testID="auth-password-input"
@@ -71,7 +84,7 @@ export default function LoginScreen() {
           textContentType="none"
           importantForAutofill="no"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={syncPassword}
         />
         {error ? (
           <Text

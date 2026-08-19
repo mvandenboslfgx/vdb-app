@@ -1,0 +1,37 @@
+# RC7 staging — Customer A device login (credentials via env: EMAIL, PASSWORD)
+appId: nl.vdbdigital.app
+---
+- runFlow:
+    file: shared/dismiss-overlays.yaml
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: 'btn-public-login'
+    timeout: 30000
+- tapOn:
+    id: 'btn-public-login'
+- extendedWaitUntil:
+    visible:
+      id: 'auth-login-screen'
+    timeout: 30000
+- tapOn:
+    id: 'auth-email-input'
+- eraseText
+- inputText: ${EMAIL}
+- tapOn:
+    id: 'auth-password-input'
+- eraseText
+- inputText: ${PASSWORD}
+- hideKeyboard
+- tapOn:
+    text: 'Inloggen'
+    optional: true
+- tapOn:
+    id: 'auth-login-submit'
+- runFlow:
+    file: shared/dismiss-overlays.yaml
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    notVisible:
+      id: 'auth-login-screen'
+    timeout: 60000

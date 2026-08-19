@@ -7,6 +7,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Button } from '@/design-system/Button';
 import { Text } from '@/design-system/Text';
 import { TextInput } from '@/design-system/TextInput';
+import { resolveSignInErrorMessage } from '@/lib/auth/resolveSignInErrorMessage';
 import { useAuth } from '@/providers/AuthProvider';
 import { spacing } from '@/theme';
 import { loginSchema, type LoginInput } from '@/validation/auth';
@@ -19,6 +20,7 @@ export interface LoginFormProps {
 
 export function LoginForm({ onSuccess, onForgotPassword, onRegister }: LoginFormProps) {
   const { t } = useTranslation(['auth', 'errors', 'common']);
+  const { t: te } = useTranslation('errors');
   const { signIn, isDemoMode } = useAuth();
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -40,8 +42,7 @@ export function LoginForm({ onSuccess, onForgotPassword, onRegister }: LoginForm
       await signIn(values.email.trim(), values.password);
       onSuccess?.();
     } catch (err) {
-      const key = err instanceof Error ? err.message : 'errors.generic';
-      setFormError(t(key.startsWith('errors.') ? key : 'errors.auth.invalidCredentials'));
+      setFormError(resolveSignInErrorMessage(err, te));
     }
   });
 

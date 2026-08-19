@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import {
   StyleSheet,
   TextInput as RNTextInput,
@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 
 import { Text } from '@/design-system/Text';
+import { syncControlledFieldValue } from '@/lib/auth/syncControlledFieldValue';
 import { colors, radii, spacing, typography } from '@/theme';
 
 export interface TextInputProps extends RNTextInputProps {
@@ -15,17 +16,20 @@ export interface TextInputProps extends RNTextInputProps {
   hint?: string;
 }
 
-export function TextInput({
-  label,
-  error,
-  hint,
-  style,
-  onFocus,
-  onBlur,
-  onChangeText,
-  onEndEditing,
-  ...rest
-}: TextInputProps) {
+export const TextInput = forwardRef<RNTextInput, TextInputProps>(function TextInput(
+  {
+    label,
+    error,
+    hint,
+    style,
+    onFocus,
+    onBlur,
+    onChangeText,
+    onEndEditing,
+    ...rest
+  },
+  ref,
+) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -36,6 +40,7 @@ export function TextInput({
         </Text>
       ) : null}
       <RNTextInput
+        ref={ref}
         placeholderTextColor={colors.textMuted}
         style={[
           styles.input,
@@ -50,7 +55,8 @@ export function TextInput({
         onChangeText={onChangeText}
         onEndEditing={(e) => {
           // Maestro / some IMEs update native text without reliable onChangeText.
-          onChangeText?.(e.nativeEvent.text);
+          const text = syncControlledFieldValue('', e.nativeEvent.text);
+          onChangeText?.(text);
           onEndEditing?.(e);
         }}
         onBlur={(e) => {
@@ -70,7 +76,7 @@ export function TextInput({
       ) : null}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   wrapper: {

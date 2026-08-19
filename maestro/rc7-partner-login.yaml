@@ -1,0 +1,26 @@
+﻿appId: nl.vdbdigital.app
+---
+- tapOn:
+    id: 'btn-public-login'
+- extendedWaitUntil:
+    visible:
+      id: 'auth-login-screen'
+    timeout: 30000
+- tapOn:
+    id: 'auth-email-input'
+- eraseText
+- inputText: ${EMAIL}
+- tapOn:
+    id: 'auth-password-input'
+- eraseText
+- inputText: ${PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: 'auth-login-submit'
+- runFlow:
+    file: shared/dismiss-overlays.yaml
+- extendedWaitUntil:
+    notVisible:
+      id: 'auth-login-screen'
+    timeout: 60000
+- takeScreenshot: 'partner-after-login'

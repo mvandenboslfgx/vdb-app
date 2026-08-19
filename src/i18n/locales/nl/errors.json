@@ -55,6 +55,11 @@
     "invalidCredentials": "E-mail of wachtwoord is onjuist",
     "network": "Geen verbinding. Controleer je internet.",
     "emailNotConfirmed": "Bevestig eerst je e-mailadres",
+    "disabled": "Dit account is niet beschikbaar. Neem contact op met support.",
+    "bootstrapFailed": "Inloggen gelukt, maar je profiel kon niet worden geladen. Probeer het opnieuw.",
+    "profileMissing": "Je account mist verplichte profielgegevens. Neem contact op met support.",
+    "unsupportedRole": "Dit account heeft geen ondersteunde rol voor de app.",
+    "mfaRequired": "Extra verificatie is vereist om verder te gaan.",
     "userExists": "Er bestaat al een account met dit e-mailadres",
     "weakPassword": "Kies een sterker wachtwoord",
     "demoOnly": "Demomodus: registratie is alleen lokaal beschikbaar"

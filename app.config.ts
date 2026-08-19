@@ -2,7 +2,7 @@ import type { ExpoConfig, ConfigContext } from 'expo/config';
 
 const APP_VERSION = '1.0.0';
 /** Must exceed any versionCode previously uploaded to Google Play (remote EAS source is authoritative at build). */
-const VERSION_CODE = 4;
+const VERSION_CODE = 5;
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,

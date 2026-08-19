@@ -54,7 +54,7 @@ describe('LoginScreen', () => {
   });
 
   it('shows a backend error message when signIn rejects', async () => {
-    mockSignIn.mockRejectedValueOnce(new Error('Invalid login credentials'));
+    mockSignIn.mockRejectedValueOnce(new Error('errors.auth.bootstrapFailed'));
     await renderWithProviders(<LoginScreen />);
 
     await fireEvent.changeText(screen.getByTestId('auth-email-input'), 'demo@vdbdigital.nl');
@@ -62,6 +62,9 @@ describe('LoginScreen', () => {
     await fireEvent.press(screen.getByTestId('auth-login-submit'));
 
     await waitFor(() => expect(screen.getByTestId('auth-error-message')).toBeTruthy());
+    expect(screen.getByTestId('auth-error-message').props.children).not.toBe(
+      'E-mail of wachtwoord is onjuist',
+    );
   });
 
   it('shows the demo mode hint when isDemoMode is true', async () => {
