@@ -40,6 +40,10 @@
     "device:test:maestro:per-flow": "node scripts/run-maestro-device.mjs",
     "device:test:maestro:from-16": "node scripts/run-maestro-device.mjs --from=16-checkout-browser-return.yaml",
     "device:test:verify-passwords": "node scripts/verify-local-passwords.mjs",
+    "device:test:rc7:maestro": "node scripts/rc7-maestro-run.mjs",
+    "test:maestro:harness": "node --test scripts/__tests__/maestro-env-harness.test.mjs",
+    "device:test:rc7:security": "node scripts/rc7-staging-security-matrix.mjs",
+    "device:test:rc7:phone-phase": "node scripts/rc7-phone-phase.mjs",
     "maestro:manifest": "node scripts/maestro-suite-manifest.mjs"
   },
   "dependencies": {

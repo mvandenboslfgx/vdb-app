@@ -55,7 +55,7 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(function TextIn
         onChangeText={onChangeText}
         onEndEditing={(e) => {
           // Maestro / some IMEs update native text without reliable onChangeText.
-          const text = syncControlledFieldValue('', e.nativeEvent.text);
+          const text = syncControlledFieldValue(rest.value?.toString() ?? '', e.nativeEvent.text);
           onChangeText?.(text);
           onEndEditing?.(e);
         }}

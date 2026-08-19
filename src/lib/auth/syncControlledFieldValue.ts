@@ -7,7 +7,13 @@ export function syncControlledFieldValue(
   nativeText: string | undefined | null,
 ): string {
   if (typeof nativeText === 'string') {
-    return nativeText;
+    const trimmed = nativeText.trim();
+    if (trimmed === 'undefined' || trimmed === 'null') {
+      return current ?? '';
+    }
+    if (trimmed !== '') {
+      return nativeText;
+    }
   }
   return current ?? '';
 }

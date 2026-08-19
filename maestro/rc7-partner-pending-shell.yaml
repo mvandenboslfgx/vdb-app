@@ -1,0 +1,22 @@
+appId: nl.vdbdigital.app
+---
+- runFlow:
+    file: rc7-login-generic.yaml
+- tapOn:
+    id: 'tab-customer-more'
+- waitForAnimationToEnd
+- takeScreenshot: 'partner-pending-more'
+- extendedWaitUntil:
+    notVisible:
+      id: 'nav-switch-partner'
+    timeout: 5000
+    optional: true
+- extendedWaitUntil:
+    notVisible:
+      id: 'nav-switch-admin'
+    timeout: 5000
+    optional: true
+- tapOn:
+    id: 'nav-partner-apply'
+- waitForAnimationToEnd
+- takeScreenshot: 'partner-pending-apply-screen'

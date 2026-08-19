@@ -1,0 +1,12 @@
+appId: nl.vdbdigital.app
+---
+- runFlow:
+    file: rc7-logout-admin.yaml
+    optional: true
+- runFlow:
+    file: rc7-logout-current.yaml
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: 'btn-public-login'
+    timeout: 30000

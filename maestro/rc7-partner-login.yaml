@@ -16,6 +16,9 @@
 - inputText: ${PASSWORD}
 - hideKeyboard
 - tapOn:
+    text: 'Inloggen'
+    optional: true
+- tapOn:
     id: 'auth-login-submit'
 - runFlow:
     file: shared/dismiss-overlays.yaml

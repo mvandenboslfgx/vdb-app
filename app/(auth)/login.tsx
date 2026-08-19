@@ -23,15 +23,19 @@ export default function LoginScreen() {
   const passwordDraftRef = useRef('');
 
   const syncEmail = useCallback((value: string) => {
-    const next = syncControlledFieldValue('', value);
-    emailDraftRef.current = next;
-    setEmail(next);
+    setEmail((prev) => {
+      const next = syncControlledFieldValue(prev, value);
+      emailDraftRef.current = next;
+      return next;
+    });
   }, []);
 
   const syncPassword = useCallback((value: string) => {
-    const next = syncControlledFieldValue('', value);
-    passwordDraftRef.current = next;
-    setPassword(next);
+    setPassword((prev) => {
+      const next = syncControlledFieldValue(prev, value);
+      passwordDraftRef.current = next;
+      return next;
+    });
   }, []);
 
   async function onSubmit() {
