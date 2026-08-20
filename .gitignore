@@ -82,3 +82,8 @@ docs/_m-*.log
 docs/_device-*.log
 docs/maestro-device-junit.xml
 docs/maestro-device-results.latest.json
+
+# Local UI / CI scratch (never commit)
+report.xml
+tmp-ui-*.xml
+tmp-*.xml
