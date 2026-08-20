@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Text, TextInput } from '@/design-system';
@@ -101,42 +109,53 @@ export function Aal2StepUpModal({ visible, status, onComplete }: Props) {
         testID="aal2-step-up-modal"
       >
         <Pressable style={styles.card} onPress={(e) => e.stopPropagation?.()}>
-          <Text variant="title">{t('aal2.title')}</Text>
-          <Text variant="body" color="textSecondary" style={styles.body}>
-            {t('aal2.body')}
-          </Text>
-          <TextInput
-            testID="input-aal2-totp"
-            label={t('aal2.codeLabel')}
-            value={code}
-            onChangeText={setCode}
-            keyboardType="number-pad"
-            textContentType="oneTimeCode"
-            autoComplete="one-time-code"
-            secureTextEntry
-            maxLength={8}
-            editable={!busy}
-          />
-          {error ? (
-            <Text testID="text-aal2-error" variant="caption" color="error">
-              {error}
-            </Text>
-          ) : null}
-          <Button
-            testID="btn-aal2-verify"
-            title={t('aal2.verify')}
-            variant="gold"
-            loading={busy}
-            disabled={busy || !isValidTotpCodeFormat(code)}
-            onPress={() => void onVerify()}
-          />
-          <Button
-            testID="btn-aal2-cancel"
-            title={tc('cancel')}
-            variant="secondary"
-            disabled={busy}
-            onPress={() => onComplete('cancelled')}
-          />
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+            <ScrollView keyboardShouldPersistTaps="handled" bounces={false}>
+              <Text variant="title">{t('aal2.title')}</Text>
+              <Text variant="body" color="textSecondary" style={styles.body}>
+                {t('aal2.body')}
+              </Text>
+              <TextInput
+                testID="input-aal2-totp"
+                label={t('aal2.codeLabel')}
+                value={code}
+                onChangeText={setCode}
+                keyboardType="number-pad"
+                textContentType="oneTimeCode"
+                autoComplete="one-time-code"
+                maxLength={6}
+                editable={!busy}
+                returnKeyType="done"
+                onSubmitEditing={() => {
+                  if (isValidTotpCodeFormat(code) && !busy) void onVerify();
+                }}
+              />
+              {error ? (
+                <Text testID="text-aal2-error" variant="caption" color="error">
+                  {error}
+                </Text>
+              ) : null}
+              <View style={styles.actions}>
+                <Button
+                  testID="btn-aal2-verify"
+                  title={t('aal2.verify')}
+                  variant="gold"
+                  loading={busy}
+                  disabled={busy || !isValidTotpCodeFormat(code)}
+                  onPress={() => void onVerify()}
+                  accessibilityLabel={t('aal2.verify')}
+                />
+                <Button
+                  testID="btn-aal2-cancel"
+                  title={tc('cancel')}
+                  variant="secondary"
+                  disabled={busy}
+                  onPress={() => onComplete('cancelled')}
+                  accessibilityLabel={tc('cancel')}
+                />
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
         </Pressable>
       </Pressable>
     </Modal>
@@ -159,4 +178,5 @@ const styles = StyleSheet.create({
     borderColor: colors.borderSubtle,
   },
   body: { marginBottom: spacing.sm },
+  actions: { gap: spacing.sm, marginTop: spacing.sm },
 });
