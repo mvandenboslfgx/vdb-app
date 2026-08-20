@@ -40,6 +40,7 @@ export function buildMaestroClasspath(maestroHome) {
  *   password: string;
  *   device?: string;
  *   extraEnv?: Record<string, string>;
+ *   totp?: string;
  *   maestroHome?: string;
  *   cwd?: string;
  * }} input
@@ -63,6 +64,9 @@ export function runMaestroFlow(input) {
     MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED: 'true',
     MAESTRO_DRIVER_STARTUP_TIMEOUT: process.env.MAESTRO_DRIVER_STARTUP_TIMEOUT ?? '180000',
   };
+  if (input.totp) {
+    childEnv.TOTP = input.totp;
+  }
 
   const args = [
     '--enable-native-access=ALL-UNNAMED',
@@ -76,6 +80,9 @@ export function runMaestroFlow(input) {
     '-e',
     `PASSWORD=${input.password}`,
   ];
+  if (input.totp) {
+    args.push('-e', `TOTP=${input.totp}`);
+  }
   if (input.device) args.push('--device', input.device);
 
   const started = Date.now();
@@ -93,7 +100,11 @@ export function runMaestroFlow(input) {
     durationSec,
     stdout: result.stdout ?? '',
     stderr: result.stderr ?? '',
-    envLog: redactEnvForLog({ EMAIL: input.email, PASSWORD: input.password }),
+    envLog: redactEnvForLog({
+      EMAIL: input.email,
+      PASSWORD: input.password,
+      ...(input.totp ? { TOTP: input.totp } : {}),
+    }),
   };
 }
 

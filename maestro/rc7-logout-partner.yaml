@@ -1,13 +1,13 @@
 appId: nl.vdbdigital.app
 ---
 - tapOn:
-    id: 'tab-admin-more'
+    id: 'tab-partner-more'
     optional: true
 - scrollUntilVisible:
     element:
       id: 'auth-logout-button'
     direction: DOWN
-    timeout: 30000
+    timeout: 15000
 - tapOn:
     id: 'auth-logout-button'
 - runFlow:
@@ -16,4 +16,4 @@ appId: nl.vdbdigital.app
     visible:
       id: 'btn-public-login'
     timeout: 30000
-- takeScreenshot: 'after-admin-logout'
+- takeScreenshot: 'after-partner-logout'

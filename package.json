@@ -44,6 +44,8 @@
     "test:maestro:harness": "node --test scripts/__tests__/maestro-env-harness.test.mjs",
     "device:test:rc7:security": "node scripts/rc7-staging-security-matrix.mjs",
     "device:test:rc7:phone-phase": "node scripts/rc7-phone-phase.mjs",
+    "device:test:rc7:phone-phase-full": "node scripts/rc7-phone-phase-full.mjs",
+    "device:test:rc7:phone-phase-final": "node scripts/rc7-phone-phase-final-rerun.mjs",
     "maestro:manifest": "node scripts/maestro-suite-manifest.mjs"
   },
   "dependencies": {

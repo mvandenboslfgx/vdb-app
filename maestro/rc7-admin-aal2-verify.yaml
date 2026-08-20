@@ -1,0 +1,17 @@
+appId: nl.vdbdigital.app
+---
+- extendedWaitUntil:
+    visible:
+      id: 'input-aal2-totp'
+    timeout: 45000
+- tapOn:
+    id: 'input-aal2-totp'
+- eraseText
+- inputText: ${TOTP}
+- tapOn:
+    id: 'btn-aal2-verify'
+- extendedWaitUntil:
+    notVisible:
+      id: 'input-aal2-totp'
+    timeout: 45000
+- takeScreenshot: 'rc7-admin-aal2-verified'

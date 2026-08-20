@@ -1,0 +1,14 @@
+appId: nl.vdbdigital.app
+---
+- runFlow:
+    file: rc7-logout-admin.yaml
+- assertNotVisible:
+    id: 'admin-dashboard-screen'
+- assertNotVisible:
+    id: 'tab-admin-home'
+- back
+- extendedWaitUntil:
+    visible:
+      id: 'btn-public-login'
+    timeout: 15000
+- takeScreenshot: 'final-admin-logout-public'

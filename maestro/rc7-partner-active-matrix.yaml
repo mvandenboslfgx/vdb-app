@@ -1,0 +1,67 @@
+appId: nl.vdbdigital.app
+---
+- extendedWaitUntil:
+    visible:
+      id: 'partner-dashboard-screen'
+    timeout: 30000
+- tapOn:
+    id: 'tab-partner-home'
+- takeScreenshot: 'partner-matrix-home'
+- tapOn:
+    id: 'tab-partner-leads'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-leads'
+    timeout: 20000
+- takeScreenshot: 'partner-matrix-leads'
+- tapOn:
+    id: 'btn-lead-new'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-lead-new'
+    timeout: 15000
+- takeScreenshot: 'partner-matrix-lead-new'
+- back
+- tapOn:
+    id: 'tab-partner-commissions'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-partner-commissions'
+    timeout: 20000
+- takeScreenshot: 'partner-matrix-commissions'
+- tapOn:
+    id: 'tab-partner-marketing'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-partner-marketing'
+    timeout: 20000
+- takeScreenshot: 'partner-matrix-marketing'
+- tapOn:
+    id: 'tab-partner-more'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-partner-more'
+    timeout: 20000
+- takeScreenshot: 'partner-matrix-more'
+- tapOn:
+    id: 'partner-more-support'
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: 'screen-partner-support'
+    timeout: 15000
+    optional: true
+- takeScreenshot: 'partner-matrix-support'
+- back
+- tapOn:
+    id: 'partner-payout-request'
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: 'screen-partner-payouts'
+    timeout: 15000
+    optional: true
+- takeScreenshot: 'partner-matrix-payouts'
+- back
+- tapOn:
+    id: 'tab-partner-home'

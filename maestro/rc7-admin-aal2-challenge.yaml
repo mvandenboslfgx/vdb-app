@@ -1,0 +1,27 @@
+appId: nl.vdbdigital.app
+---
+# Admin login → approvals partner approve → AAL2 TOTP input (operator on device).
+- runFlow:
+    file: rc7-login-generic.yaml
+- extendedWaitUntil:
+    visible:
+      id: 'admin-dashboard-screen'
+    timeout: 45000
+- tapOn:
+    id: 'tab-admin-approvals'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-admin-approvals'
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: 'admin-partner-approve'
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: 'admin-partner-approve'
+- extendedWaitUntil:
+    visible:
+      id: 'input-aal2-totp'
+    timeout: 45000
+- takeScreenshot: 'rc7-admin-aal2-totp-ready'

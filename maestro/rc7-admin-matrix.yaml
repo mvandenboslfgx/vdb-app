@@ -1,0 +1,122 @@
+appId: nl.vdbdigital.app
+---
+- tapOn:
+    id: 'tab-admin-home'
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: 'admin-dashboard-screen'
+    timeout: 30000
+- tapOn:
+    id: 'tab-admin-home'
+- waitForAnimationToEnd
+- takeScreenshot: 'admin-matrix-home'
+- tapOn:
+    id: 'tab-admin-approvals'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-admin-approvals'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-approvals'
+- tapOn:
+    id: 'tab-admin-tickets'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-admin-tickets'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-tickets'
+- tapOn:
+    id: 'tab-admin-finance'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-admin-finance'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-finance'
+- tapOn:
+    id: 'tab-admin-more'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-admin-more'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-more'
+- scrollUntilVisible:
+    element:
+      id: 'admin-more-leads'
+    direction: DOWN
+    timeout: 15000
+- tapOn:
+    id: 'admin-more-leads'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-admin-leads'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-leads'
+- tapOn:
+    id: 'tab-admin-more'
+- scrollUntilVisible:
+    element:
+      id: 'admin-more-partners'
+    direction: DOWN
+    timeout: 15000
+- tapOn:
+    id: 'admin-more-partners'
+- extendedWaitUntil:
+    visible:
+      id: 'admin-surface-partners'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-partners'
+- tapOn:
+    id: 'tab-admin-more'
+- scrollUntilVisible:
+    element:
+      id: 'admin-more-customers'
+    direction: DOWN
+    timeout: 15000
+- tapOn:
+    id: 'admin-more-customers'
+- extendedWaitUntil:
+    visible:
+      id: 'admin-surface-customers'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-customers'
+- tapOn:
+    id: 'tab-admin-more'
+- scrollUntilVisible:
+    element:
+      id: 'admin-more-projects'
+    direction: DOWN
+    timeout: 15000
+- tapOn:
+    id: 'admin-more-projects'
+- extendedWaitUntil:
+    visible:
+      id: 'admin-surface-projects'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-projects'
+- tapOn:
+    id: 'tab-admin-more'
+- scrollUntilVisible:
+    element:
+      id: 'admin-more-quotes'
+    direction: DOWN
+    timeout: 15000
+- tapOn:
+    id: 'admin-more-quotes'
+- extendedWaitUntil:
+    visible:
+      id: 'admin-surface-quotes'
+    timeout: 20000
+- takeScreenshot: 'admin-matrix-quotes'
+- tapOn:
+    id: 'tab-admin-more'
+- scrollUntilVisible:
+    element:
+      id: 'admin-more-settings'
+    direction: DOWN
+    timeout: 15000
+- tapOn:
+    id: 'admin-more-settings'
+- waitForAnimationToEnd
+- takeScreenshot: 'admin-matrix-settings'
+- tapOn:
+    id: 'tab-admin-home'

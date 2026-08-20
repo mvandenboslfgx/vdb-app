@@ -1,0 +1,9 @@
+appId: nl.vdbdigital.app
+---
+- runFlow:
+    file: rc7-login-generic.yaml
+- extendedWaitUntil:
+    visible:
+      id: 'partner-dashboard-screen'
+    timeout: 60000
+- takeScreenshot: 'partner-active-dashboard'
