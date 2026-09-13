@@ -5,7 +5,15 @@ import { useTranslation } from 'react-i18next';
 
 import { listCommissions } from '@/api/repositories/commissionsRepository';
 import { listLeads, getPartnerLink } from '@/api/repositories/partnersRepository';
-import { Button, ListRow, LoadingState, Screen, Text } from '@/design-system';
+import {
+  AppHeader,
+  Button,
+  ListRow,
+  LoadingState,
+  MetricCard,
+  Screen,
+  SectionHeader,
+} from '@/design-system';
 import { formatCurrency } from '@/lib/format';
 import { spacing } from '@/theme';
 
@@ -42,24 +50,33 @@ export default function PartnerHomeScreen() {
 
   return (
     <Screen scroll testID="partner-dashboard-screen">
-      <Text variant="title">{t('dashboard')}</Text>
-      <View style={styles.stats}>
-        <View style={styles.stat}>
-          <Text variant="caption" color="textMuted">
-            {t('leads')}
-          </Text>
-          <Text variant="title" color="champagneGold">
-            {leadCount}
-          </Text>
-        </View>
-        <View style={styles.stat}>
-          <Text variant="caption" color="textMuted">
-            {tc('title')}
-          </Text>
-          <Text variant="title">{formatCurrency(commissionTotal)}</Text>
-        </View>
+      <AppHeader subtitle={t('dashboard')} />
+
+      <View style={styles.metrics}>
+        <MetricCard
+          testID="partner-metric-leads"
+          title={t('leads')}
+          value={String(leadCount)}
+          detail={
+            leadCount === 0 ? t('leadsEmpty') : t('leadsDetail', { count: leadCount })
+          }
+          icon="account-group-outline"
+          onPress={() => router.push('/(partner)/leads')}
+        />
+        <MetricCard
+          testID="partner-metric-commissions"
+          title={tc('title')}
+          value={formatCurrency(commissionTotal)}
+          detail={tc('dashboardDetail')}
+          icon="cash-multiple"
+          onPress={() => router.push('/(partner)/commissions')}
+        />
       </View>
+
+      <SectionHeader title={t('link')} />
       <ListRow testID="partner-code-link" title={t('link')} subtitle={link} />
+
+      <SectionHeader title={t('supportTickets')} />
       <Button
         testID="partner-support-open"
         title={t('supportTickets')}
@@ -85,13 +102,11 @@ export default function PartnerHomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  stats: { flexDirection: 'row', gap: spacing.md, marginVertical: spacing.xl },
-  stat: {
-    flex: 1,
-    gap: spacing.xs,
-    padding: spacing.lg,
-    backgroundColor: '#141416',
-    borderRadius: 10,
+  metrics: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    justifyContent: 'space-between',
   },
   cta: { marginBottom: spacing.md },
 });

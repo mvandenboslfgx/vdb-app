@@ -1,5 +1,6 @@
 {
   "title": "Commissies",
+  "dashboardDetail": "Totaal verdiend",
   "empty": "Nog geen commissies.",
   "emptyHint": "Commissies verschijnen hier na goedgekeurde verkopen.",
   "loading": "Commissies laden…",

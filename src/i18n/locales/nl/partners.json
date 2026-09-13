@@ -31,6 +31,8 @@
   "link": "Partnerlink",
   "leads": "Leads",
   "leadsEmpty": "Nog geen leads.",
+  "leadsDetail": "{{count}} lead in behandeling",
+  "leadsDetail_other": "{{count}} leads in behandeling",
   "leadsLoading": "Leads laden…",
   "leadsError": "Leads konden niet worden geladen.",
   "submitLead": "Nieuwe lead indienen",

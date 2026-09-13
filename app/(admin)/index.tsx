@@ -4,7 +4,16 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { getAdminDashboardBundle } from '@/api/repositories/adminRepository';
-import { EmptyState, ErrorState, ListRow, LoadingState, Screen, Text } from '@/design-system';
+import {
+  AppHeader,
+  EmptyState,
+  ErrorState,
+  ListRow,
+  LoadingState,
+  MetricCard,
+  Screen,
+  SectionHeader,
+} from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import type { AdminDashboardStats } from '@/types/domain';
 import type { AdminQueueItem } from '@/api/mockData';
@@ -52,17 +61,54 @@ export default function AdminHomeScreen() {
 
   return (
     <Screen scroll testID="admin-dashboard-screen">
-      <Text variant="title">{t('dashboard')}</Text>
+      <AppHeader subtitle={t('dashboard')} />
+
       <View style={styles.grid}>
-        <Stat label={t('stats.partnerApplications')} value={stats.openPartnerApplications} />
-        <Stat label={t('stats.openTickets')} value={stats.openTickets} />
-        <Stat label={t('stats.commissionsReview')} value={stats.commissionsUnderReview} />
-        <Stat label={t('stats.payoutRequests')} value={stats.payoutRequests} />
+        <MetricCard
+          testID="admin-metric-partner-applications"
+          title={t('stats.partnerApplications')}
+          value={String(stats.openPartnerApplications)}
+          detail={
+            stats.openPartnerApplications === 0
+              ? t('stats.allClear')
+              : t('stats.partnerApplicationsDetail')
+          }
+          icon="account-plus-outline"
+          onPress={() => router.push('/(admin)/approvals')}
+        />
+        <MetricCard
+          testID="admin-metric-open-tickets"
+          title={t('stats.openTickets')}
+          value={String(stats.openTickets)}
+          detail={stats.openTickets === 0 ? t('stats.allClear') : t('stats.openTicketsDetail')}
+          icon="lifebuoy"
+          onPress={() => router.push('/(admin)/tickets')}
+        />
+        <MetricCard
+          testID="admin-metric-commissions"
+          title={t('stats.commissionsReview')}
+          value={String(stats.commissionsUnderReview)}
+          detail={
+            stats.commissionsUnderReview === 0
+              ? t('stats.allClear')
+              : t('stats.commissionsReviewDetail')
+          }
+          icon="cash-multiple"
+          onPress={() => router.push('/(admin)/finance')}
+        />
+        <MetricCard
+          testID="admin-metric-payout-requests"
+          title={t('stats.payoutRequests')}
+          value={String(stats.payoutRequests)}
+          detail={
+            stats.payoutRequests === 0 ? t('stats.allClear') : t('stats.payoutRequestsDetail')
+          }
+          icon="bank-transfer-out"
+          onPress={() => router.push('/(admin)/finance')}
+        />
       </View>
 
-      <Text variant="subtitle" style={styles.section}>
-        {t('queue')}
-      </Text>
+      <SectionHeader title={t('queue')} />
       {queue.length === 0 ? (
         <EmptyState title={tc('empty')} />
       ) : (
@@ -94,32 +140,11 @@ export default function AdminHomeScreen() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <View style={styles.stat}>
-      <Text variant="caption" color="textMuted">
-        {label}
-      </Text>
-      <Text variant="title" color="champagneGold">
-        {value}
-      </Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.md,
-    marginVertical: spacing.xl,
+    justifyContent: 'space-between',
   },
-  stat: {
-    width: '47%',
-    gap: spacing.xs,
-    padding: spacing.lg,
-    backgroundColor: '#141416',
-    borderRadius: 10,
-  },
-  section: { marginBottom: spacing.md },
 });

@@ -12,7 +12,12 @@
     "openPayments": "Open payments",
     "commissionsReview": "Commissions under review",
     "payoutRequests": "Payout requests",
-    "upcomingAppointments": "Upcoming appointments"
+    "upcomingAppointments": "Upcoming appointments",
+    "partnerApplicationsDetail": "Awaiting review",
+    "openTicketsDetail": "Not yet answered",
+    "commissionsReviewDetail": "Awaiting approval",
+    "payoutRequestsDetail": "Awaiting processing",
+    "allClear": "Nothing outstanding"
   },
   "actions": {
     "approvePartner": "Approve partner",

@@ -31,6 +31,8 @@
   "link": "Partner link",
   "leads": "Leads",
   "leadsEmpty": "No leads yet.",
+  "leadsDetail": "{{count}} lead in progress",
+  "leadsDetail_other": "{{count}} leads in progress",
   "leadsLoading": "Loading leads…",
   "leadsError": "Could not load leads.",
   "submitLead": "Submit new lead",

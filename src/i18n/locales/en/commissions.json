@@ -1,5 +1,6 @@
 {
   "title": "Commissions",
+  "dashboardDetail": "Total earned",
   "empty": "No commissions yet.",
   "emptyHint": "Commissions appear here after approved sales.",
   "loading": "Loading commissions…",

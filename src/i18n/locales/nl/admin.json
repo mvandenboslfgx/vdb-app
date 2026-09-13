@@ -12,7 +12,12 @@
     "openPayments": "Open betalingen",
     "commissionsReview": "Commissies in review",
     "payoutRequests": "Uitbetalingsverzoeken",
-    "upcomingAppointments": "Aankomende afspraken"
+    "upcomingAppointments": "Aankomende afspraken",
+    "partnerApplicationsDetail": "Wacht op beoordeling",
+    "openTicketsDetail": "Nog niet beantwoord",
+    "commissionsReviewDetail": "Wacht op goedkeuring",
+    "payoutRequestsDetail": "Wacht op verwerking",
+    "allClear": "Niets openstaand"
   },
   "actions": {
     "approvePartner": "Partner goedkeuren",
