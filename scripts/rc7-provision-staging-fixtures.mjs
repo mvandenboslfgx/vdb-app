@@ -20,10 +20,7 @@ const OUT_DIR =
   'C:/Users/XXX/vdb-full-staging-recovery-2026-07-29/samsung-s25-rc7-device-e2e';
 
 const url = process.env.RC7_STAGING_URL || `https://${STAGING_REF}.supabase.co`;
-const anon =
-  process.env.RC7_STAGING_ANON_KEY ||
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
-  '';
+const anon = process.env.RC7_STAGING_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 
 /** @type {{ step: string; result: string; detail?: string }[]} */
 const log = [];
@@ -71,8 +68,12 @@ function fetchServiceRoleKey() {
   const keys = JSON.parse(raw);
   const row = keys.find(
     (k) =>
-      String(k.name ?? '').toLowerCase().includes('service') ||
-      String(k.description ?? '').toLowerCase().includes('service'),
+      String(k.name ?? '')
+        .toLowerCase()
+        .includes('service') ||
+      String(k.description ?? '')
+        .toLowerCase()
+        .includes('service'),
   );
   if (!row?.api_key) throw new Error('service_role_key_unavailable');
   return row.api_key;
@@ -250,7 +251,11 @@ async function ensureAal2ApprovalQueue(svc, vault) {
   const { error } = existing?.id
     ? await svc.from('partner_applications').update(payload).eq('id', existing.id)
     : await svc.from('partner_applications').insert(payload);
-  note('aal2_approval_seed', error ? 'FAIL' : 'PASS', error?.message ?? 'SUBMITTED application ready');
+  note(
+    'aal2_approval_seed',
+    error ? 'FAIL' : 'PASS',
+    error?.message ?? 'SUBMITTED application ready',
+  );
 }
 
 async function main() {
@@ -285,7 +290,10 @@ async function main() {
   }
 
   const serviceKey = fetchServiceRoleKey();
-  await ensureAal2ApprovalQueue(createClient(url, serviceKey, { auth: { persistSession: false } }), vault);
+  await ensureAal2ApprovalQueue(
+    createClient(url, serviceKey, { auth: { persistSession: false } }),
+    vault,
+  );
   const partner = await prepareActivePartner(serviceKey, adminEmail, adminPassword, mfaVault);
 
   const lines = fs.existsSync(VAULT) ? fs.readFileSync(VAULT, 'utf8').split(/\r?\n/) : [];
@@ -311,7 +319,10 @@ async function main() {
     vault: redactEnvForLog(parseEnvFile(VAULT)),
     steps: log,
   };
-  fs.writeFileSync(path.join(OUT_DIR, 'rc7-staging-fixtures.json'), JSON.stringify(summary, null, 2));
+  fs.writeFileSync(
+    path.join(OUT_DIR, 'rc7-staging-fixtures.json'),
+    JSON.stringify(summary, null, 2),
+  );
   const failed = log.filter((x) => x.result === 'FAIL' || x.result === 'BLOCKED');
   if (failed.length) process.exit(2);
 }

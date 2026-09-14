@@ -27,7 +27,11 @@ function fetchServiceRoleKey() {
     { encoding: 'utf8', shell: true },
   );
   const keys = JSON.parse(raw);
-  const row = keys.find((k) => String(k.name ?? '').toLowerCase().includes('service'));
+  const row = keys.find((k) =>
+    String(k.name ?? '')
+      .toLowerCase()
+      .includes('service'),
+  );
   if (!row?.api_key) throw new Error('service_role_unavailable');
   return row.api_key;
 }
@@ -43,7 +47,10 @@ async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const svc = createClient(url, fetchServiceRoleKey(), { auth: { persistSession: false } });
 
-  const { data: listData, error: listErr } = await svc.auth.admin.listUsers({ page: 1, perPage: 200 });
+  const { data: listData, error: listErr } = await svc.auth.admin.listUsers({
+    page: 1,
+    perPage: 200,
+  });
   if (listErr) throw listErr;
   const users = listData?.users ?? [];
 
@@ -92,9 +99,7 @@ async function main() {
     owners: rows.filter((r) => r.adminRole === 'OWNER').map((r) => r.email),
     admins: rows.filter((r) => r.adminRole === 'ADMIN').map((r) => r.email),
     bootstrapPresent: rows.some((r) => r.isBootstrapOwnerCandidate),
-    bootstrapIsOwner: rows.some(
-      (r) => r.isBootstrapOwnerCandidate && r.adminRole === 'OWNER',
-    ),
+    bootstrapIsOwner: rows.some((r) => r.isBootstrapOwnerCandidate && r.adminRole === 'OWNER'),
     rows,
   };
 

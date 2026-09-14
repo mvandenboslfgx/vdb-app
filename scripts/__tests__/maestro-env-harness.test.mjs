@@ -4,18 +4,17 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {
-  METACHAR_TEST_VECTORS,
-  parseEnvFile,
-  redactEnvForLog,
-} from '../lib/load-env-file.mjs';
+import { METACHAR_TEST_VECTORS, parseEnvFile, redactEnvForLog } from '../lib/load-env-file.mjs';
 import { assertSecretRoundTrip, loadRoleCredentials } from '../lib/maestro-env.mjs';
 
 test('parses shell metacharacters literally', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'maestro-env-'));
   const file = path.join(dir, 'test.env');
   const secret = 'c3LQww^JS&9Mw-[vZMZNgCWxtW#]9mWXBJSXT@Gs';
-  fs.writeFileSync(file, `RC7_CUSTOMER_A_EMAIL=customer.a@example.com\nRC7_CUSTOMER_A_PASSWORD=${secret}\n`);
+  fs.writeFileSync(
+    file,
+    `RC7_CUSTOMER_A_EMAIL=customer.a@example.com\nRC7_CUSTOMER_A_PASSWORD=${secret}\n`,
+  );
   const parsed = parseEnvFile(file);
   assert.equal(parsed.RC7_CUSTOMER_A_EMAIL, 'customer.a@example.com');
   assert.equal(parsed.RC7_CUSTOMER_A_PASSWORD, secret);

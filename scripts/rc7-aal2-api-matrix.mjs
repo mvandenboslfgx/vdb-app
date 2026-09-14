@@ -93,7 +93,11 @@ async function main() {
     p_reason: 'rc7 aal2 pre probe',
     p_idempotency_key: `rc7-pre-comm-${Date.now()}`,
   });
-  rec('pre_aal2_approve_commission', denyOk(preComm) ? 'PASS' : 'FAIL', preComm?.message || 'allowed');
+  rec(
+    'pre_aal2_approve_commission',
+    denyOk(preComm) ? 'PASS' : 'FAIL',
+    preComm?.message || 'allowed',
+  );
 
   const factors = await client.auth.mfa.listFactors();
   const verified = (factors.data?.totp ?? []).filter((f) => f.status === 'verified');
@@ -168,7 +172,10 @@ async function main() {
     failed: rows.filter((r) => r.result === 'FAIL').length,
     rows,
   };
-  fs.writeFileSync(path.join(OUT_DIR, 'rc7-aal2-api-matrix.json'), JSON.stringify(summary, null, 2));
+  fs.writeFileSync(
+    path.join(OUT_DIR, 'rc7-aal2-api-matrix.json'),
+    JSON.stringify(summary, null, 2),
+  );
   if (summary.failed > 0) process.exit(1);
 }
 

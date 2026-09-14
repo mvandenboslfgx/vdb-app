@@ -22,10 +22,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { clientEnv } from '@/config/env';
 import { fetchRolesForUser } from '@/lib/auth/fetchRoles';
-import {
-  classifyBootstrapError,
-  classifySupabaseAuthError,
-} from '@/lib/auth/signInErrors';
+import { classifyBootstrapError, classifySupabaseAuthError } from '@/lib/auth/signInErrors';
 import { shouldClearQueryCacheOnSessionChange } from '@/lib/auth/sessionCache';
 import { getSupabase } from '@/lib/supabase';
 import { isPubliclyAssignableRole } from '@/security/roles';

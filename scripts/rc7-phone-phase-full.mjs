@@ -79,7 +79,9 @@ function redactLogcat() {
   text = text
     .replace(/Bearer\s+[A-Za-z0-9\-._~+/]+=*/g, 'Bearer [REDACTED]')
     .replace(/eyJ[A-Za-z0-9\-._~+/]+=*/g, '[JWT_REDACTED]')
-    .replace(/\b\d{6}\b/g, (m, _o, s) => (s.includes('aal2') || s.includes('totp') ? '[TOTP_REDACTED]' : m));
+    .replace(/\b\d{6}\b/g, (m, _o, s) =>
+      s.includes('aal2') || s.includes('totp') ? '[TOTP_REDACTED]' : m,
+    );
   fs.writeFileSync(red, text, 'utf8');
 }
 
@@ -101,7 +103,9 @@ function fetchAnonKey() {
   );
   const text = `${res.stdout ?? ''}\n${res.stderr ?? ''}`;
   const m = text.match(/EXPO_PUBLIC_SUPABASE_ANON_KEY=(\S+)/);
-  return m?.[1] ?? process.env.RC7_STAGING_ANON_KEY ?? process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+  return (
+    m?.[1] ?? process.env.RC7_STAGING_ANON_KEY ?? process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? ''
+  );
 }
 
 function maestro(flow, emailKey, passwordKey, opts = {}) {
@@ -182,7 +186,11 @@ async function main() {
 
   const pkg = adb(['shell', 'dumpsys', 'package', APP_PACKAGE]).stdout ?? '';
   const versionCode = pkg.match(/versionCode=(\d+)/)?.[1] ?? '?';
-  note('installed_release', versionCode === EXPECTED_VERSION ? 'PASS' : 'WARN', `versionCode=${versionCode}`);
+  note(
+    'installed_release',
+    versionCode === EXPECTED_VERSION ? 'PASS' : 'WARN',
+    `versionCode=${versionCode}`,
+  );
 
   const health = spawnSync(
     'curl.exe',
@@ -254,9 +262,14 @@ async function main() {
     emailKey: 'RC7_PARTNER_ACTIVE_EMAIL',
     passwordKey: 'RC7_PARTNER_ACTIVE_PASSWORD',
   });
-  r = maestro('maestro/rc7-partner-active-login.yaml', 'RC7_PARTNER_ACTIVE_EMAIL', 'RC7_PARTNER_ACTIVE_PASSWORD', {
-    cold: true,
-  });
+  r = maestro(
+    'maestro/rc7-partner-active-login.yaml',
+    'RC7_PARTNER_ACTIVE_EMAIL',
+    'RC7_PARTNER_ACTIVE_PASSWORD',
+    {
+      cold: true,
+    },
+  );
   note('partner_active_login', r.ok ? 'PASS' : 'FAIL', `exit=${r.exitCode}`);
   pullUi('partner-active-login');
 
@@ -278,7 +291,12 @@ async function main() {
     emailKey: 'RC7_CUSTOMER_A_EMAIL',
     passwordKey: 'RC7_CUSTOMER_A_PASSWORD',
   });
-  r = maestro('maestro/rc7-customer-a-login.yaml', 'RC7_CUSTOMER_A_EMAIL', 'RC7_CUSTOMER_A_PASSWORD', { cold: true });
+  r = maestro(
+    'maestro/rc7-customer-a-login.yaml',
+    'RC7_CUSTOMER_A_EMAIL',
+    'RC7_CUSTOMER_A_PASSWORD',
+    { cold: true },
+  );
   note('customer_login', r.ok ? 'PASS' : 'FAIL');
   r = runMaestroFlow({
     flowPath: 'maestro/rc7-customer-matrix.yaml',
@@ -296,7 +314,12 @@ async function main() {
 
   note('cross_role_cache', 'START');
   runNode('scripts/rc7-provision-staging-fixtures.mjs', [], envCommon);
-  r = maestro('maestro/rc7-customer-a-login.yaml', 'RC7_CUSTOMER_A_EMAIL', 'RC7_CUSTOMER_A_PASSWORD', { cold: true });
+  r = maestro(
+    'maestro/rc7-customer-a-login.yaml',
+    'RC7_CUSTOMER_A_EMAIL',
+    'RC7_CUSTOMER_A_PASSWORD',
+    { cold: true },
+  );
   note('cache_customer', r.ok ? 'PASS' : 'FAIL');
   runMaestroFlow({
     flowPath: 'maestro/rc7-logout-current.yaml',
@@ -304,9 +327,14 @@ async function main() {
     password: customerCreds.password,
   });
 
-  r = maestro('maestro/rc7-partner-active-login.yaml', 'RC7_PARTNER_ACTIVE_EMAIL', 'RC7_PARTNER_ACTIVE_PASSWORD', {
-    cold: true,
-  });
+  r = maestro(
+    'maestro/rc7-partner-active-login.yaml',
+    'RC7_PARTNER_ACTIVE_EMAIL',
+    'RC7_PARTNER_ACTIVE_PASSWORD',
+    {
+      cold: true,
+    },
+  );
   note('cache_partner', r.ok ? 'PASS' : 'FAIL');
   runMaestroFlow({
     flowPath: 'maestro/rc7-logout-partner.yaml',
@@ -322,7 +350,12 @@ async function main() {
     password: adminCreds.password,
   });
 
-  r = maestro('maestro/rc7-customer-a-login.yaml', 'RC7_CUSTOMER_A_EMAIL', 'RC7_CUSTOMER_A_PASSWORD', { cold: true });
+  r = maestro(
+    'maestro/rc7-customer-a-login.yaml',
+    'RC7_CUSTOMER_A_EMAIL',
+    'RC7_CUSTOMER_A_PASSWORD',
+    { cold: true },
+  );
   note('cache_customer_relogin', r.ok ? 'PASS' : 'FAIL');
   pullUi('cache-final-customer');
   const cacheFails = log.filter((x) => x.phase.startsWith('cache_') && x.result === 'FAIL').length;
@@ -349,12 +382,13 @@ async function main() {
   const fails = log.filter((x) => x.result === 'FAIL').length;
   const partials = log.filter((x) => x.result === 'PARTIAL').length;
   const passAll =
-    aal2Ok &&
-    fails === 0 &&
-    partials === 0 &&
-    log.filter((x) => x.result === 'WARN').length === 0;
+    aal2Ok && fails === 0 && partials === 0 && log.filter((x) => x.result === 'WARN').length === 0;
 
-  const verdict = passAll ? 'PHONE PHASE — PASS' : fails === 0 ? 'PHONE PHASE — PARTIAL' : 'PHONE PHASE — FAIL';
+  const verdict = passAll
+    ? 'PHONE PHASE — PASS'
+    : fails === 0
+      ? 'PHONE PHASE — PARTIAL'
+      : 'PHONE PHASE — FAIL';
 
   const report = {
     at: new Date().toISOString(),
@@ -374,7 +408,10 @@ async function main() {
     evidenceDir: EVIDENCE,
   };
 
-  fs.writeFileSync(path.join(EVIDENCE, 'rc7-phone-phase-final-report.json'), JSON.stringify(report, null, 2));
+  fs.writeFileSync(
+    path.join(EVIDENCE, 'rc7-phone-phase-final-report.json'),
+    JSON.stringify(report, null, 2),
+  );
   fs.writeFileSync(
     path.join(EVIDENCE, 'rc7-phone-phase-final-report.md'),
     `# RC7 Phone Phase Final Report\n\n**Verdict:** ${verdict}\n\n**At:** ${report.at}\n\n## Release\n- versionCode: ${versionCode}\n- staging: ${STAGING_REF}\n\n## Summary\n- PASS: ${report.pass}\n- FAIL: ${report.fail}\n- PARTIAL steps: ${report.partial}\n\n## Evidence\n${EVIDENCE}\n`,

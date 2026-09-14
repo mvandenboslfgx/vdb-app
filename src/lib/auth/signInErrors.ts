@@ -40,10 +40,7 @@ export function classifySupabaseAuthError(error: unknown): SignInErrorKey {
     return 'errors.auth.invalidCredentials';
   }
 
-  if (
-    message.includes('email not confirmed') ||
-    message.includes('email_not_confirmed')
-  ) {
+  if (message.includes('email not confirmed') || message.includes('email_not_confirmed')) {
     return 'errors.auth.emailNotConfirmed';
   }
 

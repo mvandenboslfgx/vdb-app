@@ -20,7 +20,7 @@ const DEFAULT_VAULT = 'C:/Users/XXX/.vdb-vault/rc7-staging-role-matrix.env';
 
 function arg(name) {
   const hit = process.argv.find((a) => a.startsWith(`--${name}=`));
-  return hit ? hit.slice(name.length + 3) : process.env[`RC7_${name.toUpperCase()}`] ?? '';
+  return hit ? hit.slice(name.length + 3) : (process.env[`RC7_${name.toUpperCase()}`] ?? '');
 }
 
 function hasFlag(name) {

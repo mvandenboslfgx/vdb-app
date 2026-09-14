@@ -90,7 +90,11 @@ async function adminAal2Complete(adminCreds, mfaSecret, cold) {
       password: adminCreds.password,
     });
     if (!challenge.ok) {
-      note('admin_aal2_challenge', attempt + 1 >= 3 ? 'FAIL' : 'RETRY', `exit=${challenge.exitCode}`);
+      note(
+        'admin_aal2_challenge',
+        attempt + 1 >= 3 ? 'FAIL' : 'RETRY',
+        `exit=${challenge.exitCode}`,
+      );
       coldStart();
       continue;
     }
@@ -157,7 +161,11 @@ function adminLogoutFinal(creds) {
   const stillLoggedOut = !uiHasAdminShell('final-admin-relaunch-ui');
 
   const ok = r.ok && loggedOutUi && stillLoggedOut;
-  note('admin_logout', ok ? 'PASS' : 'FAIL', `maestro=${r.ok} ui=${loggedOutUi} relaunch=${stillLoggedOut}`);
+  note(
+    'admin_logout',
+    ok ? 'PASS' : 'FAIL',
+    `maestro=${r.ok} ui=${loggedOutUi} relaunch=${stillLoggedOut}`,
+  );
   return ok;
 }
 
@@ -168,7 +176,11 @@ async function main() {
   const versionCode = (adb(['shell', 'dumpsys', 'package', APP_PACKAGE]).stdout ?? '').match(
     /versionCode=(\d+)/,
   )?.[1];
-  note('preflight', versionCode === EXPECTED_VERSION ? 'PASS' : 'FAIL', `versionCode=${versionCode ?? '?'}`);
+  note(
+    'preflight',
+    versionCode === EXPECTED_VERSION ? 'PASS' : 'FAIL',
+    `versionCode=${versionCode ?? '?'}`,
+  );
 
   const envCommon = { RC7_STAGING_ANON_KEY: fetchAnonKey(), RC7_EVIDENCE_DIR: EVIDENCE };
   runNode('scripts/rc7-seed-aal2-approval.mjs', [], envCommon);
@@ -252,14 +264,26 @@ async function main() {
   const gates = [
     ['quality_typecheck', spawnSync('npm', ['run', 'typecheck'], { shell: true })],
     ['quality_lint', spawnSync('npm', ['run', 'lint'], { shell: true })],
-    ['quality_jest', spawnSync('npm', ['test', '--', '--ci', '--passWithNoTests'], { shell: true })],
+    [
+      'quality_jest',
+      spawnSync('npm', ['test', '--', '--ci', '--passWithNoTests'], { shell: true }),
+    ],
     ['quality_harness', spawnSync('npm', ['run', 'test:maestro:harness'], { shell: true })],
   ];
   for (const [name, res] of gates) note(name, res.status === 0 ? 'PASS' : 'FAIL');
 
-  note('security_matrix', runNode('scripts/rc7-staging-security-matrix.mjs', [], envCommon).ok ? 'PASS' : 'FAIL');
-  note('aal2_api_matrix', runNode('scripts/rc7-aal2-api-matrix.mjs', [], envCommon).ok ? 'PASS' : 'FAIL');
-  note('partner_security', runNode('scripts/rc7-partner-active-security.mjs', [], envCommon).ok ? 'PASS' : 'FAIL');
+  note(
+    'security_matrix',
+    runNode('scripts/rc7-staging-security-matrix.mjs', [], envCommon).ok ? 'PASS' : 'FAIL',
+  );
+  note(
+    'aal2_api_matrix',
+    runNode('scripts/rc7-aal2-api-matrix.mjs', [], envCommon).ok ? 'PASS' : 'FAIL',
+  );
+  note(
+    'partner_security',
+    runNode('scripts/rc7-partner-active-security.mjs', [], envCommon).ok ? 'PASS' : 'FAIL',
+  );
   note('secret_scan', runNode('scripts/secret-scan.mjs').ok ? 'PASS' : 'FAIL');
 
   const terminal = (phase) => log.findLast((x) => x.phase === phase)?.result ?? 'FAIL';
@@ -278,7 +302,11 @@ async function main() {
   const fails = log.filter((x) => x.result === 'FAIL').length;
   const passAll = criticalFails === 0 && terminal('preflight') === 'PASS';
 
-  const verdict = passAll ? 'PHONE PHASE — PASS' : criticalFails === 0 ? 'PHONE PHASE — PARTIAL' : 'PHONE PHASE — FAIL';
+  const verdict = passAll
+    ? 'PHONE PHASE — PASS'
+    : criticalFails === 0
+      ? 'PHONE PHASE — PARTIAL'
+      : 'PHONE PHASE — FAIL';
 
   const report = {
     at: new Date().toISOString(),
@@ -295,7 +323,10 @@ async function main() {
     verdict,
     evidenceDir: EVIDENCE,
   };
-  fs.writeFileSync(path.join(EVIDENCE, 'rc7-phone-phase-final-rerun.json'), JSON.stringify(report, null, 2));
+  fs.writeFileSync(
+    path.join(EVIDENCE, 'rc7-phone-phase-final-rerun.json'),
+    JSON.stringify(report, null, 2),
+  );
   note('verdict', verdict);
   console.log(verdict);
   process.exit(passAll ? 0 : 1);

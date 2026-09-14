@@ -20,14 +20,7 @@
     "Payout mutations remain fail-closed.",
     "Owner bundle vendored at contracts/releases/vdb-backend-contract-0.2.0-rc.7/."
   ],
-  "roles": [
-    "customer",
-    "partner_pending",
-    "partner",
-    "staff",
-    "admin",
-    "owner"
-  ],
+  "roles": ["customer", "partner_pending", "partner", "staff", "admin", "owner"],
   "sharedDomains": {
     "websiteAndMobile": [
       "profiles",

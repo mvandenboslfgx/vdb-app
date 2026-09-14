@@ -178,10 +178,15 @@ async function main() {
     pass: log.filter((x) => x.result === 'PASS').length,
     fail: log.filter((x) => x.result === 'FAIL').length,
   };
-  fs.writeFileSync(path.join(EVIDENCE, 'rc7-phone-phase-summary.json'), JSON.stringify(summary, null, 2));
+  fs.writeFileSync(
+    path.join(EVIDENCE, 'rc7-phone-phase-summary.json'),
+    JSON.stringify(summary, null, 2),
+  );
 
   const verdict =
-    summary.fail === 0 && log.every((x) => x.result !== 'FAIL') ? 'PHONE PHASE — PARTIAL' : 'PHONE PHASE — PARTIAL';
+    summary.fail === 0 && log.every((x) => x.result !== 'FAIL')
+      ? 'PHONE PHASE — PARTIAL'
+      : 'PHONE PHASE — PARTIAL';
   note('verdict', verdict);
   console.log(verdict);
 }

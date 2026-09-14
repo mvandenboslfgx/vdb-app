@@ -138,7 +138,11 @@ async function main() {
       ['admin_work_queue', 'admin_work_queue'],
       ['admin_list_partners', 'admin_list_partners'],
     ]) {
-      const { data, error } = await rpc(client, rpcName, rpcName.includes('list') ? { p_limit: 3 } : {});
+      const { data, error } = await rpc(
+        client,
+        rpcName,
+        rpcName.includes('list') ? { p_limit: 3 } : {},
+      );
       if (isCustomerish) {
         rec({
           role: account.role,
@@ -206,10 +210,9 @@ async function main() {
         : idemDenied || (Array.isArray(idemData) && idemData.length >= 0)
           ? 'PASS'
           : 'FAIL',
-      detail: (idemErr?.message || `rows=${Array.isArray(idemData) ? idemData.length : 'n/a'}`).slice(
-        0,
-        120,
-      ),
+      detail: (
+        idemErr?.message || `rows=${Array.isArray(idemData) ? idemData.length : 'n/a'}`
+      ).slice(0, 120),
     });
 
     await client.auth.signOut();
@@ -229,7 +232,9 @@ async function main() {
 
   const outJson = path.join(OUT_DIR, 'rc7-staging-security-matrix.json');
   fs.writeFileSync(outJson, JSON.stringify(summary, null, 2));
-  console.log(`RC7_SECURITY_SUMMARY pass=${summary.passed} fail=${summary.failed} blocked=${summary.blocked}`);
+  console.log(
+    `RC7_SECURITY_SUMMARY pass=${summary.passed} fail=${summary.failed} blocked=${summary.blocked}`,
+  );
   if (summary.failed > 0) process.exit(1);
 }
 

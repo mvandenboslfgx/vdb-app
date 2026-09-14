@@ -3,10 +3,7 @@ import type { TFunction } from 'i18next';
 import { isSignInErrorKey, type SignInErrorKey } from '@/lib/auth/signInErrors';
 
 /** Resolve a sign-in error key to localized, user-safe copy. */
-export function resolveSignInErrorMessage(
-  error: unknown,
-  t: TFunction<'errors'>,
-): string {
+export function resolveSignInErrorMessage(error: unknown, t: TFunction<'errors'>): string {
   const key =
     error instanceof Error && isSignInErrorKey(error.message)
       ? (error.message as SignInErrorKey)

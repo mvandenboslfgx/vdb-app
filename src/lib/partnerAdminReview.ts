@@ -2,10 +2,7 @@
  * Administrative partner review status labels (aligned with Partners web).
  * VERIFIED = administrative review completed — not automatic IDV.
  */
-export const ADMIN_REVIEW_STATUS_COPY: Record<
-  string,
-  { titleNl: string; titleEn: string }
-> = {
+export const ADMIN_REVIEW_STATUS_COPY: Record<string, { titleNl: string; titleEn: string }> = {
   NOT_STARTED: {
     titleNl: 'Administratieve partnercontrole niet gestart',
     titleEn: 'Administrative partner review not started',
@@ -39,9 +36,7 @@ export function adminReviewStatusTitle(
   const key = (status ?? 'NOT_STARTED').toUpperCase();
   const row = ADMIN_REVIEW_STATUS_COPY[key];
   if (!row) {
-    return locale === 'nl'
-      ? 'Administratieve partnercontrole'
-      : 'Administrative partner review';
+    return locale === 'nl' ? 'Administratieve partnercontrole' : 'Administrative partner review';
   }
   return locale === 'nl' ? row.titleNl : row.titleEn;
 }

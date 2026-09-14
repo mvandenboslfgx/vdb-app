@@ -17,10 +17,7 @@ const MANIFEST = path.join(VAULT_DIR, 'rc7-staging-mfa-enroll.manifest.json');
 const SECRETS = path.join(VAULT_DIR, 'rc7-staging-mfa-enroll.local.json');
 
 const url = `https://${STAGING_REF}.supabase.co`;
-const anon =
-  process.env.RC7_STAGING_ANON_KEY ||
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
-  '';
+const anon = process.env.RC7_STAGING_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 
 async function main() {
   if (!anon) throw new Error('missing anon key');
@@ -51,8 +48,7 @@ async function main() {
     throw new Error(enrollErr?.message ?? 'enroll_failed');
   }
 
-  const otpauth =
-    enroll.totp.uri ?? enroll.totp.otpauth_url ?? enroll.totp.otpauthUrl ?? null;
+  const otpauth = enroll.totp.uri ?? enroll.totp.otpauth_url ?? enroll.totp.otpauthUrl ?? null;
   if (!otpauth) throw new Error('missing_otpauth_uri');
 
   fs.mkdirSync(VAULT_DIR, { recursive: true });

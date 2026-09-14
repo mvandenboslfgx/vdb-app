@@ -3,12 +3,13 @@
  */
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-const mockInvoke = jest.fn<
-  (
-    name: string,
-    opts?: { body: Record<string, unknown> },
-  ) => Promise<{ data: unknown; error: unknown }>
->();
+const mockInvoke =
+  jest.fn<
+    (
+      name: string,
+      opts?: { body: Record<string, unknown> },
+    ) => Promise<{ data: unknown; error: unknown }>
+  >();
 const mockMaybeSingle = jest.fn<() => Promise<{ data: unknown; error: unknown }>>();
 
 jest.mock('@/api/repositories/_utils', () => ({

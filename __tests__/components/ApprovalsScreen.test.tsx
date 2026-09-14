@@ -158,10 +158,7 @@ describe('ApprovalsScreen partner approval wiring', () => {
     await fireEvent.press(screen.getByTestId('admin-partner-reject'));
 
     await waitFor(() =>
-      expect(mockReject).toHaveBeenCalledWith(
-        'app-1',
-        'Incomplete partner application package',
-      ),
+      expect(mockReject).toHaveBeenCalledWith('app-1', 'Incomplete partner application package'),
     );
   });
 

@@ -17,17 +17,7 @@ export interface TextInputProps extends RNTextInputProps {
 }
 
 export const TextInput = forwardRef<RNTextInput, TextInputProps>(function TextInput(
-  {
-    label,
-    error,
-    hint,
-    style,
-    onFocus,
-    onBlur,
-    onChangeText,
-    onEndEditing,
-    ...rest
-  },
+  { label, error, hint, style, onFocus, onBlur, onChangeText, onEndEditing, ...rest },
   ref,
 ) {
   const [focused, setFocused] = useState(false);

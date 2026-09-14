@@ -10,7 +10,9 @@ import { parseEnvFile, redactEnvForLog } from './load-env-file.mjs';
 
 const DEFAULT_MAESTRO_HOME =
   process.env.MAESTRO_HOME ||
-  (process.platform === 'win32' ? String.raw`C:\Users\XXX\maestro` : path.join(process.env.HOME ?? '', '.maestro'));
+  (process.platform === 'win32'
+    ? String.raw`C:\Users\XXX\maestro`
+    : path.join(process.env.HOME ?? '', '.maestro'));
 
 /**
  * Resolve java executable (same logic as maestro.bat).

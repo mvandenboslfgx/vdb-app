@@ -67,7 +67,11 @@ async function main() {
     ['partner_payout_requests', 'partner_id', otherPartner],
   ]) {
     const { data, error } = await client.from(table).select('id').eq(col, val).limit(1);
-    rec(`cross_tenant_${table}`, denied(error, data) ? 'PASS' : 'FAIL', error?.message || `rows=${data?.length ?? 0}`);
+    rec(
+      `cross_tenant_${table}`,
+      denied(error, data) ? 'PASS' : 'FAIL',
+      error?.message || `rows=${data?.length ?? 0}`,
+    );
   }
 
   for (const rpcName of [
@@ -91,11 +95,23 @@ async function main() {
               p_idempotency_key: `p-${Date.now()}`,
             };
     const { data, error } = await client.rpc(rpcName, params);
-    rec(`deny_${rpcName}`, denied(error, data) ? 'PASS' : 'FAIL', error?.message || 'unexpected allow');
+    rec(
+      `deny_${rpcName}`,
+      denied(error, data) ? 'PASS' : 'FAIL',
+      error?.message || 'unexpected allow',
+    );
   }
 
-  const { data: ownProfile } = await client.from('partner_profiles').select('id,status').eq('id', ownId).maybeSingle();
-  rec('own_profile_read', ownProfile?.status === 'ACTIVE' ? 'PASS' : 'FAIL', `status=${ownProfile?.status ?? 'missing'}`);
+  const { data: ownProfile } = await client
+    .from('partner_profiles')
+    .select('id,status')
+    .eq('id', ownId)
+    .maybeSingle();
+  rec(
+    'own_profile_read',
+    ownProfile?.status === 'ACTIVE' ? 'PASS' : 'FAIL',
+    `status=${ownProfile?.status ?? 'missing'}`,
+  );
 
   await client.auth.signOut();
 

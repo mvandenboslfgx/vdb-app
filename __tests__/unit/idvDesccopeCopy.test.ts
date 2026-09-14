@@ -26,9 +26,7 @@ describe('Mobile v1 IDV de-scope copy', () => {
   });
 
   it('IDENTITY_NOT_VERIFIED block label is not KYC-provider language', () => {
-    expect(ACTIVATION_BLOCK_COPY.IDENTITY_NOT_VERIFIED).toMatch(
-      /Administratieve partnercontrole/i,
-    );
+    expect(ACTIVATION_BLOCK_COPY.IDENTITY_NOT_VERIFIED).toMatch(/Administratieve partnercontrole/i);
     expect(ACTIVATION_BLOCK_COPY.IDENTITY_NOT_VERIFIED).not.toMatch(/KYC/i);
   });
 

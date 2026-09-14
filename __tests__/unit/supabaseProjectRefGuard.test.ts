@@ -47,10 +47,7 @@ describe('Supabase project ref environment guards', () => {
 
   it('preview hard-rejects legacy staging ref', () => {
     expect(() =>
-      assertSupabaseProjectRefForAppEnv(
-        'preview',
-        'https://qzekuvmgfekzsowdecyk.supabase.co',
-      ),
+      assertSupabaseProjectRefForAppEnv('preview', 'https://qzekuvmgfekzsowdecyk.supabase.co'),
     ).toThrow(/rejects project ref/);
   });
 

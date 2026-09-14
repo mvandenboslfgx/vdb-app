@@ -21,7 +21,11 @@ function fetchServiceRoleKey() {
     { encoding: 'utf8', shell: true },
   );
   const keys = JSON.parse(raw);
-  const row = keys.find((k) => String(k.name ?? '').toLowerCase().includes('service'));
+  const row = keys.find((k) =>
+    String(k.name ?? '')
+      .toLowerCase()
+      .includes('service'),
+  );
   if (!row?.api_key) throw new Error('service_role_key_unavailable');
   return row.api_key;
 }
@@ -60,7 +64,15 @@ async function main() {
 
   fs.writeFileSync(
     path.join(OUT_DIR, 'rc7-aal2-approval-seed.json'),
-    JSON.stringify({ at: new Date().toISOString(), result: 'PASS', partnerEmailPrefix: partnerEmail.slice(0, 12) }, null, 2),
+    JSON.stringify(
+      {
+        at: new Date().toISOString(),
+        result: 'PASS',
+        partnerEmailPrefix: partnerEmail.slice(0, 12),
+      },
+      null,
+      2,
+    ),
   );
   console.log('RC7_AAL2_APPROVAL_SEED PASS');
 }
