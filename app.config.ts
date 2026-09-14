@@ -73,14 +73,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         microphonePermission: false,
       },
     ],
-    [
-      'expo-notifications',
-      {
-        icon: './assets/images/android-icon-monochrome.png',
-        color: '#C7A66A',
-        defaultChannel: 'default',
-      },
-    ],
+    // No expo-notifications in v1: the app ships no push client, so it must not
+    // request POST_NOTIFICATIONS / RECEIVE_BOOT_COMPLETED / vendor badge permissions
+    // nor declare push-token collection in Play Data Safety. See docs/push-notifications.md.
   ],
   experiments: {
     typedRoutes: true,

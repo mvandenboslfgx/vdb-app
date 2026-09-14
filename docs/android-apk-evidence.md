@@ -31,6 +31,12 @@
 
 ## Requested permissions (APK)
 
+> **Historical.** Captured while `expo-notifications` was still a dependency.
+> That plugin has since been removed (v1 ships no push client), which drops
+> `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK` and the vendor
+> badge permissions below. Re-run `aapt dump permissions` against the next
+> build before using this table for Play review.
+
 ### Core / justified
 
 | Permission | Justification |

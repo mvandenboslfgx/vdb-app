@@ -14,7 +14,17 @@
 | Messages                    | Yes          | No                     | Support / projects     |
 | Files / docs                | Yes          | No                     | Project delivery       |
 | Crash logs                  | Yes (Sentry) | Sentry                 | Stability              |
-| Device IDs / push tokens    | Yes          | Push provider          | Notifications          |
+
+## Not collected in v1
+
+| Data type                | Why not                                                                                                                                                          |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Device IDs / push tokens | The app ships no push client (`expo-notifications` is not a dependency), registers no token, and requests no notification permission. Declare **not collected**. |
+| Location                 | No location APIs or permissions in the build.                                                                                                                    |
+
+> Crash logs only leave the device once a Sentry DSN is configured; today the
+> DSN is empty and `observability.ts` no-ops. Confirm the Sentry row against the
+> shipping configuration before submitting.
 
 ## Security
 

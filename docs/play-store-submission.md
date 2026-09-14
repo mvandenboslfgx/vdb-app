@@ -16,7 +16,10 @@ Declare collection of:
 - Personal info (name, email, phone)
 - Financial info (invoice metadata — not full PAN; Mollie hosts checkout)
 - App activity (support, in-app messages)
-- Device/app IDs (push tokens)
+
+Do **not** declare device/app IDs or push tokens: v1 ships no push client
+(no `expo-notifications`, no token registration, no notification permission).
+See `docs/store/data-safety-draft.md`.
 
 Purposes: app functionality, account management, fraud prevention, customer support.
 Encryption in transit: yes. Deletion: supported via in-app + web URL.

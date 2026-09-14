@@ -4,7 +4,6 @@ import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { ListRow, Screen, Text } from '@/design-system';
-import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import { spacing } from '@/theme';
 
 const STORAGE_KEY = 'vdb.notification.preferences.v1';
@@ -28,14 +27,17 @@ const DEFAULTS: NotificationPreferences = {
 type PrefKey = keyof NotificationPreferences;
 
 /**
- * Notification preferences UI.
- * External push delivery remains blocked without provider credentials;
- * this screen still stores preferences and explains the disabled delivery state.
+ * Notification preferences UI — device-local only.
+ *
+ * This client ships no push code (no `expo-notifications`, no token
+ * registration), so delivery is unavailable regardless of the shared
+ * `pushNotifications` flag: the flag may be flipped on by the canonical
+ * backend for the web clients without this app gaining a push channel.
+ * The disabled-delivery notice is therefore unconditional — never gate it
+ * on the flag, or the screen would promise delivery that cannot happen.
  */
 export default function NotificationPreferencesScreen() {
   const { t } = useTranslation('notifications');
-  const { enabled } = useFeatureFlags();
-  const pushEnabled = enabled('pushNotifications');
   const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULTS);
   const [loaded, setLoaded] = useState(false);
 
@@ -79,11 +81,9 @@ export default function NotificationPreferencesScreen() {
         {t('prefs.subtitle')}
       </Text>
 
-      {!pushEnabled ? (
-        <Text variant="caption" color="warning" style={styles.warn} testID="push-delivery-disabled">
-          {t('prefs.deliveryDisabled')}
-        </Text>
-      ) : null}
+      <Text variant="caption" color="warning" style={styles.warn} testID="push-delivery-disabled">
+        {t('prefs.deliveryDisabled')}
+      </Text>
 
       <Text variant="caption" color="textMuted" style={styles.lock}>
         {t('prefs.lockScreenHint')}
