@@ -15,15 +15,7 @@ import {
 import type { AdminDirectoryDetail } from '@/api/contract/adminRc5Mappers';
 import { ACTIVATION_BLOCK_COPY } from '@/api/contract/adminRc5Mappers';
 import { adminReviewStatusTitle } from '@/lib/partnerAdminReview';
-import {
-  Button,
-  Card,
-  EmptyState,
-  ErrorState,
-  LoadingState,
-  Screen,
-  Text,
-} from '@/design-system';
+import { Button, Card, EmptyState, ErrorState, LoadingState, Screen, Text } from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import { spacing } from '@/theme';
 

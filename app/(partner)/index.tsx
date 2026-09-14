@@ -57,9 +57,7 @@ export default function PartnerHomeScreen() {
           testID="partner-metric-leads"
           title={t('leads')}
           value={String(leadCount)}
-          detail={
-            leadCount === 0 ? t('leadsEmpty') : t('leadsDetail', { count: leadCount })
-          }
+          detail={leadCount === 0 ? t('leadsEmpty') : t('leadsDetail', { count: leadCount })}
           icon="account-group-outline"
           onPress={() => router.push('/(partner)/leads')}
         />

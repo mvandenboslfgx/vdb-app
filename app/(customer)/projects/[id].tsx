@@ -87,10 +87,7 @@ export default function ProjectDetailScreen() {
       ) : (
         <Card style={styles.listCard}>
           {milestones.map((m, index) => (
-            <View
-              key={m.id}
-              style={[styles.milestoneRow, index > 0 && styles.milestoneRowDivider]}
-            >
+            <View key={m.id} style={[styles.milestoneRow, index > 0 && styles.milestoneRowDivider]}>
               <Text variant="body" color="textSecondary">
                 {m.title}
               </Text>
