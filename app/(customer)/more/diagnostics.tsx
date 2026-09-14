@@ -1,14 +1,14 @@
 import Constants from 'expo-constants';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { getRepositoryAdapter } from '@/api/repositories/_utils';
-import { Button, Screen, Text } from '@/design-system';
+import { Button, ListRow, Screen, Text } from '@/design-system';
 import { clientEnv, isDevelopment } from '@/config/env';
 import { getSupabase } from '@/lib/supabase';
 import { isFeatureEnabled } from '@/security/featureFlags';
-import { colors, radii, spacing } from '@/theme';
+import { spacing } from '@/theme';
 
 type ProbeStatus = 'idle' | 'checking' | 'ok' | 'fail' | 'n/a';
 
@@ -180,15 +180,12 @@ export default function DevDiagnosticsScreen() {
       </Text>
 
       {rows.map((row) => (
-        <View key={row.label} style={styles.row} testID={`diag-row-${row.label}`}>
-          <Text variant="label" color="textMuted">
-            {row.label}
-          </Text>
-          <Text variant="body">
-            {row.status && row.status !== 'idle' ? `[${row.status}] ` : ''}
-            {row.value}
-          </Text>
-        </View>
+        <ListRow
+          key={row.label}
+          testID={`diag-row-${row.label}`}
+          title={row.label}
+          meta={`${row.status && row.status !== 'idle' ? `[${row.status}] ` : ''}${row.value}`}
+        />
       ))}
 
       <Button
@@ -205,14 +202,5 @@ export default function DevDiagnosticsScreen() {
 const styles = StyleSheet.create({
   subtitle: { marginTop: spacing.sm, marginBottom: spacing.md },
   warn: { marginBottom: spacing.lg },
-  row: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.borderSubtle,
-    marginBottom: spacing.sm,
-    gap: spacing.xs,
-  },
   refresh: { marginTop: spacing.lg },
 });

@@ -7,7 +7,7 @@ import { getAdminSettingsSummary } from '@/api/repositories/adminRepository';
 import { BACKEND_CONTRACT } from '@/config/backendContract';
 import { clientEnv } from '@/config/env';
 import { getWhatsAppConfig } from '@/config/whatsapp';
-import { ErrorState, LoadingState, Screen, Text } from '@/design-system';
+import { Card, ErrorState, LoadingState, Screen, Text } from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import { useAuth } from '@/providers/AuthProvider';
 import { canAccessAdminArea } from '@/security/roles';
@@ -87,9 +87,11 @@ export default function AdminDiagnosticsScreen() {
         {tc('diagnostics.noSecrets')}
       </Text>
       {text ? (
-        <Text variant="body" color="textSecondary" style={styles.block}>
-          {text}
-        </Text>
+        <Card elevated>
+          <Text variant="body" color="textSecondary" style={styles.block}>
+            {text}
+          </Text>
+        </Card>
       ) : null}
     </Screen>
   );

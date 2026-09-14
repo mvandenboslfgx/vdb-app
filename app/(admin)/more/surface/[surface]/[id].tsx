@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -15,7 +15,15 @@ import {
 import type { AdminDirectoryDetail } from '@/api/contract/adminRc5Mappers';
 import { ACTIVATION_BLOCK_COPY } from '@/api/contract/adminRc5Mappers';
 import { adminReviewStatusTitle } from '@/lib/partnerAdminReview';
-import { Button, EmptyState, ErrorState, LoadingState, Screen, Text } from '@/design-system';
+import {
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  Screen,
+  Text,
+} from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import { spacing } from '@/theme';
 
@@ -123,16 +131,16 @@ export default function AdminSurfaceDetailScreen() {
           {detail.status}
         </Text>
       ) : null}
-      <View style={styles.block}>
+      <Card style={styles.block} elevated>
         {detail.metaLines.map((line) => (
           <Text key={line} variant="body" color="textSecondary" style={styles.line}>
             {line}
           </Text>
         ))}
-      </View>
+      </Card>
 
       {checklist ? (
-        <View style={styles.block} testID="partner-activation-checklist">
+        <Card style={styles.block} elevated testID="partner-activation-checklist">
           <Text variant="subtitle">{t('detail.activationTitle')}</Text>
           <Text variant="body" color="textSecondary">
             {checklist.canActivate ? t('detail.activationReady') : t('detail.activationBlocked')}
@@ -162,7 +170,7 @@ export default function AdminSurfaceDetailScreen() {
           <Text variant="caption" color="textMuted" style={styles.hint}>
             {t('detail.adminReviewReadOnly')}
           </Text>
-        </View>
+        </Card>
       ) : null}
 
       <Button title={tc('back')} variant="secondary" onPress={() => router.back()} />

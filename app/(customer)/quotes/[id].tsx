@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { acceptQuote, getQuote, rejectQuote } from '@/api/repositories/quotesRepository';
 import {
   Button,
+  Card,
   ErrorState,
   LoadingState,
   Screen,
@@ -124,7 +125,13 @@ export default function QuoteDetailScreen() {
         </Text>
       ) : null}
 
-      <View style={styles.totals}>
+      <Card style={styles.totals} elevated>
+        {quote.items.map((item) => (
+          <Text key={item.id} variant="caption" color="textSecondary" style={styles.item}>
+            {item.description} × {item.quantity}
+          </Text>
+        ))}
+        <View style={styles.totalsDivider} />
         <Text variant="body">
           {t('subtotal')}: {formatCurrency(quote.subtotalCents)}
         </Text>
@@ -134,13 +141,7 @@ export default function QuoteDetailScreen() {
         <Text variant="subtitle" color="champagneGold">
           {t('total')}: {formatCurrency(quote.totalCents)}
         </Text>
-      </View>
-
-      {quote.items.map((item) => (
-        <Text key={item.id} variant="caption" color="textSecondary" style={styles.item}>
-          {item.description} × {item.quantity}
-        </Text>
-      ))}
+      </Card>
 
       {message ? (
         <Text variant="body" color="success" style={styles.message} testID="quote-message">
@@ -207,6 +208,11 @@ export default function QuoteDetailScreen() {
 const styles = StyleSheet.create({
   meta: { marginTop: spacing.md, marginBottom: spacing.lg },
   totals: { gap: spacing.sm, marginBottom: spacing.xl },
+  totalsDivider: {
+    height: 1,
+    backgroundColor: colors.borderSubtle,
+    marginVertical: spacing.xs,
+  },
   item: { marginBottom: spacing.xs },
   message: { marginVertical: spacing.lg },
   actions: { gap: spacing.md, marginTop: spacing.xl },

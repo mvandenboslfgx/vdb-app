@@ -11,6 +11,7 @@ import {
 } from '@/api/repositories/adminRepository';
 import {
   Button,
+  Card,
   ErrorState,
   LoadingState,
   Screen,
@@ -147,7 +148,7 @@ export default function AdminLeadDetailScreen() {
         tone={STATUS_TONE[lead.status]}
       />
 
-      <View style={styles.meta}>
+      <Card style={styles.meta} elevated>
         <Text variant="body" color="textSecondary">
           {lead.email}
         </Text>
@@ -172,7 +173,7 @@ export default function AdminLeadDetailScreen() {
             {lead.rejectedReason}
           </Text>
         ) : null}
-      </View>
+      </Card>
 
       {actions.length > 0 ? (
         <View style={styles.actions}>

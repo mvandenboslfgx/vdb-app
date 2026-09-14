@@ -1,12 +1,12 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { AppState, Platform, StyleSheet, View } from 'react-native';
+import { AppState, Platform, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as WebBrowser from 'expo-web-browser';
 
 import { getInvoice } from '@/api/repositories/invoicesRepository';
 import { createCheckout } from '@/api/repositories/paymentsRepository';
-import { Button, ErrorState, LoadingState, Screen, StatusPill, Text } from '@/design-system';
+import { Button, Card, ErrorState, LoadingState, Screen, StatusPill, Text } from '@/design-system';
 import { DomainError } from '@/lib/errors';
 import { formatCurrency, formatDate } from '@/lib/format';
 import type { Invoice } from '@/types/domain';
@@ -104,7 +104,7 @@ export default function InvoiceDetailScreen() {
     <Screen scroll testID="screen-invoice-detail">
       <Text variant="title">{invoice.number}</Text>
       <StatusPill label={t(`status.${invoice.status}`)} tone="gold" />
-      <View style={styles.meta}>
+      <Card style={styles.meta} elevated>
         <Text variant="body">
           {t('issueDate')}: {formatDate(invoice.issueDate)}
         </Text>
@@ -119,7 +119,7 @@ export default function InvoiceDetailScreen() {
             {t('reference')}: {invoice.paymentReference}
           </Text>
         ) : null}
-      </View>
+      </Card>
 
       {payMessage ? (
         <Text variant="body" color="warning" style={styles.message} testID="invoice-pay-message">

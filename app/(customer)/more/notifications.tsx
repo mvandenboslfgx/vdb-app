@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Screen, Text } from '@/design-system';
+import { ListRow, Screen, Text } from '@/design-system';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
-import { colors, radii, spacing } from '@/theme';
+import { spacing } from '@/theme';
 
 const STORAGE_KEY = 'vdb.notification.preferences.v1';
 
@@ -90,17 +90,13 @@ export default function NotificationPreferencesScreen() {
       </Text>
 
       {rows.map((row) => (
-        <Pressable
+        <ListRow
           key={row.key}
           testID={`pref-${row.key}`}
-          style={[styles.row, prefs[row.key] && styles.rowOn]}
+          title={row.label}
+          meta={prefs[row.key] ? t('prefs.on') : t('prefs.off')}
           onPress={() => toggle(row.key)}
-        >
-          <Text variant="body">{row.label}</Text>
-          <Text variant="label" color={prefs[row.key] ? 'champagneGold' : 'textMuted'}>
-            {prefs[row.key] ? t('prefs.on') : t('prefs.off')}
-          </Text>
-        </Pressable>
+        />
       ))}
     </Screen>
   );
@@ -110,18 +106,4 @@ const styles = StyleSheet.create({
   subtitle: { marginTop: spacing.sm, marginBottom: spacing.md },
   warn: { marginBottom: spacing.md },
   lock: { marginBottom: spacing.lg },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.borderSubtle,
-    marginBottom: spacing.sm,
-  },
-  rowOn: {
-    borderColor: colors.champagneGold,
-  },
 });

@@ -4,9 +4,18 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { getProject, listMilestones, listUpdates } from '@/api/repositories/projectsRepository';
-import { Button, ErrorState, LoadingState, Screen, StatusPill, Text } from '@/design-system';
+import {
+  Button,
+  Card,
+  ErrorState,
+  LoadingState,
+  Screen,
+  SectionHeader,
+  StatusPill,
+  Text,
+} from '@/design-system';
 import type { Project, ProjectMilestone, ProjectUpdate } from '@/types/domain';
-import { spacing } from '@/theme';
+import { colors, spacing } from '@/theme';
 
 export default function ProjectDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -70,32 +79,41 @@ export default function ProjectDetailScreen() {
         </Text>
       ) : null}
 
-      <Text variant="subtitle" style={styles.section}>
-        {t('milestones')}
-      </Text>
-      {milestones.map((m) => (
-        <Text key={m.id} variant="body" color="textSecondary" style={styles.row}>
-          {m.title}
+      <SectionHeader title={t('milestones')} />
+      {milestones.length === 0 ? (
+        <Text variant="caption" color="textMuted">
+          {t('noUpdates')}
         </Text>
-      ))}
+      ) : (
+        <Card style={styles.listCard}>
+          {milestones.map((m, index) => (
+            <View
+              key={m.id}
+              style={[styles.milestoneRow, index > 0 && styles.milestoneRowDivider]}
+            >
+              <Text variant="body" color="textSecondary">
+                {m.title}
+              </Text>
+            </View>
+          ))}
+        </Card>
+      )}
 
-      <Text variant="subtitle" style={styles.section}>
-        {t('updates')}
-      </Text>
+      <SectionHeader title={t('updates')} />
       {updates.length === 0 ? (
         <Text variant="caption" color="textMuted">
           {t('noUpdates')}
         </Text>
       ) : (
         updates.map((u) => (
-          <View key={u.id} style={styles.update}>
+          <Card key={u.id} style={styles.update}>
             <Text variant="body" weight="medium">
               {u.title}
             </Text>
             <Text variant="caption" color="textSecondary">
               {u.body}
             </Text>
-          </View>
+          </Card>
         ))
       )}
     </Screen>
@@ -107,7 +125,8 @@ const styles = StyleSheet.create({
   uploadCta: { marginBottom: spacing.lg, alignSelf: 'flex-start' },
   body: { marginBottom: spacing.md },
   meta: { marginTop: spacing.sm },
-  section: { marginTop: spacing['2xl'], marginBottom: spacing.md },
-  row: { marginBottom: spacing.sm },
-  update: { gap: spacing.xs, marginBottom: spacing.lg },
+  listCard: { padding: 0, overflow: 'hidden' },
+  milestoneRow: { paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  milestoneRowDivider: { borderTopWidth: 1, borderTopColor: colors.borderSubtle },
+  update: { gap: spacing.xs, marginBottom: spacing.md },
 });
